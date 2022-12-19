@@ -3,6 +3,8 @@ from pprint import *
 
 lFile = open("level1.txt", "w")
 
+dirtTile = image.load("FreeTileset\\png\\Tiles\\2.png")
+
 width,height=1200,780
 screen=display.set_mode((width,height))
 RED=(255,0,0)
@@ -47,6 +49,7 @@ def addTile(x, y, t):
                         level_1[i][j] = ["-"]
 
 while running:
+    
     mx,my=mouse.get_pos()
     mb=mouse.get_pressed()
 
@@ -57,10 +60,6 @@ while running:
             # if evt.button==1:
             #     addTile(mx, my, "tile")
             if evt.button==2:
-                # lFile.write("[")
-                # for r in level_1[spot]:
-                #     lFile.write("\n"+str(repr(r))+",")
-                # lFile.write("]")
                 lFile.write(repr(level_1))
             # if evt.button==3:
             #     addTile(mx,my,"lava")
