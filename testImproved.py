@@ -1,26 +1,38 @@
 from pygame import *
 
 l1File = open("level1.txt","r")
+l2File = open("level2.txt","r")
+l3File = open("level3.txt","r")
+
+level_1 = eval(l1File.readline().strip("\n"))
+level_2 = eval(l2File.readline().strip("\n"))
+level_3 = eval(l3File.readline().strip("\n"))
+
+tileDict = {
+    "t_l_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_l_side_dirt.png"),
+    "dirt" : image.load("FreeTileset\\png\\Tiles\\dirt.png"),
+    "t_r_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_r_side_dirt.png"),
+}
 
 class Level():
     def __init__(self, screen):
         self.screen = screen
+        self.levels = [level_1, level_2, level_3]
+        self.currentLevel = 0
     def drawLevel(self):
         #draw all three levels
         for i in range(row):
             for j in range(lower, upper):
-                if level_1[i][j]==["X"]:
-                    draw.rect(self.screen,BROWN,(widthOfTile*j+player.offset, heightOfTile*i, widthOfTile, heightOfTile))
-                if level_1[i][j]==["-"]:
-                    draw.rect(self.screen,RED,(widthOfTile*j+player.offset, heightOfTile*i, widthOfTile, heightOfTile))
-        #draw grid lines (just for debugging right now)
-        for i in range(col):
-            draw.line(self.screen, GREEN, (width//col*i, 0), (width//col*i, height))
-        for i in range(row):
-            draw.line(self.screen, GREEN, (0, height//row*i), (width, height//row*i))
-        #draw lines for when the screen should scroll (also just for debugging)
-        draw.line(self.screen,RED,(900,0),(900,height))
-        draw.line(self.screen,RED,(240,0),(240,height))
+                if len(self.levels[self.currentLevel][i][j])!=0:
+                    screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
+        # #draw grid lines (just for debugging right now)
+        # for i in range(col):
+        #     draw.line(self.screen, GREEN, (width//col*i, 0), (width//col*i, height))
+        # for i in range(row):
+        #     draw.line(self.screen, GREEN, (0, height//row*i), (width, height//row*i))
+        # #draw lines for when the screen should scroll (also just for debugging)
+        # draw.line(self.screen,RED,(900,0),(900,height))
+        # draw.line(self.screen,RED,(240,0),(240,height))
 
 class Player():
     def __init__(self, x, y, screen):
@@ -77,13 +89,6 @@ class Player():
         #Maybe revisit if statement here?
         breakLoop=False
         self.groundY = height
-        # if len(level_1[(self.y+self.size[1])//heightOfTile][self.posInLevel//widthOfTile]) != 0 or len(level_1[(self.y+self.size[1])//heightOfTile][self.posInLevel//widthOfTile+1]) != 0:
-        #     if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
-        #                 self.groundY = height//row*i
-        #                 self.vel[1] = 0
-        #                 self.y = self.groundY-player.size[1]
-        #                 breakLoop=True
-        #                 break
         for i in range(row):
             for j in range(lower, upper):
                 if len(level_1[i][j]) !=0:
@@ -129,12 +134,12 @@ col = 20
 spot = 0
 widthOfTile = width//col
 heightOfTile = height//row
-#Called level_1 instead of level bc I'm too lazy to change it lol
-level_1 = eval(l1File.readline().strip("\n"))
 
 #boundries for scrolling:
 lenOfLevel = len(level_1[0])
 right = lenOfLevel*widthOfTile-591
+
+print(widthOfTile, heightOfTile)
 
 while running:
     lower = (player.posInLevel)//widthOfTile-20
