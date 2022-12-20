@@ -14,8 +14,8 @@ YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
 tileDict = {
-    "t_l_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_l_side_dirt.png"),
-    "dirt" : image.load("FreeTileset\\png\\Tiles\\dirt.png"),
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
+    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
     "t_r_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_r_side_dirt.png"),
 }
 
@@ -80,12 +80,8 @@ while running:
         if evt.type==QUIT:
             running=False
         if evt.type==MOUSEBUTTONDOWN:
-            # if evt.button==1:
-            #     addTile(mx, my, "tile")
             if evt.button==2:
                 lFile.write(repr(level_1))
-            # if evt.button==3:
-            #     addTile(mx,my,"lava")
         if evt.type==KEYDOWN:
             if evt.key == K_LEFT:
                 if spot > 0:
