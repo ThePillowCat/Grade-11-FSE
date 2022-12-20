@@ -9,9 +9,9 @@ level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
 
 tileDict = {
-    "t_l_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_l_side_dirt.png"),
-    "dirt" : image.load("FreeTileset\\png\\Tiles\\dirt.png"),
-    "t_r_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_r_side_dirt.png"),
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
+    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
 }
 
 class Level():
@@ -20,19 +20,10 @@ class Level():
         self.levels = [level_1, level_2, level_3]
         self.currentLevel = 0
     def drawLevel(self):
-        #draw all three levels
         for i in range(row):
             for j in range(lower, upper):
                 if len(self.levels[self.currentLevel][i][j])!=0:
                     screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
-        # #draw grid lines (just for debugging right now)
-        # for i in range(col):
-        #     draw.line(self.screen, GREEN, (width//col*i, 0), (width//col*i, height))
-        # for i in range(row):
-        #     draw.line(self.screen, GREEN, (0, height//row*i), (width, height//row*i))
-        # #draw lines for when the screen should scroll (also just for debugging)
-        # draw.line(self.screen,RED,(900,0),(900,height))
-        # draw.line(self.screen,RED,(240,0),(240,height))
 
 class Player():
     def __init__(self, x, y, screen):
@@ -47,6 +38,9 @@ class Player():
         self.moving = True
         self.offset = 0
         self.posInLevel = 0
+        self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 13, 12)]
+        self.moveSpot = 0
+        self.direction = 0
 
     def movePlayer(self):
         #getting keys list
@@ -56,8 +50,10 @@ class Player():
         self.vel[0] = 0
         if keys[K_LEFT]:
             self.vel[0]=-5
+            self.direction = 1
         if keys[K_RIGHT]:
             self.vel[0]=5
+            self.direction = 0
         if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] < 1:
             self.vel[1] = self.jumpPower
 
@@ -100,7 +96,7 @@ class Player():
                         break
             if breakLoop:
                 break
-        # #checking if player is in void
+        #checking if player is in void
         self.y+=self.vel[1]
         if self.y+self.size[1] >= height:
             self.vel[1] = 0
@@ -108,8 +104,13 @@ class Player():
             self.y = height-player.size[1]
 
     def drawPlayer(self):
-        draw.rect(self.screen,RED,(self.x,player.y,player.size[0],player.size[1]))
-        
+        if not self.moving:
+            self.moveSpot = 0
+        if self.moveSpot > 10:
+            self.moveSpot = 0
+        self.moveSpot+=0.6
+        screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
+
 width,height=1200,703
 screen=display.set_mode((width,height))
 RED=(255,0,0)
@@ -139,9 +140,10 @@ heightOfTile = height//row
 lenOfLevel = len(level_1[0])
 right = lenOfLevel*widthOfTile-591
 
-print(widthOfTile, heightOfTile)
+bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
 while running:
+    keys = key.get_pressed()
     lower = (player.posInLevel)//widthOfTile-20
     if lower < 0:
         lower = 0
@@ -153,7 +155,7 @@ while running:
     mb=mouse.get_pressed()
 
     #drawing background - SUBJECT TO CHANGE
-    screen.fill(0)
+    screen.blit(bgForest, (0,0))
 
     for evt in event.get():
         if evt.type==QUIT:

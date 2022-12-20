@@ -3,7 +3,7 @@ from pprint import *
 
 lFile = open("level1.txt", "w")
 
-width,height=1200,780
+width,height=1200,703
 screen=display.set_mode((width,height))
 RED=(255,0,0)
 GREY=(127,127,127)
@@ -16,8 +16,10 @@ BROWN=(205, 127, 50)
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
     "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
-    "t_r_side_dirt" : image.load("FreeTileset\\png\\Tiles\\t_r_side_dirt.png"),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
 }
+
+bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
 running=True
 
@@ -25,15 +27,15 @@ row = 13
 col = 20
 spot = 0
 
-numOfRects=5
+numOfRects=3
 
 level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
 
 def fixTextures(level_1):
     for i in range(row):
-        for j in range(col*spot, col*spot+col):
+        for j in range(0, col*numOfRects-1):
             if level_1[i][j] == ["dirt"]:
-                for k in range(j, col*spot+col):
+                for k in range(j, col*spot+col-1):
                     if level_1[i][k-1] == []:
                         level_1[i][k] = ["t_l_side_dirt"]
                     if level_1[i][k+1] == []:
@@ -49,7 +51,7 @@ widthOfTile = width//col
 heightOfTile = height//row
 
 def drawLevel(screen):
-    screen.fill(0)
+    screen.blit(bgForest,(0,0))
     for i in range(row):
         for j in range(col*spot, col*spot+col):
             if level_1[i][j] != []:
