@@ -53,7 +53,7 @@ def drawLevel(screen):
     for i in range(row):
         for j in range(col*spot, col*spot+col):
             if level_1[i][j] != []:
-                screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j, heightOfTile*i))
+                screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j-(spot*width), heightOfTile*i))
     for i in range(col):
         draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
     for i in range(row):
@@ -62,7 +62,7 @@ def drawLevel(screen):
 def addTile(x, y, t):
     for i in range(row):
         for j in range(col*spot, col*spot+col):
-            if x > width//col*j-(spot)*width and x < width//col*j-(spot)*width+width//col:
+            if x > width//col*j-(spot*width) and x < width//col*j-(spot*width)+width//col:
                 if y > height//row*i and y < height//row*i+height//row:
                     if t == "tile":
                         level_1[i][j] = ["dirt"]
