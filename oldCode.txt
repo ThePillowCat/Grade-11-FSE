@@ -29,3 +29,27 @@ yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
                 self.vel[1] = 0
             if (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
                 self.vel[1] = 0
+
+def fixTextures(level_1):
+    for i in range(1, row):
+        for j in range(0, col*numOfRects-1):
+            if level_1[i][j] == ["dirt"]:
+                for k in range(j, col*spot+col-1):
+                    if level_1[i][k-1] == []:
+                        level_1[i][k] = ["t_l_side_dirt"]
+                    if level_1[i][k+1] == []:
+                        level_1[i][k] = ["t_r_side_dirt"]
+                        break
+                if level_1[i][j-1] == [] and level_1[i][j+1] == []:
+                    level_1[i][j] = ["dirt"]
+                if level_1[i-1][j] == ["t_l_side_dirt"]:
+                    if level_1[i+1][j] == [] and level_1[i+1][j]:
+                        level_1[i][j] = ["b_l_side_dirt"]
+                    else:
+                        level_1[i][j] = ["m_l_side_dirt"]
+                elif level_1[i-1][j] == ["t_r_side_dirt"]:
+                    if level_1[i+1][j] == []:
+                        level_1[i][j] = ["b_r_side_dirt"]
+                    else:
+                        level_1[i][j] = ["m_r_side_dirt"]
+    return level_1
