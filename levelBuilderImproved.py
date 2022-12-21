@@ -15,9 +15,16 @@ BROWN=(205, 127, 50)
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
-    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
+    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
     "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
-    "door" : image.load("Textures\\png\\Door\\door1.png")
+    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png"),
+    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png"),
+    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png"),
+    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png"),
+    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png"),
+    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png"),
+    "door" : image.load("Textures\\png\\Door\\door1.png"),
+    "question" : image.load("Textures\\png\\Tiles\\block1.png")
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -31,20 +38,6 @@ spot = 0
 numOfRects=3
 
 level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
-
-def fixTextures(level_1):
-    for i in range(row):
-        for j in range(0, col*numOfRects-1):
-            if level_1[i][j] == ["dirt"]:
-                for k in range(j, col*spot+col-1):
-                    if level_1[i][k-1] == []:
-                        level_1[i][k] = ["t_l_side_dirt"]
-                    if level_1[i][k+1] == []:
-                        level_1[i][k] = ["t_r_side_dirt"]
-                        break
-                if level_1[i][j-1] == [] and level_1[i][j+1] == []:
-                    level_1[i][j] = ["dirt"]
-    return level_1
 
 
 widthOfTile = width//col
@@ -66,12 +59,10 @@ def addTile(x, y, t):
         for j in range(col*spot, col*spot+col):
             if x > width//col*j-(spot*width) and x < width//col*j-(spot*width)+width//col:
                 if y > height//row*i and y < height//row*i+height//row:
-                    if t == "tile":
-                        level_1[i][j] = ["dirt"]
-                    elif t == "lava":
-                        level_1[i][j] = ["lava"]
-                    elif t == "door":
-                        level_1[i][j] = ["door"]
+                    if t is "erase":
+                        level_1[i][j] = []
+                    else:
+                        level_1[i][j] = [t]
 
 while running:
     
@@ -91,15 +82,35 @@ while running:
             if evt.key == K_RIGHT:
                 if spot < numOfRects-1:
                     spot+=1
-            if evt.key == K_1:
+            if evt.key == K_n:
                 addTile(mx, my, "door")
+            if evt.key == K_m:
+                addTile(mx, my, "question")
+            if evt.key == K_e:
+                addTile(mx,my,"erase")
+            if evt.key == K_1:
+                addTile(mx, my, "t_l_side_dirt")
+            if evt.key == K_2:
+                addTile(mx, my, "t_m_side_dirt")
+            if evt.key == K_3:
+                addTile(mx, my, "t_r_side_dirt")
+            if evt.key == K_4:
+                addTile(mx, my, "m_l_side_dirt")
+            if evt.key == K_5:
+                addTile(mx, my, "m_m_side_dirt")
+            if evt.key == K_6:
+                addTile(mx, my, "m_r_side_dirt")
+            if evt.key == K_7:
+                addTile(mx, my, "b_l_side_dirt")
+            if evt.key == K_8:
+                addTile(mx, my, "b_m_side_dirt")
             if evt.key == K_9:
-                level_1 = fixTextures(level_1)
+                addTile(mx, my, "b_r_side_dirt")
             if evt.key == K_SPACE:
                 lFile.write(repr(level_1))
     
     if mb[0]:
-        addTile(mx, my, "tile")
+        addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
         addTile(mx, my, "lava")
     drawLevel(screen)

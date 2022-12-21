@@ -12,9 +12,17 @@ width,height=1200,703
 screen=display.set_mode((width,height))
 
 tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert(),
-    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert(),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert(),
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
+    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
+    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png"),
+    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png"),
+    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png"),
+    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png"),
+    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png"),
+    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png"),
+    "door" : image.load("Textures\\png\\Door\\door1.png"),
+    "question" : image.load("Textures\\png\\Tiles\\block1.png")
 }
 
 class Level():
@@ -63,7 +71,7 @@ class Player():
                 for j in range(lower, upper):
                     tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
                     playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
-                    if level.levels[level.currentLevel][i][j] != []:
+                    if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
                         if tileRect.colliderect(playerRect):
                             self.vel[0]=0
                             self.x+=5
@@ -75,7 +83,7 @@ class Player():
                 for j in range(lower, upper):
                     tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
                     playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
-                    if level.levels[level.currentLevel][i][j] != []:
+                    if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
                         if tileRect.colliderect(playerRect):
                             self.vel[0]=0
                             self.x-=5
@@ -91,12 +99,12 @@ class Player():
             for j in range(lower, upper):
                 tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
                 playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
-                if level.levels[level.currentLevel][i][j] != []:
+                if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
                     if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
                         self.groundY = height//row*i
                         self.vel[1] = 0
                         self.y = self.groundY-player.size[1]
-                if level.levels[level.currentLevel][i][j] != []:
+                if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
                     tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
                     playerRect = Rect(self.x, self.y+self.vel[1], self.size[0], self.size[1])
                     if tileRect.colliderect(playerRect):
@@ -149,7 +157,6 @@ GREEN=(0,255,0)
 YELLOW=(255,255,0)
 BLACK = (0,0,0)
 BROWN=(205, 127, 50)
-
 running=True
 
 #OBJECTS
@@ -201,5 +208,6 @@ while running:
     display.flip()
     myClock.tick(60)
 
-l1File.close()            
+l1File.close()
+
 quit()
