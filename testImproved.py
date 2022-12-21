@@ -8,10 +8,13 @@ level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
 
+width,height=1200,703
+screen=display.set_mode((width,height))
+
 tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
-    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert(),
+    "dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert(),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert(),
 }
 
 class Level():
@@ -19,12 +22,17 @@ class Level():
         self.screen = screen
         self.levels = [level_1, level_2, level_3]
         self.currentLevel = 0
+        self.curFrame = 0
+        self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
     def drawLevel(self):
         for i in range(row):
             for j in range(lower, upper):
                 if len(self.levels[self.currentLevel][i][j])!=0:
                     screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
-
+        # self.curFrame+=0.2
+        # if self.curFrame > 4:
+        #     self.curFrame = 0
+        # screen.blit(self.door[int(self.curFrame)], (0,0))
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -45,28 +53,71 @@ class Player():
     def movePlayer(self):
         #getting keys list
         keys = key.get_pressed()
-
-        #resetting horizontal velocity
         self.vel[0] = 0
+        self.vel[1]+=self.gravity
+        #checking inputs
         if keys[K_LEFT]:
             self.vel[0]=-5
+            self.x-=5
+            for i in range(row):
+                for j in range(lower, upper):
+                    tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+                    playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
+                    if level.levels[level.currentLevel][i][j] != []:
+                        if tileRect.colliderect(playerRect):
+                            self.vel[0]=0
+                            self.x+=5
             self.direction = 1
-        if keys[K_RIGHT]:
+        elif keys[K_RIGHT]:
             self.vel[0]=5
+            self.x+=5
+            for i in range(row):
+                for j in range(lower, upper):
+                    tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+                    playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
+                    if level.levels[level.currentLevel][i][j] != []:
+                        if tileRect.colliderect(playerRect):
+                            self.vel[0]=0
+                            self.x-=5
             self.direction = 0
-        if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] < 1:
+        if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 1:
             self.vel[1] = self.jumpPower
 
+        #defaults the ground to be the void
+        self.groundY = height
+
+        #checks if hit ground or ceiling
+        for i in range(row):
+            for j in range(lower, upper):
+                tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+                playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
+                if level.levels[level.currentLevel][i][j] != []:
+                    if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
+                        self.groundY = height//row*i
+                        self.vel[1] = 0
+                        self.y = self.groundY-player.size[1]
+                if level.levels[level.currentLevel][i][j] != []:
+                    tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+                    playerRect = Rect(self.x, self.y+self.vel[1], self.size[0], self.size[1])
+                    if tileRect.colliderect(playerRect):
+                        self.vel[1] = 0
+
+        #updating the yPos of the player
+        self.y+=self.vel[1]
+        #moving player, adding gravity, updating position variable
+        self.posInLevel=self.x+abs(self.offset)
+        
         #determines if the player is moving or not
         if self.vel[0] != 0 and self.moving == False:
             self.moving = True
         if self.vel[0] == 0 and self.moving:
             self.moving = False
 
-        #adding x and y velocities
-        self.x+=self.vel[0]
-        self.vel[1]+=self.gravity
-        self.posInLevel=self.x+abs(self.offset)
+        #checking if player is in the void
+        if self.y+self.size[1] >= height:
+            self.vel[1] = 0
+            self.groundY=height
+            self.y = height-player.size[1]
     
     def checkPlayerCollision(self):
         #checks when the level should be scrolled
@@ -81,62 +132,6 @@ class Player():
         #checks if the player is hitting the ground
         #default the ground to height-the void
         #then loop through and check if there is a platform directly under the player
-        breakLoop = False
-        self.groundY = height
-        yBlock = (self.y+self.vel[1])//heightOfTile
-        # for i in range(row):
-        #     for j in range(lower, upper):
-        #         if level.levels[level.currentLevel][i][j] != []:
-        #             if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
-        #                 self.groundY = height//row*i
-        #                 self.vel[1] = 0
-        #                 self.y = self.groundY-player.size[1]
-        #                 breakLoop=True
-        #                 break
-        #     if breakLoop:
-        #         break
-        yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
-        xBlock = (self.posInLevel)//widthOfTile
-        #CHECK IF HIT WALL
-        if 0 <= xBlock < lenOfLevel:
-            if (level.levels[level.currentLevel][yBlock-1][xBlock] != []):
-                self.x+=5
-            elif (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
-                self.x+=5
-            if (level.levels[level.currentLevel][yBlock-1][xBlock+1] != []):
-                self.x-=5
-            elif (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
-                self.x-=5
-        #CHECK IF GROUNDED OR IF HIT CIELLING
-        yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
-        xBlock = (self.posInLevel)//widthOfTile
-        if 0 <= yBlock < row:
-            if self.vel[1] >=0:
-                if (level.levels[level.currentLevel][yBlock][xBlock] != []):
-                    self.groundY = yBlock*heightOfTile
-                    self.y = self.groundY-self.size[1]
-                    self.vel[1] = 0
-                if (level.levels[level.currentLevel][yBlock][xBlock+1] != []):
-                    self.groundY = (self.y+self.size[1]+self.vel[1])//heightOfTile*heightOfTile
-                    self.y = self.groundY-self.size[1]
-                    self.vel[1] = 0
-            yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
-            xBlock = (self.posInLevel)//widthOfTile
-            if (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
-                self.vel[1] = 0
-            if (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
-                self.vel[1] = 0
-        #UPDATE WAY LENOFLEVEL IS MADE
-        for i in range(col):
-            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
-        for i in range(row):
-            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
-        #checking if player is in void
-        self.y+=self.vel[1]
-        if self.y+self.size[1] >= height:
-            self.vel[1] = 0
-            self.groundY=height
-            self.y = height-player.size[1]
 
     def drawPlayer(self):
         if not self.moving:
@@ -146,8 +141,6 @@ class Player():
         self.moveSpot+=0.6
         screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
 
-width,height=1200,703
-screen=display.set_mode((width,height))
 RED=(255,0,0)
 GREY=(127,127,127)
 BLACK=(0,0,0)

@@ -1,0 +1,31 @@
+yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+        xBlock = (self.posInLevel)//widthOfTile
+        #CHECK IF HIT WALL
+        if 0 <= xBlock < lenOfLevel:
+            if (level.levels[level.currentLevel][yBlock-1][xBlock] != []):
+                self.x+=5
+            elif (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
+                self.x+=5
+            if (level.levels[level.currentLevel][yBlock-1][xBlock+1] != []):
+                self.x-=5
+            elif (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
+                self.x-=5
+        #CHECK IF GROUNDED OR IF HIT CIELLING
+        yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+        xBlock = (self.posInLevel)//widthOfTile
+        if 0 <= yBlock < row:
+            if self.vel[1] >=0:
+                if (level.levels[level.currentLevel][yBlock][xBlock] != []):
+                    self.groundY = yBlock*heightOfTile
+                    self.y = self.groundY-self.size[1]
+                    self.vel[1] = 0
+                if (level.levels[level.currentLevel][yBlock][xBlock+1] != []):
+                    self.groundY = (self.y+self.size[1]+self.vel[1])//heightOfTile*heightOfTile
+                    self.y = self.groundY-self.size[1]
+                    self.vel[1] = 0
+            yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+            xBlock = (self.posInLevel)//widthOfTile
+            if (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
+                self.vel[1] = 0
+            if (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
+                self.vel[1] = 0

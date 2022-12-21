@@ -17,6 +17,7 @@ tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
     "dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
     "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
+    "door" : image.load("Textures\\png\\Door\\door1.png")
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -44,7 +45,6 @@ def fixTextures(level_1):
                 if level_1[i][j-1] == [] and level_1[i][j+1] == []:
                     level_1[i][j] = ["dirt"]
     return level_1
-
 
 
 widthOfTile = width//col
