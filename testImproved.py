@@ -81,21 +81,56 @@ class Player():
         #checks if the player is hitting the ground
         #default the ground to height-the void
         #then loop through and check if there is a platform directly under the player
-        self.groundY=0
-        #Maybe revisit if statement here?
-        breakLoop=False
+        breakLoop = False
         self.groundY = height
+        yBlock = (self.y+self.vel[1])//heightOfTile
+        # for i in range(row):
+        #     for j in range(lower, upper):
+        #         if level.levels[level.currentLevel][i][j] != []:
+        #             if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
+        #                 self.groundY = height//row*i
+        #                 self.vel[1] = 0
+        #                 self.y = self.groundY-player.size[1]
+        #                 breakLoop=True
+        #                 break
+        #     if breakLoop:
+        #         break
+        yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+        xBlock = (self.posInLevel)//widthOfTile
+        #CHECK IF HIT WALL
+        if 0 <= xBlock < lenOfLevel:
+            if (level.levels[level.currentLevel][yBlock-1][xBlock] != []):
+                self.x+=5
+            elif (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
+                self.x+=5
+            if (level.levels[level.currentLevel][yBlock-1][xBlock+1] != []):
+                self.x-=5
+            elif (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
+                self.x-=5
+        #CHECK IF GROUNDED OR IF HIT CIELLING
+        yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+        xBlock = (self.posInLevel)//widthOfTile
+        if 0 <= yBlock < row:
+            if self.vel[1] >=0:
+                if (level.levels[level.currentLevel][yBlock][xBlock] != []):
+                    self.groundY = yBlock*heightOfTile
+                    self.y = self.groundY-self.size[1]
+                    self.vel[1] = 0
+                if (level.levels[level.currentLevel][yBlock][xBlock+1] != []):
+                    self.groundY = (self.y+self.size[1]+self.vel[1])//heightOfTile*heightOfTile
+                    self.y = self.groundY-self.size[1]
+                    self.vel[1] = 0
+            yBlock = (self.y+self.size[1]+self.vel[1])//heightOfTile
+            xBlock = (self.posInLevel)//widthOfTile
+            if (level.levels[level.currentLevel][yBlock-2][xBlock] != []):
+                self.vel[1] = 0
+            if (level.levels[level.currentLevel][yBlock-2][xBlock+1] != []):
+                self.vel[1] = 0
+        #UPDATE WAY LENOFLEVEL IS MADE
+        for i in range(col):
+            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
         for i in range(row):
-            for j in range(lower, upper):
-                if len(level_1[i][j]) !=0:
-                    if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
-                        self.groundY = height//row*i
-                        self.vel[1] = 0
-                        self.y = self.groundY-player.size[1]
-                        breakLoop=True
-                        break
-            if breakLoop:
-                break
+            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
         #checking if player is in void
         self.y+=self.vel[1]
         if self.y+self.size[1] >= height:
