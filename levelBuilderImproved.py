@@ -91,6 +91,7 @@ while running:
             if evt.key == K_m:
                 addTile(mx, my, "question")
             if evt.key == K_SPACE:
+                lFile.truncate(0)
                 lFile.write(repr(level_1))
     keys = key.get_pressed()
     if keys[K_e]:

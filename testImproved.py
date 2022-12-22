@@ -92,19 +92,29 @@ class Player():
         self.groundY = height
 
         #checks if hit ground or ceiling
-        for i in range(row):
-            for j in range(lower, upper):
-                tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
-                playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
-                if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
-                    if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
-                        self.groundY = height//row*i
-                        self.vel[1] = 0
-                        self.y = self.groundY-player.size[1]
-                    tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
-                    playerRect = Rect(self.x, self.y+self.vel[1], self.size[0], self.size[1])
-                    if tileRect.colliderect(playerRect):
-                        self.vel[1] = 0
+        # for i in range(row):
+        #     for j in range(lower, upper):
+        #         tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+        #         playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
+        #         if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
+        #             if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
+        #                 self.groundY = height//row*i
+        #                 self.vel[1] = 0
+        #                 self.y = self.groundY-player.size[1]
+        #             tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
+        #             playerRect = Rect(self.x, self.y+self.vel[1], self.size[0], self.size[1])
+        #             if tileRect.colliderect(playerRect):
+        #                 self.vel[1] = 0
+        playerRect = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
+        hitRect = playerRect.collidelist(level_1_Rects)
+        if hitRect != -1:
+            self.groundY = level_1_Rects[hitRect][1]
+            self.vel[1] = 0
+            self.y = self.groundY-player.size[1]
+        playerRect = Rect(self.posInLevel, self.y+self.vel[1], self.size[0], 1)
+        hitRect = playerRect.collidelist(level_1_Rects)
+        if hitRect != -1:
+            self.vel[1] = 0
         #updating the yPos of the player
         self.y+=self.vel[1]
         #moving player, adding gravity, updating position variable
