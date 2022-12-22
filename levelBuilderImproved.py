@@ -2,6 +2,7 @@ from pygame import *
 from pprint import *
 
 lFile = open("level1.txt", "w")
+r1File = open("level1Rects.txt", "w")
 
 width,height=1200,703
 screen=display.set_mode((width,height))
@@ -13,6 +14,8 @@ GREEN=(0,255,0)
 YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
+listOfRects = []
+
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
     "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
@@ -23,6 +26,9 @@ tileDict = {
     "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png"),
     "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png"),
     "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png"),
+    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png"),
+    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png"),
+    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png"),
     "door" : image.load("Textures\\png\\Door\\door1.png"),
     "question" : image.load("Textures\\png\\Tiles\\block1.png")
 }
@@ -35,7 +41,7 @@ row = 13
 col = 20
 spot = 0
 
-numOfRects=3
+numOfRects=6
 
 level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
 
@@ -88,24 +94,30 @@ while running:
                 addTile(mx, my, "question")
             if evt.key == K_e:
                 addTile(mx,my,"erase")
-            if evt.key == K_1:
+            elif evt.key == K_1:
                 addTile(mx, my, "t_l_side_dirt")
-            if evt.key == K_2:
+            elif evt.key == K_2:
                 addTile(mx, my, "t_m_side_dirt")
-            if evt.key == K_3:
+            elif evt.key == K_3:
                 addTile(mx, my, "t_r_side_dirt")
-            if evt.key == K_4:
+            elif evt.key == K_4:
                 addTile(mx, my, "m_l_side_dirt")
-            if evt.key == K_5:
+            elif evt.key == K_5:
                 addTile(mx, my, "m_m_side_dirt")
-            if evt.key == K_6:
+            elif evt.key == K_6:
                 addTile(mx, my, "m_r_side_dirt")
-            if evt.key == K_7:
+            elif evt.key == K_7:
                 addTile(mx, my, "b_l_side_dirt")
-            if evt.key == K_8:
+            elif evt.key == K_8:
                 addTile(mx, my, "b_m_side_dirt")
-            if evt.key == K_9:
+            elif evt.key == K_9:
                 addTile(mx, my, "b_r_side_dirt")
+            elif evt.key == K_a:
+                addTile(mx, my, "p_l_side_dirt")
+            elif evt.key == K_b:
+                addTile(mx, my, "p_m_side_dirt")
+            elif evt.key == K_c:
+                addTile(mx, my, "p_r_side_dirt")
             if evt.key == K_SPACE:
                 lFile.write(repr(level_1))
     
