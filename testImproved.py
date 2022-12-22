@@ -62,7 +62,6 @@ class Player():
         self.fireBalls = []
 
     def movePlayer(self):
-        print(self.posInLevel)
         #getting keys list
         keys = key.get_pressed()
         self.vel[0] = 0
@@ -142,18 +141,33 @@ class Player():
             self.moveSpot = 0
         self.moveSpot+=0.6
         screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
-
-    def drawFireBalls(self):
-        for fireBall in self.fireBalls:
-            pass
-
+    
+    def usePowerUp(self, powerUp):
+        if powerUp == "fireball":
+            for i in range(len(self.fireBalls)):
+                draw.circle(screen, RED, (self.fireBalls[i].x, self.fireBalls[i].y), self.fireBalls[i].rad)
+                if self.fireBalls[i].y+self.fireBalls[i].rad > height:
+                    self.fireBalls[i].y = height-self.fireBalls[i].rad
+                    self.fireBalls[i].vel[1]=-8
+                    self.fireBalls[i].bounces+=1
+                self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
+                self.fireBalls[i].y+=self.fireBalls[i].vel[1]
+                self.fireBalls[i].x+=self.fireBalls[i].speed
+            temp = len(self.fireBalls)*1
+            for i in range(temp):
+                if self.fireBalls[i].bounces > 3:
+                    del self.fireBalls[i]
 class Fireball():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 3
-        self.vel = [self.speed, -4]
-        self.gravity = 1
+        self.speed = 10
+        self.vel = [self.speed, 8]
+        if player.direction != 0:
+            self.speed=-self.speed
+        self.gravity = 0.5
+        self.rad = 5
+        self.bounces = 0
 
 RED=(255,0,0)
 GREY=(127,127,127)
@@ -210,16 +224,18 @@ while running:
         if evt.type==MOUSEBUTTONDOWN:
             if evt.button==1:
                 print(mx,my)
-        # if evt.type==KEYDOWN:
-        #     if evt.key == K_SPACE and player.powerUp == "fireball":
-        #         if len(player.fireBalls) < 4:
-        #             player.fireBalls.append(Fireball(player.x,player.y))
-        #             print(player.fireBalls)
+        if evt.type==KEYDOWN:
+            if evt.key == K_r and player.powerUp == "fireball":
+                if len(player.fireBalls) < 3:
+                    player.fireBalls.append(Fireball(player.x,player.y))
 
     player.movePlayer()
     player.checkPlayerCollision()
     level.drawLevel()
     player.drawPlayer()
+
+    if player.powerUp != "normal":
+        player.usePowerUp(player.powerUp)
 
     #flipping display and insuring 60fps
     display.flip()
