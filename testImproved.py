@@ -1,7 +1,6 @@
 from pygame import *
 
 l1File = open("level1.txt","r")
-r1File = open("level1Rects.txt", "r")
 
 l2File = open("level2.txt","r")
 l3File = open("level3.txt","r")
@@ -14,21 +13,24 @@ width,height=1200,703
 screen=display.set_mode((width,height))
 
 tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
-    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
-    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png"),
-    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png"),
-    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png"),
-    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png"),
-    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png"),
-    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png"),
-    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png"),
-    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png"),
-    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png"),
-    "door" : image.load("Textures\\png\\Door\\door1.png"),
-    "question" : image.load("Textures\\png\\Tiles\\block1.png")
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
+    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
+    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png").convert_alpha(),
+    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png").convert_alpha(),
+    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png").convert_alpha(),
+    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png").convert_alpha(),
+    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png").convert_alpha(),
+    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png").convert_alpha(),
+    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
+    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
+    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
+    "door" : image.load("Textures\\png\\Door\\door1.png").convert(),
+    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert()
 }
+
+class UI():
+    pass
 
 class Level():
     def __init__(self, screen):
@@ -122,6 +124,7 @@ class Player():
     
     def checkPlayerCollision(self):
         #checks when the level should be scrolled
+        #also check if the player is hitting an enemy
         if self.x+self.size[0] > 900 and self.posInLevel < right:
             self.x = 900-self.size[0]
             if self.moving:
@@ -130,9 +133,6 @@ class Player():
             self.x = 240
             if self.moving and self.posInLevel > 240:
                 self.offset += 5
-        #checks if the player is hitting the ground
-        #default the ground to height-the void
-        #then loop through and check if there is a platform directly under the player
 
     def drawPlayer(self):
         if not self.moving:
@@ -145,16 +145,30 @@ class Player():
     def usePowerUp(self, powerUp):
         if powerUp == "fireball":
             for i in range(len(self.fireBalls)):
-                draw.circle(screen, RED, (self.fireBalls[i].x, self.fireBalls[i].y), self.fireBalls[i].rad)
+                draw.circle(screen, RED, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y), self.fireBalls[i].rad)
+                bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2), (self.fireBalls[i].rad*2)-10, 5)
+                rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2), self.y+5, 1, (self.fireBalls[i].rad*2)-10)
+                leftOfFireball = Rect(self.fireBalls[i].x, self.y, 1, (self.fireBalls[i].rad*2))
+                #topOfFireball = Rect(self.fireBalls[i].x+self.offset+(self.fireBalls[i].rad*2)+self.offset, self.y, 1, (self.fireBalls[i].rad*2))
+                #deletes fireball if it's in the void (at bottom of screen)
                 if self.fireBalls[i].y+self.fireBalls[i].rad > height:
-                    self.fireBalls[i].y = height-self.fireBalls[i].rad
+                    self.fireBalls[i].bounces = 4
+                if rightOfFireball.collidelist(level_1_Rects) != -1:
+                    self.fireBalls[i].bounces = 4
+                if leftOfFireball.collidelist(level_1_Rects) != -1:
+                    self.fireBalls[i].bounces = 4
+                    print("yo")
+                if bottomOfFireball.collidelist(level_1_Rects) != -1:
                     self.fireBalls[i].vel[1]=-8
                     self.fireBalls[i].bounces+=1
+                # if leftOfFireball.collidelist(level_1_Rects) != -1:
+                #     self.fireBalls[i].bounces = 4
+                #increasing gravity, updating x and y based off velocites
                 self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
                 self.fireBalls[i].y+=self.fireBalls[i].vel[1]
                 self.fireBalls[i].x+=self.fireBalls[i].speed
-            temp = len(self.fireBalls)*1
-            for i in range(temp):
+            temp = len(self.fireBalls)
+            for i in range(temp-1,-1,-1):
                 if self.fireBalls[i].bounces > 3:
                     del self.fireBalls[i]
 class Fireball():
@@ -166,7 +180,7 @@ class Fireball():
         if player.direction != 0:
             self.speed=-self.speed
         self.gravity = 0.5
-        self.rad = 5
+        self.rad = 10
         self.bounces = 0
 
 RED=(255,0,0)
@@ -227,7 +241,7 @@ while running:
         if evt.type==KEYDOWN:
             if evt.key == K_r and player.powerUp == "fireball":
                 if len(player.fireBalls) < 3:
-                    player.fireBalls.append(Fireball(player.x,player.y))
+                    player.fireBalls.append(Fireball(player.posInLevel,player.y))
 
     player.movePlayer()
     player.checkPlayerCollision()

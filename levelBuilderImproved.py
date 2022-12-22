@@ -14,8 +14,6 @@ GREEN=(0,255,0)
 YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
-listOfRects = []
-
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
     "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
@@ -41,7 +39,7 @@ row = 13
 col = 20
 spot = 0
 
-numOfRects=6
+numOfRects=5
 
 level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
 
@@ -92,35 +90,35 @@ while running:
                 addTile(mx, my, "door")
             if evt.key == K_m:
                 addTile(mx, my, "question")
-            if evt.key == K_e:
-                addTile(mx,my,"erase")
-            elif evt.key == K_1:
-                addTile(mx, my, "t_l_side_dirt")
-            elif evt.key == K_2:
-                addTile(mx, my, "t_m_side_dirt")
-            elif evt.key == K_3:
-                addTile(mx, my, "t_r_side_dirt")
-            elif evt.key == K_4:
-                addTile(mx, my, "m_l_side_dirt")
-            elif evt.key == K_5:
-                addTile(mx, my, "m_m_side_dirt")
-            elif evt.key == K_6:
-                addTile(mx, my, "m_r_side_dirt")
-            elif evt.key == K_7:
-                addTile(mx, my, "b_l_side_dirt")
-            elif evt.key == K_8:
-                addTile(mx, my, "b_m_side_dirt")
-            elif evt.key == K_9:
-                addTile(mx, my, "b_r_side_dirt")
-            elif evt.key == K_a:
-                addTile(mx, my, "p_l_side_dirt")
-            elif evt.key == K_b:
-                addTile(mx, my, "p_m_side_dirt")
-            elif evt.key == K_c:
-                addTile(mx, my, "p_r_side_dirt")
             if evt.key == K_SPACE:
                 lFile.write(repr(level_1))
-    
+    keys = key.get_pressed()
+    if keys[K_e]:
+        addTile(mx,my,"erase")
+    elif keys[K_1]:
+        addTile(mx, my, "t_l_side_dirt")
+    elif keys[K_2]:
+        addTile(mx, my, "t_m_side_dirt")
+    elif keys[K_3]:
+        addTile(mx, my, "t_r_side_dirt")
+    elif keys[K_4]:
+        addTile(mx, my, "m_l_side_dirt")
+    elif keys[K_5]:
+        addTile(mx, my, "m_m_side_dirt")
+    elif keys[K_6]:
+        addTile(mx, my, "m_r_side_dirt")
+    elif keys[K_7]:
+        addTile(mx, my, "b_l_side_dirt")
+    elif keys[K_8]:
+        addTile(mx, my, "b_m_side_dirt")
+    elif keys[K_9]:
+        addTile(mx, my, "b_r_side_dirt")
+    elif keys[K_a]:
+        addTile(mx, my, "p_l_side_dirt")
+    elif keys[K_b]:
+        addTile(mx, my, "p_m_side_dirt")
+    elif keys[K_c]:
+        addTile(mx, my, "p_r_side_dirt")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
