@@ -32,20 +32,56 @@ right = lenOfLevel*widthOfTile-591
 
 level_1_Rects = []
 level_1_Objects = []
+level_1_Enemies = []
 level_2_Rects = []
 level_2_Objects = []
+level_2_Enemies = []
 level_3_Rects = []
 level_3_Objects = []
+level_3_Enemies = []
 
 #POSSIBLE SOURCE OF BUGS:
 #LEN OF LEVEL
 #ANOTHER IDEA:
 #HAVE ENEMIES IN THEIR OWN ARRAY
 
+class Enemy():
+    def __init__(self, t, re, x, y):
+        self.dead = False
+        self.x = x
+        self.y = y
+        self.hitbox = re
+        self.type = t
+        self.velX = 5
+
+class Slime(Enemy):
+    def drawSelf(self):
+        screen.blit(tileDict[self.type], (self.hitbox[0], self.hitbox[1]))
+        self.hitbox = self.hitbox.move(self.velX,0)
+    def checkCollision(self):
+        X = self.hitbox[0]//widthOfTile
+        Y = self.hitbox[1]//heightOfTile
+        if level.levels[level.currentLevel][Y+1][X] == [] or level.levels[level.currentLevel][Y+1][X+1] == []:
+            self.velX*=-1
+        bottomOfPlayer = Rect(player.posInLevel, player.y+player.vel[1]+player.size[1], player.size[0], 1)
+        if bottomOfPlayer.colliderect(self.hitbox):
+            player.vel[1] = -5
+            self.dead = True
+        #Checking if hit by fireball
+        else:
+            for i in range(len(player.fireBalls)):
+                fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
+                if fireRect.colliderect(self.hitbox):
+                    self.dead = True
+                    player.fireBalls[i].bounces = 4
+
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
 
 #would include stuff like enemies
 seperateObjects = [["door1"]]
+
+#enemies array (contains all the enemies)
+enemies = [["BlueSlime1"], ["PinkSlime1"]]
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -72,40 +108,90 @@ tileDict = {
     "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
     "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
+    "BlueSlime1": image.load("Textures\png\Enemies\BlueSlime1.png").convert_alpha(),
+    "BlueSlime2": image.load("Textures\png\Enemies\BlueSlime2.png").convert_alpha(),
+    "BlueSlimeSq": image.load("Textures\png\Enemies\BlueSlimeSq.png").convert_alpha(),
+    "BlueSlimeDead": image.load("Textures\png\Enemies\BlueSlimeDead.png").convert_alpha(),
+    "PinkSlime1": image.load("Textures\png\Enemies\PinkSlime1.png").convert_alpha(),
+    "PinkSlime2": image.load("Textures\png\Enemies\PinkSlime2.png").convert_alpha(),
+    "PinkSlimeSq": image.load("Textures\png\Enemies\PinkSlimeSq.png").convert_alpha(),
+    "PinkSlimeDead": image.load("Textures\png\Enemies\PinkSlimeDead.png").convert_alpha(),
 }
 
 for i in range(row):
     for j in range(lenOfLevel):
-        if level_1[i][j] not in stuffWithNoCollision:
-            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
-        if level_1[i][j] in seperateObjects:
+        if level_1[i][j] in enemies:
+            W = tileDict[level_1[i][j][0]].get_width()
+            H = tileDict[level_1[i][j][0]].get_height()
+            offset = 0
+            if level_1[i][j] == ["BlueSlime1"]:
+                offset = 20
+                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                level_1[i][j] = []
+            if level_1[i][j] == ["PinkSlime1"]:
+                offset = 20
+                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                level_1[i][j] = []
+            level_1_Enemies.append(myObj)
+        elif level_1[i][j] in seperateObjects:
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+        elif level_1[i][j] not in stuffWithNoCollision:
+            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 for i in range(row):
-    for j in range(lenOfLevel):
-        if level_2[i][j] not in stuffWithNoCollision:
+    for j in range(len(level_2[0])):
+        if level_2[i][j] in enemies:
+            W = tileDict[level_1[i][j][0]].get_width()
+            H = tileDict[level_1[i][j][0]].get_height()
+            offset = 0
+            if level_2[i][j] == ["BlueSlime1"]:
+                offset = 20
+                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                level_2[i][j] = []
+            if level_2[i][j] == ["PinkSlime1"]:
+                offset = 20
+                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                level_2[i][j] = []
+            level_2_Enemies.append(myObj)
+        elif level_2[i][j] in seperateObjects:
+            W = tileDict[level_2[i][j][0]].get_width()
+            H = tileDict[level_2[i][j][0]].get_height()
+            level_2_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+        elif level_2[i][j] not in stuffWithNoCollision:
             level_2_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
-        if level_2[i][j] in seperateObjects:
-            level_2_Objects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 for i in range(row):
-    for j in range(lenOfLevel):
-        if level_3[i][j] not in stuffWithNoCollision:
+    for j in range(len(level_3[0])):
+        if level_3[i][j] in enemies:
+            W = tileDict[level_1[i][j][0]].get_width()
+            H = tileDict[level_1[i][j][0]].get_height()
+            offset = 0
+            if level_3[i][j] == ["BlueSlime1"]:
+                offset = 20
+                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                level_3[i][j] = []
+            if level_3[i][j] == ["PinkSlime1"]:
+                offset = 20
+                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                level_3[i][j] = []
+            level_3_Enemies.append(myObj)
+        elif level_3[i][j] in seperateObjects:
+            W = tileDict[level_3[i][j][0]].get_width()
+            H = tileDict[level_3[i][j][0]].get_height()
+            level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+        elif level_3[i][j] not in stuffWithNoCollision:
             level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
-        if level_3[i][j] in seperateObjects:
-            level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 soundEffects = {
 
 }
 
 class UI():
-    pass
+    def __init__(self):
+        self.timeLeft = 200
 
-class Enemy():
-    pass
 
 class Level():
     def __init__(self, screen):
@@ -113,11 +199,13 @@ class Level():
         self.levels = [level_1, level_2, level_3]
         self.objects = [level_1_Objects, level_2_Objects, level_3_Rects]
         self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
-        self.currentLevel = 0
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
+        self.enemies = [level_1_Enemies, level_2_Enemies, level_3_Enemies]
+        self.currentLevel = 0
         self.doorFrame = 1
         self.doorOpening = False
         self.temp = 0
+        self.doorIsOpen = False
     def drawLevel(self):
         for i in range(row):
             for j in range(lower, upper):
@@ -131,7 +219,16 @@ class Level():
             self.doorFrame+=0.05
             if level.doorFrame >= 5:
                 self.doorOpening = False
-
+                self.doorIsOpen = True
+    def drawEnemies(self):
+        for e in self.enemies[self.currentLevel]:
+            e.drawSelf()
+            e.checkCollision()
+        tempLen = len(self.enemies[self.currentLevel])
+        for i in range(tempLen-1,-1,-1):
+            if self.enemies[self.currentLevel][i].dead:
+                del self.enemies[self.currentLevel][i]
+            
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -215,6 +312,13 @@ class Player():
                 if level.levels[level.currentLevel][Y][X] == ["door1"]:
                     level.doorOpening = True
                     level.temp = temp
+                if level.levels[level.currentLevel][Y][X] == ["door4"]:
+                    player.x = 100
+                    player.y = 50
+                    self.offset = 0
+                    level.doorOpening = False
+                    self.posInLevel = 50
+                    level.currentLevel+=1
 
         #updating the yPos of the player
         self.y+=self.vel[1]
@@ -312,6 +416,7 @@ running=True
 myClock = time.Clock()
 player = Player(300,100,screen)
 level = Level(screen)
+ui = UI()
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
@@ -343,8 +448,9 @@ while running:
 
     player.movePlayer()
     player.checkPlayerCollision()
-    level.playAnimations()
+    level.drawEnemies()
     level.drawLevel()
+    level.playAnimations()
     player.drawPlayer()
 
     if player.powerUp != "normal":

@@ -38,6 +38,14 @@ tileDict = {
     "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
     "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
+    "BlueSlime1": image.load("Textures\png\Enemies\BlueSlime1.png").convert_alpha(),
+    "BlueSlime2": image.load("Textures\png\Enemies\BlueSlime2.png").convert_alpha(),
+    "BlueSlimeSq": image.load("Textures\png\Enemies\BlueSlimeSq.png").convert_alpha(),
+    "BlueSlimeDead": image.load("Textures\png\Enemies\BlueSlimeDead.png").convert_alpha(),
+    "PinkSlime1": image.load("Textures\png\Enemies\PinkSlime1.png").convert_alpha(),
+    "PinkSlime2": image.load("Textures\png\Enemies\PinkSlime2.png").convert_alpha(),
+    "PinkSlimeSq": image.load("Textures\png\Enemies\PinkSlimeSq.png").convert_alpha(),
+    "PinkSlimeDead": image.load("Textures\png\Enemies\PinkSlimeDead.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -137,6 +145,10 @@ while running:
         addTile(mx, my, "Bush (3)")
     elif keys[K_l]:
         addTile(mx, my, "Bush (4)")
+    elif keys[K_o]:
+        addTile(mx,my, "BlueSlime1")
+    elif keys[K_p]:
+        addTile(mx,my, "PinkSlime1")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
