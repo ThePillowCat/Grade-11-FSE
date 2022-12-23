@@ -2,7 +2,6 @@ from pygame import *
 from pprint import *
 
 lFile = open("level1.txt", "w")
-r1File = open("level1Rects.txt", "w")
 
 width,height=1200,703
 screen=display.set_mode((width,height))
@@ -15,20 +14,23 @@ YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
 tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png"),
-    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png"),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png"),
-    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png"),
-    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png"),
-    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png"),
-    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png"),
-    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png"),
-    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png"),
-    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png"),
-    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png"),
-    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png"),
-    "door" : image.load("Textures\\png\\Door\\door1.png"),
-    "question" : image.load("Textures\\png\\Tiles\\block1.png")
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
+    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
+    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png").convert_alpha(),
+    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png").convert_alpha(),
+    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png").convert_alpha(),
+    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png").convert_alpha(),
+    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png").convert_alpha(),
+    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png").convert_alpha(),
+    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
+    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
+    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
+    "door" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
+    "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
+    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha()
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -42,7 +44,6 @@ spot = 0
 numOfRects=5
 
 level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
-
 
 widthOfTile = width//col
 heightOfTile = height//row
@@ -120,6 +121,8 @@ while running:
         addTile(mx, my, "p_m_side_dirt")
     elif keys[K_c]:
         addTile(mx, my, "p_r_side_dirt")
+    elif keys[K_t]:
+        addTile(mx,my,"Tree_2")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:

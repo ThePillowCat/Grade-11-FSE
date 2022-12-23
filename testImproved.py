@@ -1,7 +1,6 @@
 from pygame import *
 
 l1File = open("level1.txt","r")
-
 l2File = open("level2.txt","r")
 l3File = open("level3.txt","r")
 
@@ -11,6 +10,39 @@ level_3 = eval(l3File.readline().strip("\n"))
 
 width,height=1200,703
 screen=display.set_mode((width,height))
+
+#LEVEL LISTS AND VARIABLES
+row = 13
+col = 20
+spot = 0
+widthOfTile = width//col
+heightOfTile = height//row
+
+#boundries for scrolling:
+lenOfLevel = len(level_1[0])
+right = lenOfLevel*widthOfTile-591
+
+level_1_Rects = []
+level_1_Objects = []
+level_2_Rects = []
+level_2_Objects = []
+level_3_Rects = []
+level_3_Objects = []
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_1[i][j] != [] and level_1[i][j] != ["Tree_2"] and level_1[i][j] != ["m_m_side_dirt"]:
+            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_2[i][j] != [] and level_2[i][j] != ["Tree_2"] and level_2[i][j] != ["m_m_side_dirt"]:
+            level_2_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_3[i][j] != [] and level_3[i][j] != ["Tree_2"] and level_3[i][j] != ["m_m_side_dirt"]:
+            level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -25,8 +57,15 @@ tileDict = {
     "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
     "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
     "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
-    "door" : image.load("Textures\\png\\Door\\door1.png").convert(),
-    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert()
+    "door" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
+    "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
+    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha()
+}
+
+soundEffects = {
+
 }
 
 class UI():
@@ -36,6 +75,8 @@ class Level():
     def __init__(self, screen):
         self.screen = screen
         self.levels = [level_1, level_2, level_3]
+        self.objects = [level_1_Objects, level_2_Objects, level_3_Rects]
+        self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
         self.currentLevel = 0
         self.curFrame = 0
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
@@ -60,8 +101,9 @@ class Player():
         self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 13, 12)]
         self.moveSpot = 0
         self.direction = 0
-        self.powerUp = "fireball"
+        self.powerUp = "normal"
         self.fireBalls = []
+        self.lives = 3
 
     def movePlayer(self):
         #getting keys list
@@ -73,7 +115,7 @@ class Player():
             self.vel[0]=-5
             self.x-=5
             playerRect = Rect(self.posInLevel-5, self.y+5, 2, self.size[1]-10)
-            if playerRect.collidelist(level_1_Rects) != -1:
+            if playerRect.collidelist(level.rects[level.currentLevel]) != -1:
                 self.vel[0]=0
                 self.x+=5
             self.direction = 1
@@ -81,7 +123,7 @@ class Player():
             self.vel[0]=5
             self.x+=5
             playerRect = Rect(self.posInLevel+self.size[0]+5, self.y+5, 1, self.size[1]-10)
-            if playerRect.collidelist(level_1_Rects) != -1:
+            if playerRect.collidelist(level.rects[level.currentLevel]) != -1:
                 self.vel[0]=0
                 self.x-=5
             self.direction = 0
@@ -91,30 +133,38 @@ class Player():
         #defaults the ground to be the void
         self.groundY = height
 
-        #checks if hit ground or ceiling
-        # for i in range(row):
-        #     for j in range(lower, upper):
-        #         tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
-        #         playerRect = Rect(self.x, self.y, self.size[0], self.size[1])
-        #         if ["m_m_side_dirt"] != level.levels[level.currentLevel][i][j] != []:
-        #             if self.x+self.size[0]>widthOfTile*j+self.offset and self.x < widthOfTile*j+player.offset+widthOfTile and player.y+player.size[1]<=heightOfTile*i and player.y+player.size[1]+player.vel[1]>=heightOfTile*i:
-        #                 self.groundY = height//row*i
-        #                 self.vel[1] = 0
-        #                 self.y = self.groundY-player.size[1]
-        #             tileRect = Rect(widthOfTile*j+self.offset, heightOfTile*i, widthOfTile, heightOfTile)
-        #             playerRect = Rect(self.x, self.y+self.vel[1], self.size[0], self.size[1])
-        #             if tileRect.colliderect(playerRect):
-        #                 self.vel[1] = 0
+        #checks if hit ground
         playerRect = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
-        hitRect = playerRect.collidelist(level_1_Rects)
+        hitRect = playerRect.collidelist(level.rects[level.currentLevel])
         if hitRect != -1:
-            self.groundY = level_1_Rects[hitRect][1]
+            self.groundY = level.rects[level.currentLevel][hitRect][1]
             self.vel[1] = 0
             self.y = self.groundY-player.size[1]
+        #checks if hit ceiling
         playerRect = Rect(self.posInLevel, self.y+self.vel[1], self.size[0], 1)
-        hitRect = playerRect.collidelist(level_1_Rects)
+        hitRect = playerRect.collidelist(level.rects[level.currentLevel])
+        for i in range(col):
+            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
+        for i in range(row):
+            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
         if hitRect != -1:
             self.vel[1] = 0
+            if level.levels[level.currentLevel][self.y//heightOfTile-1][self.posInLevel//widthOfTile] == ["question"]:
+                level.levels[level.currentLevel][self.y//heightOfTile-1][self.posInLevel//widthOfTile] = ["neutral_block"]
+                level.levels[level.currentLevel][self.y//heightOfTile-2][self.posInLevel//widthOfTile] = ["fire_flower"]
+                level_1_Objects.append(Rect((self.posInLevel//widthOfTile)*widthOfTile, (self.y//heightOfTile-2)*heightOfTile, widthOfTile, heightOfTile))
+        
+        if len(level.objects[level.currentLevel]) > 0:
+            playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
+            temp = playerRect.collidelist(level_1_Objects)
+            if temp != -1:
+                X = level.objects[level.currentLevel][temp][0]//widthOfTile
+                Y = level.objects[level.currentLevel][temp][1]//heightOfTile
+                if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
+                    self.powerUp = "fireball"
+                    del level.objects[level.currentLevel][temp]
+                    level.levels[level.currentLevel][Y][X] = []
+
         #updating the yPos of the player
         self.y+=self.vel[1]
         #moving player, adding gravity, updating position variable
@@ -163,16 +213,13 @@ class Player():
                 #deletes fireball if it's in the void (at bottom of screen)
                 if self.fireBalls[i].y+self.fireBalls[i].rad > height:
                     self.fireBalls[i].bounces = 4
-                if rightOfFireball.collidelist(level_1_Rects) != -1:
+                if rightOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
                     self.fireBalls[i].bounces = 4
-                if leftOfFireball.collidelist(level_1_Rects) != -1:
+                if leftOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
                     self.fireBalls[i].bounces = 4
-                    print("yo")
-                if bottomOfFireball.collidelist(level_1_Rects) != -1:
+                if bottomOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
                     self.fireBalls[i].vel[1]=-8
                     self.fireBalls[i].bounces+=1
-                # if leftOfFireball.collidelist(level_1_Rects) != -1:
-                #     self.fireBalls[i].bounces = 4
                 #increasing gravity, updating x and y based off velocites
                 self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
                 self.fireBalls[i].y+=self.fireBalls[i].vel[1]
@@ -181,6 +228,8 @@ class Player():
             for i in range(temp-1,-1,-1):
                 if self.fireBalls[i].bounces > 3:
                     del self.fireBalls[i]
+    def resetPlayer(self):
+        pass
 class Fireball():
     def __init__(self, x, y):
         self.x = x
@@ -208,24 +257,7 @@ myClock = time.Clock()
 player = Player(300,100,screen)
 level = Level(screen)
 
-#LEVEL LISTS AND VARIABLES
-row = 13
-col = 20
-spot = 0
-widthOfTile = width//col
-heightOfTile = height//row
-
-#boundries for scrolling:
-lenOfLevel = len(level_1[0])
-right = lenOfLevel*widthOfTile-591
-
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
-
-level_1_Rects = []
-for i in range(row):
-    for j in range(lenOfLevel):
-        if level_1[i][j] != []:
-            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 while running:
     keys = key.get_pressed()
