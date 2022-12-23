@@ -1,5 +1,14 @@
 from pygame import *
 
+#OUTLINE OF CODE-----------------
+#There are 3 levels, each stored in a 2D list
+#The levels are read from text files, and are created by the level builder program
+#Each grid cell in each level determines what that texture should be
+#Each level also has two additional 1D arrays
+#The first array has all the rects in the level that the player can collide with (stuff that isn't in "stuffWithNoCollision" array)
+#The second array contains rectangles with powerups and eneimes
+#To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
+
 l1File = open("level1.txt","r")
 l2File = open("level2.txt","r")
 l3File = open("level3.txt","r")
@@ -14,7 +23,6 @@ screen=display.set_mode((width,height))
 #LEVEL LISTS AND VARIABLES
 row = 13
 col = 20
-spot = 0
 widthOfTile = width//col
 heightOfTile = height//row
 
@@ -29,20 +37,15 @@ level_2_Objects = []
 level_3_Rects = []
 level_3_Objects = []
 
-for i in range(row):
-    for j in range(lenOfLevel):
-        if level_1[i][j] != [] and level_1[i][j] != ["Tree_2"] and level_1[i][j] != ["m_m_side_dirt"]:
-            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+#POSSIBLE SOURCE OF BUGS:
+#LEN OF LEVEL
+#ANOTHER IDEA:
+#HAVE ENEMIES IN THEIR OWN ARRAY
 
-for i in range(row):
-    for j in range(lenOfLevel):
-        if level_2[i][j] != [] and level_2[i][j] != ["Tree_2"] and level_2[i][j] != ["m_m_side_dirt"]:
-            level_2_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
 
-for i in range(row):
-    for j in range(lenOfLevel):
-        if level_3[i][j] != [] and level_3[i][j] != ["Tree_2"] and level_3[i][j] != ["m_m_side_dirt"]:
-            level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+#would include stuff like enemies
+seperateObjects = [["door1"]]
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -57,18 +60,51 @@ tileDict = {
     "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
     "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
     "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
-    "door" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "door1" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
+    "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
+    "door4" : image.load("Textures\\png\\Door\\door4.png").convert_alpha(),
     "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
     "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
-    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha()
+    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha(),
+    "Bush (1)" : image.load("Textures\png\Object\Bush (1).png").convert_alpha(),
+    "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
+    "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
+    "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
 }
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_1[i][j] not in stuffWithNoCollision:
+            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+        if level_1[i][j] in seperateObjects:
+            W = tileDict[level_1[i][j][0]].get_width()
+            H = tileDict[level_1[i][j][0]].get_height()
+            level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_2[i][j] not in stuffWithNoCollision:
+            level_2_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+        if level_2[i][j] in seperateObjects:
+            level_2_Objects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+
+for i in range(row):
+    for j in range(lenOfLevel):
+        if level_3[i][j] not in stuffWithNoCollision:
+            level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
+        if level_3[i][j] in seperateObjects:
+            level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 soundEffects = {
 
 }
 
 class UI():
+    pass
+
+class Enemy():
     pass
 
 class Level():
@@ -78,13 +114,24 @@ class Level():
         self.objects = [level_1_Objects, level_2_Objects, level_3_Rects]
         self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
         self.currentLevel = 0
-        self.curFrame = 0
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
+        self.doorFrame = 1
+        self.doorOpening = False
+        self.temp = 0
     def drawLevel(self):
         for i in range(row):
             for j in range(lower, upper):
                 if len(self.levels[self.currentLevel][i][j])!=0:
                     screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
+    def playAnimations(self):
+        if self.doorOpening:
+            X = level.objects[level.currentLevel][self.temp][0]//widthOfTile
+            Y = level.objects[level.currentLevel][self.temp][1]//heightOfTile
+            self.levels[level.currentLevel][Y][X] = ["door"+str(int(level.doorFrame))]
+            self.doorFrame+=0.05
+            if level.doorFrame >= 5:
+                self.doorOpening = False
+
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -113,50 +160,51 @@ class Player():
         #checking inputs
         if keys[K_LEFT]:
             self.vel[0]=-5
-            self.x-=5
-            playerRect = Rect(self.posInLevel-5, self.y+5, 2, self.size[1]-10)
-            if playerRect.collidelist(level.rects[level.currentLevel]) != -1:
+            leftOfPlayer = Rect(self.posInLevel+self.vel[0], self.y, 2, self.size[1])
+            if leftOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
                 self.vel[0]=0
-                self.x+=5
             self.direction = 1
         elif keys[K_RIGHT]:
             self.vel[0]=5
-            self.x+=5
-            playerRect = Rect(self.posInLevel+self.size[0]+5, self.y+5, 1, self.size[1]-10)
-            if playerRect.collidelist(level.rects[level.currentLevel]) != -1:
+            rightOfPlayer = Rect(self.posInLevel+self.size[0]+self.vel[0], self.y, 1, self.size[1])
+            if rightOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
                 self.vel[0]=0
-                self.x-=5
             self.direction = 0
         if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 1:
             self.vel[1] = self.jumpPower
 
+        self.x+=self.vel[0]
+
         #defaults the ground to be the void
         self.groundY = height
-
-        #checks if hit ground
-        playerRect = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
-        hitRect = playerRect.collidelist(level.rects[level.currentLevel])
+        '''
+        Ideas for enemies:
+        worm that digs through soil???
+        snake that walks on platform
+        '''
+        
+        bottomOfPlayer = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
+        hitRect = bottomOfPlayer.collidelist(level.rects[level.currentLevel])
         if hitRect != -1:
             self.groundY = level.rects[level.currentLevel][hitRect][1]
             self.vel[1] = 0
             self.y = self.groundY-player.size[1]
-        #checks if hit ceiling
-        playerRect = Rect(self.posInLevel, self.y+self.vel[1], self.size[0], 1)
-        hitRect = playerRect.collidelist(level.rects[level.currentLevel])
-        for i in range(col):
-            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
-        for i in range(row):
-            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
+        
+        topOfPlayer = Rect(self.posInLevel, self.y+self.vel[1], self.size[0], 1)
+        hitRect = topOfPlayer.collidelist(level.rects[level.currentLevel])
         if hitRect != -1:
             self.vel[1] = 0
-            if level.levels[level.currentLevel][self.y//heightOfTile-1][self.posInLevel//widthOfTile] == ["question"]:
-                level.levels[level.currentLevel][self.y//heightOfTile-1][self.posInLevel//widthOfTile] = ["neutral_block"]
-                level.levels[level.currentLevel][self.y//heightOfTile-2][self.posInLevel//widthOfTile] = ["fire_flower"]
-                level_1_Objects.append(Rect((self.posInLevel//widthOfTile)*widthOfTile, (self.y//heightOfTile-2)*heightOfTile, widthOfTile, heightOfTile))
+            Y = self.y//heightOfTile
+            X = self.posInLevel//widthOfTile
+            if level.levels[level.currentLevel][Y-1][X] == ["question"]:
+                level.levels[level.currentLevel][Y-1][X] = ["neutral_block"]
+                level.levels[level.currentLevel][Y-2][X] = ["fire_flower"]
+                level_1_Objects.append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
         
+        #OBJECTS
         if len(level.objects[level.currentLevel]) > 0:
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
-            temp = playerRect.collidelist(level_1_Objects)
+            temp = playerRect.collidelist(level.objects[level.currentLevel])
             if temp != -1:
                 X = level.objects[level.currentLevel][temp][0]//widthOfTile
                 Y = level.objects[level.currentLevel][temp][1]//heightOfTile
@@ -164,6 +212,9 @@ class Player():
                     self.powerUp = "fireball"
                     del level.objects[level.currentLevel][temp]
                     level.levels[level.currentLevel][Y][X] = []
+                if level.levels[level.currentLevel][Y][X] == ["door1"]:
+                    level.doorOpening = True
+                    level.temp = temp
 
         #updating the yPos of the player
         self.y+=self.vel[1]
@@ -206,20 +257,25 @@ class Player():
         if powerUp == "fireball":
             for i in range(len(self.fireBalls)):
                 draw.circle(screen, RED, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y), self.fireBalls[i].rad)
-                bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2), (self.fireBalls[i].rad*2)-10, 5)
-                rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2), self.y+5, 1, (self.fireBalls[i].rad*2)-10)
-                leftOfFireball = Rect(self.fireBalls[i].x, self.y, 1, (self.fireBalls[i].rad*2))
-                #topOfFireball = Rect(self.fireBalls[i].x+self.offset+(self.fireBalls[i].rad*2)+self.offset, self.y, 1, (self.fireBalls[i].rad*2))
+                #fix speed?
+                bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2+self.fireBalls[i].vel[1]), (self.fireBalls[i].rad*2)-10, 5)
+                rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2)+self.fireBalls[i].speed, self.fireBalls[i].y+5, 1, (self.fireBalls[i].rad*2)-10)
+                leftOfFireball = Rect(self.fireBalls[i].x+5+self.fireBalls[i].speed, self.fireBalls[i].y, 1, (self.fireBalls[i].rad*2)-10)
                 #deletes fireball if it's in the void (at bottom of screen)
                 if self.fireBalls[i].y+self.fireBalls[i].rad > height:
                     self.fireBalls[i].bounces = 4
-                if rightOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.fireBalls[i].bounces = 4
-                if leftOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.fireBalls[i].bounces = 4
-                if bottomOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
+                    continue
+                hitRect = bottomOfFireball.collidelist(level.rects[level.currentLevel])
+                if hitRect != -1:
                     self.fireBalls[i].vel[1]=-8
                     self.fireBalls[i].bounces+=1
+                    self.fireBalls[i].y = level.rects[level.currentLevel][hitRect][1]-self.fireBalls[i].rad
+                elif rightOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
+                    self.fireBalls[i].bounces = 4
+                    continue
+                elif leftOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
+                    self.fireBalls[i].bounces = 4
+                    continue
                 #increasing gravity, updating x and y based off velocites
                 self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
                 self.fireBalls[i].y+=self.fireBalls[i].vel[1]
@@ -287,6 +343,7 @@ while running:
 
     player.movePlayer()
     player.checkPlayerCollision()
+    level.playAnimations()
     level.drawLevel()
     player.drawPlayer()
 

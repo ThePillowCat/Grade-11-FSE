@@ -26,11 +26,18 @@ tileDict = {
     "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
     "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
     "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
-    "door" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "door1" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
+    "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
+    "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
+    "door4" : image.load("Textures\\png\\Door\\door4.png").convert_alpha(),
     "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
     "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
-    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha()
+    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha(),
+    "Bush (1)" : image.load("Textures\png\Object\Bush (1).png").convert_alpha(),
+    "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
+    "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
+    "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -88,11 +95,10 @@ while running:
                 if spot < numOfRects-1:
                     spot+=1
             if evt.key == K_n:
-                addTile(mx, my, "door")
+                addTile(mx, my, "door1")
             if evt.key == K_m:
                 addTile(mx, my, "question")
             if evt.key == K_SPACE:
-                lFile.truncate(0)
                 lFile.write(repr(level_1))
     keys = key.get_pressed()
     if keys[K_e]:
@@ -123,6 +129,14 @@ while running:
         addTile(mx, my, "p_r_side_dirt")
     elif keys[K_t]:
         addTile(mx,my,"Tree_2")
+    elif keys[K_h]:
+        addTile(mx, my, "Bush (1)")
+    elif keys[K_j]:
+        addTile(mx, my, "Bush (2)")
+    elif keys[K_k]:
+        addTile(mx, my, "Bush (3)")
+    elif keys[K_l]:
+        addTile(mx, my, "Bush (4)")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
