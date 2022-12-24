@@ -11,9 +11,9 @@ init()
 #The second array contains rectangles with powerups and eneimes
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
-l1File = open("level1.txt","r")
-l2File = open("level2.txt","r")
-l3File = open("level3.txt","r")
+l1File = open("Levels\\level1.txt","r")
+l2File = open("Levels\\level2.txt","r")
+l3File = open("Levels\\level3.txt","r")
 
 level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
@@ -65,7 +65,7 @@ class Slime(Enemy):
         self.gravity = 0
         self.direction = "right"
     def drawSelf(self):
-        screen.blit(tileDict[self.type], (self.hitbox[0], self.hitbox[1]))
+        screen.blit(tileDict[self.type], (self.hitbox[0]+player.offset, self.hitbox[1]))
         self.hitbox = self.hitbox.move(self.speed,0)
     def checkCollision(self):
         X = self.hitbox[0]//widthOfTile
@@ -75,6 +75,8 @@ class Slime(Enemy):
         bottomOfPlayer = Rect(player.posInLevel, player.y+player.vel[1]+player.size[1], player.size[0], 1)
         if bottomOfPlayer.colliderect(self.hitbox):
             player.vel[1] = -5
+            mixer.music.load("Sound Effects\\smb_stomp.mp3")
+            mixer.music.play()
             self.dead = True
         #Checking if hit by fireball
         else:
@@ -90,7 +92,7 @@ stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"]
 seperateObjects = [["door1"]]
 
 #enemies array (contains all the enemies)
-enemies = [["BlueSlime1"], ["PinkSlime1"]]
+enemies = [["BlueSlime1Left"], ["PinkSlime1Left"]]
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -119,12 +121,12 @@ tileDict = {
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
     "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
     "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
-    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
-    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
-    "PinkSlime1": image.load("Textures\png\Enemies\PinkSlime1.png").convert_alpha(),
-    "PinkSlime2": image.load("Textures\png\Enemies\PinkSlime2.png").convert_alpha(),
-    "PinkSlimeSq": image.load("Textures\png\Enemies\PinkSlimeSq.png").convert_alpha(),
-    "PinkSlimeDead": image.load("Textures\png\Enemies\PinkSlimeDead.png").convert_alpha(),
+    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
+    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "PinkSlime1Left": image.load("Textures\png\Enemies\PinkSlime1Left.png").convert_alpha(),
+    "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
+    "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
+    "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
 }
 
 for i in range(row):
@@ -133,13 +135,13 @@ for i in range(row):
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             offset = 0
-            if level_1[i][j] == ["BlueSlime1"]:
+            if level_1[i][j] == ["BlueSlime1Left"]:
                 offset = 20
-                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                myObj = Slime("BlueSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_1[i][j] = []
-            if level_1[i][j] == ["PinkSlime1"]:
+            if level_1[i][j] == ["PinkSlime1Left"]:
                 offset = 20
-                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                myObj = Slime("PinkSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_1[i][j] = []
             level_1_Enemies.append(myObj)
         elif level_1[i][j] in seperateObjects:
@@ -177,13 +179,13 @@ for i in range(row):
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             offset = 0
-            if level_3[i][j] == ["BlueSlime1"]:
+            if level_3[i][j] == ["BlueSlime1Left"]:
                 offset = 20
-                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                myObj = Slime("BlueSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_3[i][j] = []
-            if level_3[i][j] == ["PinkSlime1"]:
+            if level_3[i][j] == ["PinkSlime1Left"]:
                 offset = 20
-                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                myObj = Slime("PinkSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_3[i][j] = []
             level_3_Enemies.append(myObj)
         elif level_3[i][j] in seperateObjects:
@@ -277,7 +279,7 @@ class Player():
 
         self.x+=self.vel[0]
 
-        #defaults the ground to be the void
+        #defaults the ground to be the 1
         self.groundY = height
         '''
         Ideas for enemies:
@@ -329,11 +331,6 @@ class Player():
                     level.doorOpening = False
                     self.posInLevel = 50
                     level.currentLevel+=1
-
-        #updating the yPos of the player
-        self.y+=self.vel[1]
-        #moving player, adding gravity, updating position variable
-        self.posInLevel=self.x+abs(self.offset)
         
         #determines if the player is moving or not
         if self.vel[0] != 0 and self.moving == False:
@@ -343,9 +340,17 @@ class Player():
 
         #checking if player is in the void
         if self.y+self.size[1] >= height:
-            self.vel[1] = 0
-            self.groundY=height
-            self.y = height-player.size[1]
+            # self.vel[1] = 0
+            # self.groundY=height
+            # self.y = height-player.size[1]
+            self.x = 100
+            self.y = 50
+            self.offset = 0
+
+        #updating the yPos of the player
+        self.y+=self.vel[1]
+        #moving player, adding gravity, updating position variable
+        self.posInLevel=self.x+abs(self.offset)
     
     def checkPlayerCollision(self):
         #checks when the level should be scrolled
@@ -448,9 +453,6 @@ while running:
     for evt in event.get():
         if evt.type==QUIT:
             running=False
-        if evt.type==MOUSEBUTTONDOWN:
-            if evt.button==1:
-                print(mx,my)
         if evt.type==KEYDOWN:
             if evt.key == K_r and player.powerUp == "fireball":
                 if len(player.fireBalls) < 3:

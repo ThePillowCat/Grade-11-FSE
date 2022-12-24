@@ -23,13 +23,13 @@ def instructions():
     return "menu"
     
 
+#story
 def story():
     running = True
     story = image.load("pics/story.png")
     story = transform.smoothscale(story, screen.get_size())
     screen.blit(story,(0,0))
     while running:
-        print("story")
         for evnt in event.get():          
             if evnt.type == QUIT:
                 running = False
@@ -38,10 +38,10 @@ def story():
         display.flip()
     return "menu"
 
+#start
 def level1():
     running=True
     while running:#game loop level 1
-        print("start")
         for evnt in event.get():            
             if evnt.type == QUIT:
                 running=False
