@@ -1,5 +1,7 @@
 from pygame import *
 
+init()
+
 #OUTLINE OF CODE-----------------
 #There are 3 levels, each stored in a 2D list
 #The levels are read from text files, and are created by the level builder program
@@ -52,17 +54,24 @@ class Enemy():
         self.y = y
         self.hitbox = re
         self.type = t
-        self.velX = 5
+        self.speed = 5
+    def fireBallDeath(self):
+        pass
 
 class Slime(Enemy):
+    def __init__(self, t, re, x, y):
+        Enemy.__init__(self, t, re, x, y)
+        self.vel = [0,0]
+        self.gravity = 0
+        self.direction = "right"
     def drawSelf(self):
         screen.blit(tileDict[self.type], (self.hitbox[0], self.hitbox[1]))
-        self.hitbox = self.hitbox.move(self.velX,0)
+        self.hitbox = self.hitbox.move(self.speed,0)
     def checkCollision(self):
         X = self.hitbox[0]//widthOfTile
         Y = self.hitbox[1]//heightOfTile
         if level.levels[level.currentLevel][Y+1][X] == [] or level.levels[level.currentLevel][Y+1][X+1] == []:
-            self.velX*=-1
+            self.speed*=-1
         bottomOfPlayer = Rect(player.posInLevel, player.y+player.vel[1]+player.size[1], player.size[0], 1)
         if bottomOfPlayer.colliderect(self.hitbox):
             player.vel[1] = -5
@@ -108,10 +117,10 @@ tileDict = {
     "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
     "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
-    "BlueSlime1": image.load("Textures\png\Enemies\BlueSlime1.png").convert_alpha(),
-    "BlueSlime2": image.load("Textures\png\Enemies\BlueSlime2.png").convert_alpha(),
-    "BlueSlimeSq": image.load("Textures\png\Enemies\BlueSlimeSq.png").convert_alpha(),
-    "BlueSlimeDead": image.load("Textures\png\Enemies\BlueSlimeDead.png").convert_alpha(),
+    "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
+    "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
+    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
+    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
     "PinkSlime1": image.load("Textures\png\Enemies\PinkSlime1.png").convert_alpha(),
     "PinkSlime2": image.load("Textures\png\Enemies\PinkSlime2.png").convert_alpha(),
     "PinkSlimeSq": image.load("Textures\png\Enemies\PinkSlimeSq.png").convert_alpha(),
@@ -184,10 +193,6 @@ for i in range(row):
         elif level_3[i][j] not in stuffWithNoCollision:
             level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
-soundEffects = {
-
-}
-
 class UI():
     def __init__(self):
         self.timeLeft = 200
@@ -209,7 +214,7 @@ class Level():
     def drawLevel(self):
         for i in range(row):
             for j in range(lower, upper):
-                if len(self.levels[self.currentLevel][i][j])!=0:
+                if self.levels[self.currentLevel][i][j] != []:
                     screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
     def playAnimations(self):
         if self.doorOpening:
@@ -296,8 +301,9 @@ class Player():
             if level.levels[level.currentLevel][Y-1][X] == ["question"]:
                 level.levels[level.currentLevel][Y-1][X] = ["neutral_block"]
                 level.levels[level.currentLevel][Y-2][X] = ["fire_flower"]
-                level_1_Objects.append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
-        
+                level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
+                mixer.music.load("Sound Effects\\smb_powerup_appears.mp3")
+                mixer.music.play()
         #OBJECTS
         if len(level.objects[level.currentLevel]) > 0:
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
@@ -306,16 +312,20 @@ class Player():
                 X = level.objects[level.currentLevel][temp][0]//widthOfTile
                 Y = level.objects[level.currentLevel][temp][1]//heightOfTile
                 if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
+                    mixer.music.load("Sound Effects\\smb_powerup.mp3")
+                    mixer.music.play()
                     self.powerUp = "fireball"
                     del level.objects[level.currentLevel][temp]
                     level.levels[level.currentLevel][Y][X] = []
-                if level.levels[level.currentLevel][Y][X] == ["door1"]:
+                if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
                     level.doorOpening = True
+                    level.doorFrame = 1
                     level.temp = temp
                 if level.levels[level.currentLevel][Y][X] == ["door4"]:
                     player.x = 100
                     player.y = 50
                     self.offset = 0
+                    level.doorFrame = 1
                     level.doorOpening = False
                     self.posInLevel = 50
                     level.currentLevel+=1
@@ -444,6 +454,8 @@ while running:
         if evt.type==KEYDOWN:
             if evt.key == K_r and player.powerUp == "fireball":
                 if len(player.fireBalls) < 3:
+                    mixer.music.load("Sound Effects\\smb_fireball.mp3")
+                    mixer.music.play()
                     player.fireBalls.append(Fireball(player.posInLevel,player.y))
 
     player.movePlayer()
