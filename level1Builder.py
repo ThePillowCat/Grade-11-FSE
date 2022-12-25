@@ -56,7 +56,11 @@ tileDict = {
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
     "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
     "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
+    "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
+    "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
 }
+
+print(len(tileDict))
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
@@ -79,10 +83,6 @@ def drawLevel(screen):
         for j in range(col*spot, col*spot+col):
             if level_1[i][j] != []:
                 screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j-(spot*width), heightOfTile*i))
-    for i in range(col):
-        draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
-    for i in range(row):
-        draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
 
 def addTile(x, y, t):
     for i in range(row):
@@ -163,6 +163,8 @@ while running:
         addTile(mx,my,"water_top")
     elif keys[K_x]:
         addTile(mx,my,"water")
+    elif keys[K_y]:
+        addTile(mx,my,"flag_red")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:

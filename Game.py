@@ -10,6 +10,17 @@ init()
 #The second array contains rectangles with powerups and eneimes
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
+#THINGS TO DO IN GAME-----------
+#Add checkpoints
+#Add heart powerup
+#Add bat enemy
+#Add dog enemy
+#Fix door
+#Create cave level
+#Create dungeon level
+#Fix any bugs/touchups
+#(maybe add speech bubbles)
+
 l1File = open("Levels\\level1.txt","r")
 l2File = open("Levels\\level2.txt","r")
 l3File = open("Levels\\level3.txt","r")
@@ -80,12 +91,12 @@ class Slime(Enemy):
         if not self.playDeathAnimation:
             X = self.hitbox[0]//widthOfTile
             Y = self.hitbox[1]//heightOfTile
-            if level.levels[level.currentLevel][Y+1][X] == [] or level.levels[level.currentLevel][Y+1][X+1] == []:
+            if level.levels[level.currentLevel][Y+1][X+1] == [] and self.direction == "Right":
                 self.speed*=-1
-                if self.direction == "Right":
-                    self.direction = "Left"
-                else:
-                    self.direction = "Right"
+                self.direction = "Left"
+            elif level.levels[level.currentLevel][Y+1][X] == [] and self.direction == "Left":
+                self.speed*=-1
+                self.direction = "Right"
             bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
             playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
             if bottomOfPlayer.colliderect(self.hitbox):
@@ -104,7 +115,12 @@ class Slime(Enemy):
                 for i in range(len(player.fireBalls)):
                     fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
                     if fireRect.colliderect(self.hitbox):
-                        self.type = self.type[0:len(self.type)-1]+"Dead"
+                        if "Sq" in self.type:
+                            self.type = self.type[0:len(self.type)-2]+"Dead"
+                        else:
+                            self.type = self.type[0:len(self.type)-1]+"Dead"
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
                         player.fireBalls[i].bounces = 4
                         self.vel[1] = -10
                         self.playDeathAnimation = True
@@ -114,7 +130,7 @@ class Slime(Enemy):
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
 
 #would include stuff like enemies
-seperateObjects = [["door1"], ["water"], ["water_top"]]
+seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"]]
 
 #enemies array (contains all the enemies)
 enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"]]
@@ -162,6 +178,8 @@ tileDict = {
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
     "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
     "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
+    "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
+    "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
 }
 
 for i in range(row):
@@ -235,6 +253,7 @@ class UI():
     def __init__(self):
         self.timeLeft = 200
 
+bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
 class Level():
     def __init__(self, screen):
@@ -244,6 +263,7 @@ class Level():
         self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
         self.enemies = [level_1_Enemies, level_2_Enemies, level_3_Enemies]
+        self.background = [bgForest, bgForest, bgForest]
         self.currentLevel = 0
         self.doorFrame = 1
         self.doorOpening = False
@@ -341,7 +361,7 @@ class Player():
                     self.offset = 0
                     level.doorFrame = 1
                     level.doorOpening = False
-                    self.posInLevel = 50
+                    self.posInLevel = 100
                     level.currentLevel+=1
 
         self.vel[1]+=self.gravity
@@ -474,8 +494,6 @@ player = Player(300,100,screen)
 level = Level(screen)
 ui = UI()
 
-bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
-
 while running:
     keys = key.get_pressed()
     lower = (player.posInLevel)//widthOfTile-20
@@ -489,8 +507,11 @@ while running:
     mb=mouse.get_pressed()
 
     #drawing background - SUBJECT TO CHANGE
-    screen.blit(bgForest, (0,0))
-
+    screen.blit(level.background[level.currentLevel], (0,0))
+    for i in range(col):
+        draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
+    for i in range(row):
+        draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
     for evt in event.get():
         if evt.type==QUIT:
             running=False

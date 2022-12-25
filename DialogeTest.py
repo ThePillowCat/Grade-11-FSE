@@ -18,25 +18,18 @@ YELLOW=(255,255,0)
 running=True
 
 myClock = time.Clock()
-myImg = image.load(filedialog.askopenfile())
-myImg = transform.scale(myImg, (60, 54))
-fname = filedialog.asksaveasfilename(defaultextension=".png")
-image.save(myImg, fname)
 
-# while running:
-#     screen.fill(0)
-#     for evt in event.get():
-#         if evt.type==QUIT:
-#             running=False
-#     if soundFrame > 5:
-#         mixer.music.load("Sound Effects\\Retro_Multiple_v1_wav.wav")
-#         mixer.music.play()
-#         soundFrame = 0
-#     soundFrame+=0.14
-#     draw.rect(screen, (255,255,255), (30, 370, width-60,200))
-#     mx,my=mouse.get_pos()
-#     mb=mouse.get_pressed()
-#     display.flip()
-#     myClock.tick(60)
+while running:
+    for evt in event.get():
+        if evt.type == QUIT:
+            running = False
+        if evt.type == MOUSEBUTTONDOWN:
+            mixer.music.load("Sound Effects\\smb_kick.wav")
+            mixer.music.play()
+    screen.fill(0)
+    mx,my=mouse.get_pos()
+    mb=mouse.get_pressed()
+    display.flip()
+    myClock.tick(60)
             
 quit()
