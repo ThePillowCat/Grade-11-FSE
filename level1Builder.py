@@ -40,11 +40,19 @@ tileDict = {
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
     "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
     "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
-    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
-    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
+    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
     "PinkSlime1Left": image.load("Textures\png\Enemies\PinkSlime1Left.png").convert_alpha(),
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
+    "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
+    "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
+    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),
+    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
+    "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
+    "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
 }
 
@@ -146,9 +154,9 @@ while running:
     elif keys[K_l]:
         addTile(mx, my, "Bush (4)")
     elif keys[K_o]:
-        addTile(mx,my, "BlueSlime1Left")
+        addTile(mx,my, "BlueSlime1Right")
     elif keys[K_p]:
-        addTile(mx,my, "PinkSlime1Left")
+        addTile(mx,my, "PinkSlime1Right")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:

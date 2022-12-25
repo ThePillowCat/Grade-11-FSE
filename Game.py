@@ -60,31 +60,57 @@ class Enemy():
 
 class Slime(Enemy):
     def __init__(self, t, re, x, y):
+        #inheriting parrent stuff
         Enemy.__init__(self, t, re, x, y)
         self.vel = [0,0]
-        self.gravity = 0
-        self.direction = "right"
+        self.gravity = 0.5
+        self.speed = 5
+        self.direction = "Right"
+        self.playDeathAnimation = False
     def drawSelf(self):
-        screen.blit(tileDict[self.type], (self.hitbox[0]+player.offset, self.hitbox[1]))
-        self.hitbox = self.hitbox.move(self.speed,0)
-    def checkCollision(self):
-        X = self.hitbox[0]//widthOfTile
-        Y = self.hitbox[1]//heightOfTile
-        if level.levels[level.currentLevel][Y+1][X] == [] or level.levels[level.currentLevel][Y+1][X+1] == []:
-            self.speed*=-1
-        bottomOfPlayer = Rect(player.posInLevel, player.y+player.vel[1]+player.size[1], player.size[0], 1)
-        if bottomOfPlayer.colliderect(self.hitbox):
-            player.vel[1] = -5
-            mixer.music.load("Sound Effects\\smb_stomp.mp3")
-            mixer.music.play()
-            self.dead = True
-        #Checking if hit by fireball
+        screen.blit(tileDict[self.type+self.direction], (self.hitbox[0]+player.offset, self.hitbox[1]))
+        if self.playDeathAnimation:
+            self.hitbox = self.hitbox.move(self.speed, self.vel[1])
+            self.vel[1]+=self.gravity
+            if self.hitbox[1] > height:
+                self.dead = True
+                return
         else:
-            for i in range(len(player.fireBalls)):
-                fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
-                if fireRect.colliderect(self.hitbox):
+            self.hitbox = self.hitbox.move(self.speed,0)
+    def checkCollision(self):
+        if not self.playDeathAnimation:
+            X = self.hitbox[0]//widthOfTile
+            Y = self.hitbox[1]//heightOfTile
+            if level.levels[level.currentLevel][Y+1][X] == [] or level.levels[level.currentLevel][Y+1][X+1] == []:
+                self.speed*=-1
+                if self.direction == "Right":
+                    self.direction = "Left"
+                else:
+                    self.direction = "Right"
+            bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
+            playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+            if bottomOfPlayer.colliderect(self.hitbox):
+                player.vel[1] = -10
+                mixer.music.load("Sound Effects\\smb_stomp.mp3")
+                mixer.music.play()
+                if "Sq" in self.type:
                     self.dead = True
-                    player.fireBalls[i].bounces = 4
+                else:
+                    self.type = self.type[0:len(self.type)-1]+"Sq"
+                    self.hitbox = Rect(self.hitbox[0], self.hitbox[1]+22, self.hitbox[2], self.hitbox[3])
+            elif playerRect.colliderect(self.hitbox):
+                player.resetPlayer()
+            #Checking if hit by fireball
+            else:
+                for i in range(len(player.fireBalls)):
+                    fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
+                    if fireRect.colliderect(self.hitbox):
+                        self.type = self.type[0:len(self.type)-1]+"Dead"
+                        player.fireBalls[i].bounces = 4
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
 
@@ -92,7 +118,7 @@ stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"]
 seperateObjects = [["door1"]]
 
 #enemies array (contains all the enemies)
-enemies = [["BlueSlime1Left"], ["PinkSlime1Left"]]
+enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"]]
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -121,11 +147,19 @@ tileDict = {
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
     "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
     "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
-    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
-    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
+    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
     "PinkSlime1Left": image.load("Textures\png\Enemies\PinkSlime1Left.png").convert_alpha(),
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
+    "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
+    "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
+    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),
+    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
+    "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
+    "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
 }
 
@@ -135,15 +169,16 @@ for i in range(row):
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             offset = 0
-            if level_1[i][j] == ["BlueSlime1Left"]:
+            if level_1[i][j] == ["BlueSlime1Right"]:
                 offset = 20
-                myObj = Slime("BlueSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
+                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_1[i][j] = []
-            if level_1[i][j] == ["PinkSlime1Left"]:
+                level_1_Enemies.append(myObj)
+            if level_1[i][j] == ["PinkSlime1Right"]:
                 offset = 20
-                myObj = Slime("PinkSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
+                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_1[i][j] = []
-            level_1_Enemies.append(myObj)
+                level_1_Enemies.append(myObj)
         elif level_1[i][j] in seperateObjects:
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
@@ -340,12 +375,7 @@ class Player():
 
         #checking if player is in the void
         if self.y+self.size[1] >= height:
-            # self.vel[1] = 0
-            # self.groundY=height
-            # self.y = height-player.size[1]
-            self.x = 100
-            self.y = 50
-            self.offset = 0
+            self.resetPlayer()
 
         #updating the yPos of the player
         self.y+=self.vel[1]
@@ -404,7 +434,10 @@ class Player():
                 if self.fireBalls[i].bounces > 3:
                     del self.fireBalls[i]
     def resetPlayer(self):
-        pass
+        self.x = 100
+        self.y = 50
+        self.offset = 0
+        self.lives-=1
 class Fireball():
     def __init__(self, x, y):
         self.x = x
