@@ -1,5 +1,4 @@
 from pygame import *
-
 init()
 
 #OUTLINE OF CODE-----------------
@@ -115,7 +114,7 @@ class Slime(Enemy):
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
 
 #would include stuff like enemies
-seperateObjects = [["door1"]]
+seperateObjects = [["door1"], ["water"], ["water_top"]]
 
 #enemies array (contains all the enemies)
 enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"]]
@@ -161,8 +160,8 @@ tileDict = {
     "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
     "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
-    "water_top": image.load("Textures\png\Enemies\water_top.png").convert_alpha(),
-    "water": image.load("Textures\png\Enemies\water.png").convert_alpha(),
+    "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
+    "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
 }
 
 for i in range(row):
@@ -297,7 +296,7 @@ class Player():
         #getting keys list
         keys = key.get_pressed()
         self.vel[0] = 0
-        self.vel[1]+=self.gravity
+        self.gravity = 1
         #checking inputs
         if keys[K_LEFT]:
             self.vel[0]=-5
@@ -311,9 +310,41 @@ class Player():
             if rightOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
                 self.vel[0]=0
             self.direction = 0
-        if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 1:
+        if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 2:
             self.vel[1] = self.jumpPower
+        #OBJECTS
+        if len(level.objects[level.currentLevel]) > 0:
+            playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
+            temp = playerRect.collidelist(level.objects[level.currentLevel])
+            if temp != -1:
+                X = level.objects[level.currentLevel][temp][0]//widthOfTile
+                Y = level.objects[level.currentLevel][temp][1]//heightOfTile
+                if level.levels[level.currentLevel][Y][X] == ["water"] or level.levels[level.currentLevel][Y][X] == ["water_top"]:
+                    self.gravity = 0
+                    if keys[K_SPACE]:
+                        self.vel[1] = -3
+                    else:
+                        self.vel[1] = 3
+                if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
+                    mixer.music.load("Sound Effects\\smb_powerup.mp3")
+                    mixer.music.play()
+                    self.powerUp = "fireball"
+                    del level.objects[level.currentLevel][temp]
+                    level.levels[level.currentLevel][Y][X] = []
+                if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
+                    level.doorOpening = True
+                    level.doorFrame = 1
+                    level.temp = temp
+                if level.levels[level.currentLevel][Y][X] == ["door4"]:
+                    player.x = 100
+                    player.y = 50
+                    self.offset = 0
+                    level.doorFrame = 1
+                    level.doorOpening = False
+                    self.posInLevel = 50
+                    level.currentLevel+=1
 
+        self.vel[1]+=self.gravity
         self.x+=self.vel[0]
 
         #defaults the ground to be the 1
@@ -343,31 +374,6 @@ class Player():
                 level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
                 mixer.music.load("Sound Effects\\smb_powerup_appears.mp3")
                 mixer.music.play()
-        #OBJECTS
-        if len(level.objects[level.currentLevel]) > 0:
-            playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
-            temp = playerRect.collidelist(level.objects[level.currentLevel])
-            if temp != -1:
-                X = level.objects[level.currentLevel][temp][0]//widthOfTile
-                Y = level.objects[level.currentLevel][temp][1]//heightOfTile
-                if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
-                    mixer.music.load("Sound Effects\\smb_powerup.mp3")
-                    mixer.music.play()
-                    self.powerUp = "fireball"
-                    del level.objects[level.currentLevel][temp]
-                    level.levels[level.currentLevel][Y][X] = []
-                if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
-                    level.doorOpening = True
-                    level.doorFrame = 1
-                    level.temp = temp
-                if level.levels[level.currentLevel][Y][X] == ["door4"]:
-                    player.x = 100
-                    player.y = 50
-                    self.offset = 0
-                    level.doorFrame = 1
-                    level.doorOpening = False
-                    self.posInLevel = 50
-                    level.currentLevel+=1
         
         #determines if the player is moving or not
         if self.vel[0] != 0 and self.moving == False:
