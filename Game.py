@@ -161,6 +161,8 @@ tileDict = {
     "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
     "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "water_top": image.load("Textures\png\Enemies\water_top.png").convert_alpha(),
+    "water": image.load("Textures\png\Enemies\water.png").convert_alpha(),
 }
 
 for i in range(row):

@@ -18,11 +18,10 @@ YELLOW=(255,255,0)
 running=True
 
 myClock = time.Clock()
-
-# myImg = image.load("Textures\\Png\\Enemies\\PinkSlimeDeadRight.png")
-# myImg = transform.flip(myImg, True, False)
-# fname = filedialog.asksaveasfilename(defaultextension=".png")
-# image.save(myImg, fname)
+myImg = image.load(filedialog.askopenfile())
+myImg = transform.scale(myImg, (60, 54))
+fname = filedialog.asksaveasfilename(defaultextension=".png")
+image.save(myImg, fname)
 
 # while running:
 #     screen.fill(0)

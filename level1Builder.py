@@ -54,6 +54,8 @@ tileDict = {
     "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
     "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "water_top": image.load("Textures\png\Enemies\water_top.png").convert_alpha(),
+    "water": image.load("Textures\png\Enemies\water.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
@@ -157,6 +159,10 @@ while running:
         addTile(mx,my, "BlueSlime1Right")
     elif keys[K_p]:
         addTile(mx,my, "PinkSlime1Right")
+    elif keys[K_z]:
+        addTile(mx,my,"water_top")
+    elif keys[K_x]:
+        addTile(mx,my,"water")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
