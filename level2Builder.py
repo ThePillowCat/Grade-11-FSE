@@ -14,18 +14,17 @@ YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
 tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
-    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
-    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png").convert_alpha(),
-    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png").convert_alpha(),
-    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png").convert_alpha(),
-    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png").convert_alpha(),
-    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png").convert_alpha(),
-    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png").convert_alpha(),
-    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
-    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
-    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
+    "castle" : image.load("Textures\\png\\Tiles\\castle.png").convert_alpha(),
+    "castleCenter" : image.load("Textures\\png\\Tiles\\castleCenter.png").convert_alpha(),
+    "castleCliffLeft" : image.load("Textures\\png\\Tiles\\castleCliffLeft.png").convert_alpha(),
+    "castleCliffLeftAlt" : image.load("Textures\\png\\Tiles\\castleCliffLeftAlt.png").convert_alpha(),
+    "castleCliffRight" : image.load("Textures\\png\\Tiles\\castleCliffRight.png").convert_alpha(),
+    "castleCliffRightAlt" : image.load("Textures\\png\\Tiles\\castleCliffRightAlt.png").convert_alpha(),
+    "castleLeft" : image.load("Textures\\png\\Tiles\\castleLeft.png").convert_alpha(),
+    "castleMid" : image.load("Textures\\png\\Tiles\\castleMid.png").convert_alpha(),
+    "castleRight" : image.load("Textures\\png\\Tiles\\castleRight.png").convert_alpha(),
+    "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
+    "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
     "door1" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
     "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
     "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
@@ -46,9 +45,10 @@ tileDict = {
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
 }
 
-bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
+bgForest = image.load("Textures\\png\\BG\\CaveBG.png").convert()
 
 running=True
 
@@ -112,29 +112,25 @@ while running:
     if keys[K_e]:
         addTile(mx,my,"erase")
     elif keys[K_1]:
-        addTile(mx, my, "t_l_side_dirt")
+        addTile(mx, my, "castleLeft")
     elif keys[K_2]:
-        addTile(mx, my, "t_m_side_dirt")
+        addTile(mx, my, "castleMid")
     elif keys[K_3]:
-        addTile(mx, my, "t_r_side_dirt")
+        addTile(mx, my, "castleRight")
     elif keys[K_4]:
-        addTile(mx, my, "m_l_side_dirt")
+        addTile(mx, my, "castleCliffLeft")
     elif keys[K_5]:
-        addTile(mx, my, "m_m_side_dirt")
+        addTile(mx, my, "castle")
     elif keys[K_6]:
-        addTile(mx, my, "m_r_side_dirt")
+        addTile(mx, my, "castleCliffRight")
     elif keys[K_7]:
-        addTile(mx, my, "b_l_side_dirt")
+        addTile(mx, my, "castleCliffLeftAlt")
     elif keys[K_8]:
-        addTile(mx, my, "b_m_side_dirt")
+        addTile(mx, my, "castleCliffRightAlt")
     elif keys[K_9]:
-        addTile(mx, my, "b_r_side_dirt")
-    elif keys[K_a]:
-        addTile(mx, my, "p_l_side_dirt")
-    elif keys[K_b]:
-        addTile(mx, my, "p_m_side_dirt")
-    elif keys[K_c]:
-        addTile(mx, my, "p_r_side_dirt")
+        addTile(mx, my, "lava_bottom")
+    elif keys[K_0]:
+        addTile(mx, my, "lava_top")
     elif keys[K_t]:
         addTile(mx,my,"Tree_2")
     elif keys[K_h]:
@@ -149,10 +145,12 @@ while running:
         addTile(mx,my, "BlueSlime1Left")
     elif keys[K_p]:
         addTile(mx,my, "PinkSlime1Left")
-    if mb[0]:
-        addTile(mx, my, "t_m_side_dirt")
-    if mb[2]:
-        addTile(mx, my, "lava")
+    elif keys[K_a]:
+        addTile(mx,my,"Bat1")
+    # if mb[0]:
+    #     addTile(mx, my, "t_m_side_dirt")
+    # if mb[2]:
+    #     addTile(mx, my, "lava")
     drawLevel(screen)
     display.flip()
 

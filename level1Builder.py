@@ -79,6 +79,10 @@ heightOfTile = height//row
 
 def drawLevel(screen):
     screen.blit(bgForest,(0,0))
+    for i in range(col):
+        draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
+    for i in range(row):
+        draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
     for i in range(row):
         for j in range(col*spot, col*spot+col):
             if level_1[i][j] != []:

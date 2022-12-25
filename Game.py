@@ -11,12 +11,9 @@ init()
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
 #THINGS TO DO IN GAME-----------
-#Add checkpoints
 #Add heart powerup
-#Add bat enemy
 #Add dog enemy
 #Fix door
-#Create cave level
 #Create dungeon level
 #Fix any bugs/touchups
 #(maybe add speech bubbles)
@@ -127,13 +124,69 @@ class Slime(Enemy):
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
 
-stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["bush (1)"], ["bush (2)"], ["bush (3)"], ["bush (4)"]]
+class Bat(Enemy):
+    def __init__(self, t, re, x, y):
+        Enemy.__init__(self, t, re, x, y)
+        self.animationFrames = [[image.load("Textures\\png\\Enemies\\Bat"+str(i+j)+".png") for i in range(1,4)] for j in range(0, 6, 3)]
+        self.playDeathAnimation = False
+        self.vel = [0,0]
+        self.gravity = 0.5
+        self.speed = 5
+        self.direction = 1
+        self.curFrame = 0
+    def drawSelf(self):
+        screen.blit(self.animationFrames[self.direction][int(self.curFrame)], (self.hitbox[0]+player.offset, self.hitbox[1]))
+        if self.playDeathAnimation:
+            self.hitbox = self.hitbox.move(self.speed, self.vel[1])
+            self.vel[1]+=self.gravity
+            if self.hitbox[1] > height:
+                self.dead = True
+                return
+        self.curFrame+=0.2
+        if self.curFrame > 3:
+            self.curFrame = 0
+        else:
+            if self.hitbox[0] > player.posInLevel:
+                self.hitbox =  self.hitbox.move(-2, 0)
+                self.direction = 1
+            else:
+                self.hitbox =  self.hitbox.move(2, 0)
+                self.direction = 0
+            if self.hitbox[1] < player.y+50:
+                self.hitbox =  self.hitbox.move(0, 2)
+            else:
+                self.hitbox =  self.hitbox.move(0, -2)
+    def checkCollision(self):
+        if not self.playDeathAnimation:
+            bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
+            playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+            if bottomOfPlayer.colliderect(self.hitbox):
+                player.vel[1] = -10
+                self.dead = True
+                mixer.music.load("Sound Effects\\smb_stomp.mp3")
+                mixer.music.play()
+            elif playerRect.colliderect(self.hitbox):
+                player.resetPlayer()
+            #Checking if hit by fireball
+            else:
+                for i in range(len(player.fireBalls)):
+                    fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
+                    if fireRect.colliderect(self.hitbox):
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
+                        player.fireBalls[i].bounces = 4
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
+
+stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
 #would include stuff like enemies
-seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"]]
+seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"], ["lava"], ["lava_top"]]
 
 #enemies array (contains all the enemies)
-enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"]]
+enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"]]
 
 tileDict = {
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
@@ -180,6 +233,18 @@ tileDict = {
     "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
     "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
     "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
+    "castle" : image.load("Textures\\png\\Tiles\\castle.png").convert_alpha(),
+    "castleCenter" : image.load("Textures\\png\\Tiles\\castleCenter.png").convert_alpha(),
+    "castleCliffLeft" : image.load("Textures\\png\\Tiles\\castleCliffLeft.png").convert_alpha(),
+    "castleCliffLeftAlt" : image.load("Textures\\png\\Tiles\\castleCliffLeftAlt.png").convert_alpha(),
+    "castleCliffRight" : image.load("Textures\\png\\Tiles\\castleCliffRight.png").convert_alpha(),
+    "castleCliffRightAlt" : image.load("Textures\\png\\Tiles\\castleCliffRightAlt.png").convert_alpha(),
+    "castleLeft" : image.load("Textures\\png\\Tiles\\castleLeft.png").convert_alpha(),
+    "castleMid" : image.load("Textures\\png\\Tiles\\castleMid.png").convert_alpha(),
+    "castleRight" : image.load("Textures\\png\\Tiles\\castleRight.png").convert_alpha(),
+    "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
+    "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
+    "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
 }
 
 for i in range(row):
@@ -208,18 +273,23 @@ for i in range(row):
 for i in range(row):
     for j in range(len(level_2[0])):
         if level_2[i][j] in enemies:
-            W = tileDict[level_1[i][j][0]].get_width()
-            H = tileDict[level_1[i][j][0]].get_height()
+            W = tileDict[level_2[i][j][0]].get_width()
+            H = tileDict[level_2[i][j][0]].get_height()
             offset = 0
             if level_2[i][j] == ["BlueSlime1"]:
                 offset = 20
                 myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_2[i][j] = []
+                level_2_Enemies.append(myObj)
             if level_2[i][j] == ["PinkSlime1"]:
                 offset = 20
                 myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_2[i][j] = []
-            level_2_Enemies.append(myObj)
+                level_2_Enemies.append(myObj)
+            if level_2[i][j] == ["Bat1"]:
+                myObj = Bat("Bat", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i)
+                level_2[i][j] = []
+                level_2_Enemies.append(myObj)
         elif level_2[i][j] in seperateObjects:
             W = tileDict[level_2[i][j][0]].get_width()
             H = tileDict[level_2[i][j][0]].get_height()
@@ -254,6 +324,7 @@ class UI():
         self.timeLeft = 200
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
+bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
 
 class Level():
     def __init__(self, screen):
@@ -263,7 +334,7 @@ class Level():
         self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
         self.enemies = [level_1_Enemies, level_2_Enemies, level_3_Enemies]
-        self.background = [bgForest, bgForest, bgForest]
+        self.background = [bgForest, bgCave, bgForest]
         self.currentLevel = 0
         self.doorFrame = 1
         self.doorOpening = False
@@ -311,6 +382,7 @@ class Player():
         self.powerUp = "normal"
         self.fireBalls = []
         self.lives = 3
+        self.checkPoint = [100, 50, 0, 0]
 
     def movePlayer(self):
         #getting keys list
@@ -363,6 +435,11 @@ class Player():
                     level.doorOpening = False
                     self.posInLevel = 100
                     level.currentLevel+=1
+                if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
+                    mixer.music.load("Sound Effects\\checkpoint.ogg")
+                    mixer.music.play()
+                    level.levels[level.currentLevel][Y][X] = ["flag_blue"]
+                    self.checkPoint = [self.x, self.y, self.offset, self.vel[1]]
 
         self.vel[1]+=self.gravity
         self.x+=self.vel[0]
@@ -402,7 +479,7 @@ class Player():
             self.moving = False
 
         #checking if player is in the void
-        if self.y+self.size[1] >= height:
+        if self.y >= height:
             self.resetPlayer()
 
         #updating the yPos of the player
@@ -462,10 +539,12 @@ class Player():
                 if self.fireBalls[i].bounces > 3:
                     del self.fireBalls[i]
     def resetPlayer(self):
-        self.x = 100
-        self.y = 50
-        self.offset = 0
+        self.x = self.checkPoint[0]
+        self.y = self.checkPoint[1]
+        self.vel[1] = self.checkPoint[3]
+        self.offset = self.checkPoint[2]
         self.lives-=1
+        self.powerUp = "normal"
 class Fireball():
     def __init__(self, x, y):
         self.x = x
@@ -494,6 +573,8 @@ player = Player(300,100,screen)
 level = Level(screen)
 ui = UI()
 
+level.currentLevel = 1
+
 while running:
     keys = key.get_pressed()
     lower = (player.posInLevel)//widthOfTile-20
@@ -508,10 +589,6 @@ while running:
 
     #drawing background - SUBJECT TO CHANGE
     screen.blit(level.background[level.currentLevel], (0,0))
-    for i in range(col):
-        draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
-    for i in range(row):
-        draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
     for evt in event.get():
         if evt.type==QUIT:
             running=False

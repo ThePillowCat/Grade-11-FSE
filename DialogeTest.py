@@ -19,17 +19,26 @@ running=True
 
 myClock = time.Clock()
 
-while running:
-    for evt in event.get():
-        if evt.type == QUIT:
-            running = False
-        if evt.type == MOUSEBUTTONDOWN:
-            mixer.music.load("Sound Effects\\smb_kick.wav")
-            mixer.music.play()
-    screen.fill(0)
-    mx,my=mouse.get_pos()
-    mb=mouse.get_pressed()
-    display.flip()
-    myClock.tick(60)
+for i in range(5):
+    fname = filedialog.askopenfilename()
+    myImg = image.load(fname)
+    myImg = transform.scale(myImg, (65, 76))
+    fname = filedialog.asksaveasfilename()
+    image.save(myImg, fname)
+    print(fname)
+
+
+# while running:
+#     for evt in event.get():
+#         if evt.type == QUIT:
+#             running = False
+#         if evt.type == MOUSEBUTTONDOWN:
+#             mixer.music.load("Sound Effects\\smb_kick.wav")
+#             mixer.music.play()
+#     screen.fill(0)
+#     mx,my=mouse.get_pos()
+#     mb=mouse.get_pressed()
+#     display.flip()
+#     myClock.tick(60)
             
 quit()
