@@ -14,17 +14,18 @@ YELLOW=(255,255,0)
 BROWN=(205, 127, 50)
 
 tileDict = {
-    "castle" : image.load("Textures\\png\\Tiles\\castle.png").convert_alpha(),
-    "castleCenter" : image.load("Textures\\png\\Tiles\\castleCenter.png").convert_alpha(),
-    "castleCliffLeft" : image.load("Textures\\png\\Tiles\\castleCliffLeft.png").convert_alpha(),
-    "castleCliffLeftAlt" : image.load("Textures\\png\\Tiles\\castleCliffLeftAlt.png").convert_alpha(),
-    "castleCliffRight" : image.load("Textures\\png\\Tiles\\castleCliffRight.png").convert_alpha(),
-    "castleCliffRightAlt" : image.load("Textures\\png\\Tiles\\castleCliffRightAlt.png").convert_alpha(),
-    "castleLeft" : image.load("Textures\\png\\Tiles\\castleLeft.png").convert_alpha(),
-    "castleMid" : image.load("Textures\\png\\Tiles\\castleMid.png").convert_alpha(),
-    "castleRight" : image.load("Textures\\png\\Tiles\\castleRight.png").convert_alpha(),
-    "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
-    "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
+    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
+    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
+    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
+    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png").convert_alpha(),
+    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png").convert_alpha(),
+    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png").convert_alpha(),
+    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png").convert_alpha(),
+    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png").convert_alpha(),
+    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png").convert_alpha(),
+    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
+    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
+    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
     "door1" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
     "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
     "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
@@ -37,14 +38,37 @@ tileDict = {
     "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
     "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
     "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
-    "BlueSlime1": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
+    "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
     "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
-    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
-    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
+    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
     "PinkSlime1Left": image.load("Textures\png\Enemies\PinkSlime1Left.png").convert_alpha(),
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
+    "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
+    "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
+    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),
+    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
+    "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
+    "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
+    "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
+    "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
+    "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
+    "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
+    "castle" : image.load("Textures\\png\\Tiles\\castle.png").convert_alpha(),
+    "castleCenter" : image.load("Textures\\png\\Tiles\\castleCenter.png").convert_alpha(),
+    "castleCliffLeft" : image.load("Textures\\png\\Tiles\\castleCliffLeft.png").convert_alpha(),
+    "castleCliffLeftAlt" : image.load("Textures\\png\\Tiles\\castleCliffLeftAlt.png").convert_alpha(),
+    "castleCliffRight" : image.load("Textures\\png\\Tiles\\castleCliffRight.png").convert_alpha(),
+    "castleCliffRightAlt" : image.load("Textures\\png\\Tiles\\castleCliffRightAlt.png").convert_alpha(),
+    "castleLeft" : image.load("Textures\\png\\Tiles\\castleLeft.png").convert_alpha(),
+    "castleMid" : image.load("Textures\\png\\Tiles\\castleMid.png").convert_alpha(),
+    "castleRight" : image.load("Textures\\png\\Tiles\\castleRight.png").convert_alpha(),
+    "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
+    "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
 }
 
@@ -142,11 +166,13 @@ while running:
     elif keys[K_l]:
         addTile(mx, my, "Bush (4)")
     elif keys[K_o]:
-        addTile(mx,my, "BlueSlime1Left")
+        addTile(mx,my, "BlueSlime1Right")
     elif keys[K_p]:
-        addTile(mx,my, "PinkSlime1Left")
+        addTile(mx,my, "PinkSlime1Right")
     elif keys[K_a]:
         addTile(mx,my,"Bat1")
+    elif keys[K_r]:
+        addTile(mx,my,"flag_red")
     # if mb[0]:
     #     addTile(mx, my, "t_m_side_dirt")
     # if mb[2]:
