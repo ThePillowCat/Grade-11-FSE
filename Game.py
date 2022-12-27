@@ -573,7 +573,7 @@ player = Player(300,100,screen)
 level = Level(screen)
 ui = UI()
 
-level.currentLevel = 1
+# level.currentLevel = 1
 
 while running:
     keys = key.get_pressed()
