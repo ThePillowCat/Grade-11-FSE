@@ -37,8 +37,8 @@ heightOfTile = height//row
 
 #boundries for scrolling:
 lenOfLevel = len(level_1[0])
-right = lenOfLevel*widthOfTile-591
-
+right = len(level_2[0])*widthOfTile
+print(len(level_2[0]))
 level_1_Rects = []
 level_1_Objects = []
 level_1_Enemies = []
@@ -248,7 +248,7 @@ tileDict = {
 }
 
 for i in range(row):
-    for j in range(lenOfLevel):
+    for j in range(len(level_1[0])):
         if level_1[i][j] in enemies:
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
@@ -276,12 +276,12 @@ for i in range(row):
             W = tileDict[level_2[i][j][0]].get_width()
             H = tileDict[level_2[i][j][0]].get_height()
             offset = 0
-            if level_2[i][j] == ["BlueSlime1"]:
+            if level_2[i][j] == ["BlueSlime1Right"]:
                 offset = 20
                 myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_2[i][j] = []
                 level_2_Enemies.append(myObj)
-            if level_2[i][j] == ["PinkSlime1"]:
+            if level_2[i][j] == ["PinkSlime1Right"]:
                 offset = 20
                 myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_2[i][j] = []
@@ -362,7 +362,9 @@ class Level():
         for i in range(tempLen-1,-1,-1):
             if self.enemies[self.currentLevel][i].dead:
                 del self.enemies[self.currentLevel][i]
-            
+
+standingStill = image.load("Textures\png\Player\Standing still.png")
+
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -501,11 +503,12 @@ class Player():
 
     def drawPlayer(self):
         if not self.moving:
-            self.moveSpot = 0
-        if self.moveSpot > 10:
-            self.moveSpot = 0
-        self.moveSpot+=0.6
-        screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
+            screen.blit(standingStill, (self.x, self.y))
+        else:
+            if self.moveSpot > 10:
+                self.moveSpot = 0
+            self.moveSpot+=0.6
+            screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
     
     def usePowerUp(self, powerUp):
         if powerUp == "fireball":
