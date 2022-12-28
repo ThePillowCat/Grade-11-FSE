@@ -11,10 +11,12 @@ init()
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
 #THINGS TO DO IN GAME-----------
-#Add heart powerup
+#-->Add heart powerup
+#-->Fix door
+#-->Create dungeon level
+#-->Add ammo powerup
+#-->Add UI
 #Add dog enemy
-#Fix door
-#Create dungeon level
 #Fix any bugs/touchups
 #(maybe add speech bubbles)
 
