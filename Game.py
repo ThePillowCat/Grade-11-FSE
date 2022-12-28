@@ -499,6 +499,7 @@ class Player():
         '''
         Ideas for enemies:
         worm that digs through soil???
+        grenade that explodes after 1 bounce
         snake that walks on platform
         '''
         
@@ -557,7 +558,6 @@ class Player():
     def drawPlayer(self):
         if not self.moving:
             screen.blit(idleStates[str(self.powerUp)+str(self.direction)], (self.x, self.y))
-            print(self.direction)
         else:
             if self.jumping:
                 screen.blit(self.animationFrames[self.direction+self.powerUpOffset][-1], (self.x, self.y))
@@ -634,8 +634,8 @@ class Bullet():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = 7
-        self.height = 3
+        self.width = 20
+        self.height = 10
         self.speed = 15
         if player.direction != 0:
             self.speed=-self.speed
@@ -693,7 +693,7 @@ while running:
                         if player.moving:
                             player.bullets.append(Bullet(player.posInLevel,player.y+30))
                         else:
-                            player.bullets.append(Bullet(player.posInLevel,player.y+43))
+                            player.bullets.append(Bullet(player.posInLevel,player.y+35))
                         player.bulletTimer = 0
 
     player.movePlayer()
