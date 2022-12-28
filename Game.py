@@ -379,6 +379,7 @@ class Player():
         self.offset = 0
         self.posInLevel = 0
         self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 13, 12)]
+        self.jumping = False
         self.moveSpot = 0
         self.direction = 0
         self.powerUp = "normal"
@@ -406,6 +407,7 @@ class Player():
             self.direction = 0
         if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 2:
             self.vel[1] = self.jumpPower
+            self.jumping = True
         #OBJECTS
         if len(level.objects[level.currentLevel]) > 0:
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
@@ -457,6 +459,7 @@ class Player():
         bottomOfPlayer = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
         hitRect = bottomOfPlayer.collidelist(level.rects[level.currentLevel])
         if hitRect != -1:
+            self.jumping = False
             self.groundY = level.rects[level.currentLevel][hitRect][1]
             self.vel[1] = 0
             self.y = self.groundY-player.size[1]
@@ -505,10 +508,13 @@ class Player():
         if not self.moving:
             screen.blit(standingStill, (self.x, self.y))
         else:
-            if self.moveSpot > 10:
-                self.moveSpot = 0
-            self.moveSpot+=0.6
-            screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
+            if self.jumping:
+                screen.blit(self.animationFrames[self.direction][-1], (self.x, self.y))
+            else:
+                if self.moveSpot > 10:
+                    self.moveSpot = 0
+                self.moveSpot+=0.6
+                screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
     
     def usePowerUp(self, powerUp):
         if powerUp == "fireball":

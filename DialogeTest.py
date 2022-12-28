@@ -19,10 +19,10 @@ running=True
 
 myClock = time.Clock()
 
-for i in range(5):
+for i in range(12):
     fname = filedialog.askopenfilename()
     myImg = image.load(fname)
-    myImg = transform.scale(myImg, (65, 76))
+    myImg = transform.flip(myImg, True, False)
     fname = filedialog.asksaveasfilename()
     image.save(myImg, fname)
     print(fname)
