@@ -25,7 +25,6 @@ for i in range(12):
     myImg = transform.flip(myImg, True, False)
     fname = filedialog.asksaveasfilename()
     image.save(myImg, fname)
-    print(fname)
 
 
 # while running:

@@ -38,7 +38,6 @@ heightOfTile = height//row
 #boundries for scrolling:
 lenOfLevel = len(level_1[0])
 right = len(level_2[0])*widthOfTile
-print(len(level_2[0]))
 level_1_Rects = []
 level_1_Objects = []
 level_1_Enemies = []
@@ -107,7 +106,6 @@ class Slime(Enemy):
                     self.hitbox = Rect(self.hitbox[0], self.hitbox[1]+22, self.hitbox[2], self.hitbox[3])
             elif playerRect.colliderect(self.hitbox):
                 player.resetPlayer()
-            #Checking if hit by fireball
             else:
                 for i in range(len(player.fireBalls)):
                     fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
@@ -119,6 +117,20 @@ class Slime(Enemy):
                         mixer.music.load("Sound Effects\\smb_kick.wav")
                         mixer.music.play()
                         player.fireBalls[i].bounces = 4
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
+                for i in range(len(player.bullets)):
+                    bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
+                    if bullRect.colliderect(self.hitbox):
+                        player.bullets[i].dead = True
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
+                        if "Sq" in self.type:
+                            self.type = self.type[0:len(self.type)-2]+"Dead"
+                        else:
+                            self.type = self.type[0:len(self.type)-1]+"Dead"
                         self.vel[1] = -10
                         self.playDeathAnimation = True
                         #making sure enemy goes to right during death
@@ -179,6 +191,16 @@ class Bat(Enemy):
                         self.playDeathAnimation = True
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
+                for i in range(len(player.bullets)):
+                    bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
+                    if bullRect.colliderect(self.hitbox):
+                        player.bullets[i].dead = True
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
@@ -205,7 +227,8 @@ tileDict = {
     "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
     "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
     "door4" : image.load("Textures\\png\\Door\\door4.png").convert_alpha(),
-    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "question_fire_flower" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
     "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
     "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha(),
@@ -245,6 +268,16 @@ tileDict = {
     "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
     "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
+    "gun" : image.load("Textures\png\Tiles\gun.png")
+}
+
+idleStates = {
+    "normal0" : image.load("Textures\png\Player\\normal.png"),
+    "normal1" : image.load("Textures\png\Player\\normal.png"),
+    "fireball0" : image.load("Textures\png\Player\\fireball.png"),
+    "fireball1" : image.load("Textures\png\Player\\fireball.png"),
+    "gun0" : image.load("Textures\png\Player\\gun0.png"),
+    "gun1" : image.load("Textures\png\Player\\gun1.png"),
 }
 
 for i in range(row):
@@ -325,6 +358,7 @@ class UI():
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
+fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
 
 class Level():
     def __init__(self, screen):
@@ -335,6 +369,7 @@ class Level():
         self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
         self.enemies = [level_1_Enemies, level_2_Enemies, level_3_Enemies]
         self.background = [bgForest, bgCave, bgForest]
+        self.levelLengths = [len(level_1[0])*widthOfTile, len(level_2[0])*widthOfTile, len(level_3[0])*widthOfTile]
         self.currentLevel = 0
         self.doorFrame = 1
         self.doorOpening = False
@@ -363,8 +398,6 @@ class Level():
             if self.enemies[self.currentLevel][i].dead:
                 del self.enemies[self.currentLevel][i]
 
-standingStill = image.load("Textures\png\Player\Standing still.png")
-
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -378,14 +411,17 @@ class Player():
         self.moving = True
         self.offset = 0
         self.posInLevel = 0
-        self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 13, 12)]
+        self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 72, 12)]
+        self.checkPoint = [100, 50, 0, 0]
         self.jumping = False
         self.moveSpot = 0
         self.direction = 0
         self.powerUp = "normal"
+        self.powerUpOffset = 0
         self.fireBalls = []
         self.lives = 3
-        self.checkPoint = [100, 50, 0, 0]
+        self.bullets = []
+        self.bulletTimer = 0
 
     def movePlayer(self):
         #getting keys list
@@ -425,6 +461,14 @@ class Player():
                     mixer.music.load("Sound Effects\\smb_powerup.mp3")
                     mixer.music.play()
                     self.powerUp = "fireball"
+                    self.powerUpOffset = 4
+                    del level.objects[level.currentLevel][temp]
+                    level.levels[level.currentLevel][Y][X] = []
+                if level.levels[level.currentLevel][Y][X] == ["gun"]:
+                    mixer.music.load("Sound Effects\\smb_powerup.mp3")
+                    mixer.music.play()
+                    self.powerUp = "gun"
+                    self.powerUpOffset = 2
                     del level.objects[level.currentLevel][temp]
                     level.levels[level.currentLevel][Y][X] = []
                 if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
@@ -469,11 +513,15 @@ class Player():
         if hitRect != -1:
             self.vel[1] = 0
             Y = self.y//heightOfTile
-            X = self.posInLevel//widthOfTile
-            if level.levels[level.currentLevel][Y-1][X] == ["question"]:
+            X = self.posInLevel//widthOfTile  
+            if level.levels[level.currentLevel][Y-1][X] != [] and level.levels[level.currentLevel][Y-1][X][0][:8] == "question":
+                if level.levels[level.currentLevel][Y-1][X][0][9:] == "gun":
+                    level.levels[level.currentLevel][Y-3][X] = ["gun"]
+                    level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-3)*heightOfTile, widthOfTile, heightOfTile))
+                else:
+                    level.levels[level.currentLevel][Y-2][X] = [level.levels[level.currentLevel][Y-1][X][0][9:]]
+                    level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
                 level.levels[level.currentLevel][Y-1][X] = ["neutral_block"]
-                level.levels[level.currentLevel][Y-2][X] = ["fire_flower"]
-                level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
                 mixer.music.load("Sound Effects\\smb_powerup_appears.mp3")
                 mixer.music.play()
         
@@ -506,20 +554,21 @@ class Player():
 
     def drawPlayer(self):
         if not self.moving:
-            screen.blit(standingStill, (self.x, self.y))
+            screen.blit(idleStates[str(self.powerUp)+str(self.direction)], (self.x, self.y))
+            print(self.direction)
         else:
             if self.jumping:
-                screen.blit(self.animationFrames[self.direction][-1], (self.x, self.y))
+                screen.blit(self.animationFrames[self.direction+self.powerUpOffset][-1], (self.x, self.y))
             else:
                 if self.moveSpot > 10:
                     self.moveSpot = 0
                 self.moveSpot+=0.6
-                screen.blit(self.animationFrames[self.direction][int(self.moveSpot)], (self.x, self.y))
-    
+                screen.blit(self.animationFrames[self.direction+self.powerUpOffset][int(self.moveSpot)], (self.x, self.y))
+        self.bulletTimer += 0.02
     def usePowerUp(self, powerUp):
         if powerUp == "fireball":
             for i in range(len(self.fireBalls)):
-                draw.circle(screen, RED, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y), self.fireBalls[i].rad)
+                screen.blit(fireBall, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y))
                 #fix speed?
                 bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2+self.fireBalls[i].vel[1]), (self.fireBalls[i].rad*2)-10, 5)
                 rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2)+self.fireBalls[i].speed, self.fireBalls[i].y+5, 1, (self.fireBalls[i].rad*2)-10)
@@ -547,13 +596,26 @@ class Player():
             for i in range(temp-1,-1,-1):
                 if self.fireBalls[i].bounces > 3:
                     del self.fireBalls[i]
+        if powerUp == "gun":
+            for i in range(len(self.bullets)):
+                bulletRect = Rect(self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
+                draw.ellipse(screen, BROWN, (self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height))
+                if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x > level.levelLengths[level.currentLevel]:
+                    self.bullets[i].dead = True
+                self.bullets[i].x+=self.bullets[i].speed
+            temp = len(self.bullets)
+            for i in range(temp-1, -1, -1):
+                if self.bullets[i].dead:
+                    del self.bullets[i]
     def resetPlayer(self):
         self.x = self.checkPoint[0]
         self.y = self.checkPoint[1]
         self.vel[1] = self.checkPoint[3]
         self.offset = self.checkPoint[2]
         self.lives-=1
-        self.powerUp = "normal"
+        # self.powerUp = "normal"
+        # self.powerUpOffset = 0
+
 class Fireball():
     def __init__(self, x, y):
         self.x = x
@@ -565,6 +627,17 @@ class Fireball():
         self.gravity = 0.5
         self.rad = 10
         self.bounces = 0
+
+class Bullet():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 7
+        self.height = 3
+        self.speed = 15
+        if player.direction != 0:
+            self.speed=-self.speed
+        self.dead = False
 
 RED=(255,0,0)
 GREY=(127,127,127)
@@ -581,8 +654,6 @@ myClock = time.Clock()
 player = Player(300,100,screen)
 level = Level(screen)
 ui = UI()
-
-# level.currentLevel = 1
 
 while running:
     keys = key.get_pressed()
@@ -602,11 +673,26 @@ while running:
         if evt.type==QUIT:
             running=False
         if evt.type==KEYDOWN:
-            if evt.key == K_r and player.powerUp == "fireball":
-                if len(player.fireBalls) < 3:
-                    mixer.music.load("Sound Effects\\smb_fireball.mp3")
-                    mixer.music.play()
-                    player.fireBalls.append(Fireball(player.posInLevel,player.y))
+            if evt.key == K_r:
+                if player.powerUp == "fireball":
+                    if len(player.fireBalls) < 3:
+                        mixer.music.load("Sound Effects\\smb_fireball.mp3")
+                        mixer.music.play()
+                        #1 is left
+                        #0 is right
+                        if player.direction == 0:
+                            player.fireBalls.append(Fireball(player.posInLevel+50,player.y))
+                        else:
+                            player.fireBalls.append(Fireball(player.posInLevel,player.y))
+                if player.powerUp == "gun":
+                    if len(player.fireBalls) < 10 and player.bulletTimer > 1:
+                        mixer.music.load("Sound Effects\\gun_shot.mp3")
+                        mixer.music.play()
+                        if player.moving:
+                            player.bullets.append(Bullet(player.posInLevel,player.y+30))
+                        else:
+                            player.bullets.append(Bullet(player.posInLevel,player.y+43))
+                        player.bulletTimer = 0
 
     player.movePlayer()
     player.checkPlayerCollision()

@@ -70,6 +70,8 @@ tileDict = {
     "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
     "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
+    "question_fire_flower" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\CaveBG.png").convert()
@@ -128,8 +130,6 @@ while running:
                     spot+=1
             if evt.key == K_n:
                 addTile(mx, my, "door1")
-            if evt.key == K_m:
-                addTile(mx, my, "question")
             if evt.key == K_SPACE:
                 lFile.write(repr(level_1))
     keys = key.get_pressed()
@@ -173,6 +173,10 @@ while running:
         addTile(mx,my,"Bat1")
     elif keys[K_r]:
         addTile(mx,my,"flag_red")
+    elif keys[K_d]:
+        addTile(mx,my,"question_fire_flower")
+    elif keys[K_f]:
+        addTile(mx,my,"question_gun")
     # if mb[0]:
     #     addTile(mx, my, "t_m_side_dirt")
     # if mb[2]:

@@ -30,7 +30,8 @@ tileDict = {
     "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
     "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
     "door4" : image.load("Textures\\png\\Door\\door4.png").convert_alpha(),
-    "question" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "question_fire_flower" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
     "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
     "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha(),
@@ -118,8 +119,6 @@ while running:
                     spot+=1
             if evt.key == K_n:
                 addTile(mx, my, "door1")
-            if evt.key == K_m:
-                addTile(mx, my, "question")
             if evt.key == K_SPACE:
                 lFile.write(repr(level_1))
     keys = key.get_pressed()
@@ -169,6 +168,10 @@ while running:
         addTile(mx,my,"water")
     elif keys[K_y]:
         addTile(mx,my,"flag_red")
+    elif keys[K_u]:
+        addTile(mx,my,"question_fire_flower")
+    elif keys[K_i]:
+        addTile(mx,my,"question_gun")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
