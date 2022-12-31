@@ -416,7 +416,7 @@ class Player():
                     level.doorOpening = False
                     self.posInLevel = 100
                     level.currentLevel+=1
-                    self.checkPoint = [self.x, self.y, self.offset, self.vel[1]]
+                    self.checkPoint = [self.x, self.y, 0, self.vel[1]]
                 if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
                     mixer.music.load("Sound Effects\\checkpoint.ogg")
                     mixer.music.play()
@@ -475,11 +475,10 @@ class Player():
         self.y+=self.vel[1]
         #moving player, adding gravity, updating position variable
         self.posInLevel=self.x+abs(self.offset)
-    
-    def checkPlayerCollision(self):
+
         #checks when the level should be scrolled
         #also check if the player is hitting an enemy
-        if self.x+self.size[0] > 900 and self.posInLevel < level.levelLengths[level.currentLevel]:
+        if self.x+self.size[0] > 900 and self.posInLevel < level.levelLengths[level.currentLevel]-240:
             self.x = 900-self.size[0]
             if self.moving:
                 self.offset -= 5
@@ -551,8 +550,8 @@ class Player():
         self.vel[1] = self.checkPoint[3]
         self.offset = self.checkPoint[2]
         self.lives-=1
-        # self.powerUp = "normal"
-        # self.powerUpOffset = 0
+        self.powerUp = "normal"
+        self.powerUpOffset = 0
 
 class Fireball():
     def __init__(self, x, y):
@@ -637,10 +636,8 @@ while running:
                         player.bulletTimer = 0
 
     player.movePlayer()
-    player.checkPlayerCollision()
     level.drawEnemies()
     level.drawLevel()
-    level.playAnimations()
     player.drawPlayer()
 
     if player.powerUp != "normal":

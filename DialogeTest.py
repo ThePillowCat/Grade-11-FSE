@@ -19,12 +19,12 @@ running=True
 
 myClock = time.Clock()
 
-for i in range(1):
-    fname = filedialog.askopenfilename()
-    myImg = image.load(fname)
-    myImg = transform.flip(myImg, True, False)
-    fname = filedialog.asksaveasfilename()
-    image.save(myImg, fname)
+# for i in range(1):
+#     fname = filedialog.askopenfilename()
+#     myImg = image.load(fname)
+#     myImg = transform.flip(myImg, True, False)
+#     fname = filedialog.asksaveasfilename()
+#     image.save(myImg, fname)
 
 
 # while running:
@@ -39,5 +39,21 @@ for i in range(1):
 #     mb=mouse.get_pressed()
 #     display.flip()
 #     myClock.tick(60)
-            
+
+startX = 0
+startY = 0
+screen.fill(BLUE)
+
+while running:
+    for evt in event.get():
+        if evt.type == QUIT:
+            running = False
+    screen.set_clip(None)
+    currRect = Rect(startX, startY, width-startX*2, height-startY*2)
+    screen.set_clip(currRect)
+    screen.fill(0)
+    startX+=5
+    startY+=5
+    display.flip()
+    myClock.tick(1)
 quit()
