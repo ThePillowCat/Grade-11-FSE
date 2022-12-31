@@ -19,7 +19,7 @@ running=True
 
 myClock = time.Clock()
 
-for i in range(12):
+for i in range(1):
     fname = filedialog.askopenfilename()
     myImg = image.load(fname)
     myImg = transform.flip(myImg, True, False)

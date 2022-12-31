@@ -1,4 +1,6 @@
 from pygame import *
+import tilesAndIdleStates
+
 init()
 
 #OUTLINE OF CODE-----------------
@@ -39,7 +41,6 @@ heightOfTile = height//row
 
 #boundries for scrolling:
 lenOfLevel = len(level_1[0])
-right = len(level_2[0])*widthOfTile
 level_1_Rects = []
 level_1_Objects = []
 level_1_Enemies = []
@@ -63,8 +64,6 @@ class Enemy():
         self.hitbox = re
         self.type = t
         self.speed = 5
-    def fireBallDeath(self):
-        pass
 
 class Slime(Enemy):
     def __init__(self, t, re, x, y):
@@ -126,7 +125,6 @@ class Slime(Enemy):
                 for i in range(len(player.bullets)):
                     bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
                     if bullRect.colliderect(self.hitbox):
-                        player.bullets[i].dead = True
                         mixer.music.load("Sound Effects\\smb_kick.wav")
                         mixer.music.play()
                         if "Sq" in self.type:
@@ -196,7 +194,6 @@ class Bat(Enemy):
                 for i in range(len(player.bullets)):
                     bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
                     if bullRect.colliderect(self.hitbox):
-                        player.bullets[i].dead = True
                         mixer.music.load("Sound Effects\\smb_kick.wav")
                         mixer.music.play()
                         self.vel[1] = -10
@@ -212,75 +209,9 @@ seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"], ["lava"], 
 #enemies array (contains all the enemies)
 enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"]]
 
-tileDict = {
-    "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
-    "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
-    "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
-    "m_r_side_dirt" : image.load("Textures\\png\\Tiles\\m_r_side_dirt.png").convert_alpha(),
-    "m_l_side_dirt" : image.load("Textures\\png\\Tiles\\m_l_side_dirt.png").convert_alpha(),
-    "m_m_side_dirt" : image.load("Textures\\png\\Tiles\\m_dirt.png").convert_alpha(),
-    "b_r_side_dirt" : image.load("Textures\\png\\Tiles\\b_r_side_dirt.png").convert_alpha(),
-    "b_l_side_dirt" : image.load("Textures\\png\\Tiles\\b_l_side_dirt.png").convert_alpha(),
-    "b_m_side_dirt" : image.load("Textures\\png\\Tiles\\b_m_side_dirt.png").convert_alpha(),
-    "p_l_side_dirt" : image.load("Textures\\png\\Tiles\\p_l_side_dirt.png").convert_alpha(),
-    "p_m_side_dirt" : image.load("Textures\\png\\Tiles\\p_m_side_dirt.png").convert_alpha(),
-    "p_r_side_dirt" : image.load("Textures\\png\\Tiles\\p_r_side_dirt.png").convert_alpha(),
-    "door1" : image.load("Textures\\png\\Door\\door1.png").convert_alpha(),
-    "door2" : image.load("Textures\\png\\Door\\door2.png").convert_alpha(),
-    "door3" : image.load("Textures\\png\\Door\\door3.png").convert_alpha(),
-    "door4" : image.load("Textures\\png\\Door\\door4.png").convert_alpha(),
-    "question_fire_flower" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
-    "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
-    "Tree_2": image.load("Textures\png\Object\Tree_2.png"),
-    "fire_flower" : image.load("Textures\png\Tiles\\fire_flower.png").convert_alpha(),
-    "neutral_block" : image.load("Textures\png\Tiles\\neutral_block.png").convert_alpha(),
-    "Bush (1)" : image.load("Textures\png\Object\Bush (1).png").convert_alpha(),
-    "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
-    "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
-    "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
-    "BlueSlime1Left": image.load("Textures\png\Enemies\BlueSlime1Left.png").convert_alpha(),
-    "BlueSlime2Left": image.load("Textures\png\Enemies\BlueSlime2Left.png").convert_alpha(),
-    "BlueSlimeSqLeft": image.load("Textures\png\Enemies\BlueSlimeSqLeft.png").convert_alpha(),
-    "BlueSlimeDeadLeft": image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
-    "PinkSlime1Left": image.load("Textures\png\Enemies\PinkSlime1Left.png").convert_alpha(),
-    "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
-    "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
-    "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
-    "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
-    "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
-    "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),
-    "BlueSlimeDeadRight": image.load("Textures\png\Enemies\BlueSlimeDeadRight.png").convert_alpha(),
-    "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
-    "PinkSlime2Right": image.load("Textures\png\Enemies\PinkSlime2Right.png").convert_alpha(),
-    "PinkSlimeSqRight": image.load("Textures\png\Enemies\PinkSlimeSqRight.png").convert_alpha(),
-    "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
-    "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
-    "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
-    "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
-    "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
-    "castle" : image.load("Textures\\png\\Tiles\\castle.png").convert_alpha(),
-    "castleCenter" : image.load("Textures\\png\\Tiles\\castleCenter.png").convert_alpha(),
-    "castleCliffLeft" : image.load("Textures\\png\\Tiles\\castleCliffLeft.png").convert_alpha(),
-    "castleCliffLeftAlt" : image.load("Textures\\png\\Tiles\\castleCliffLeftAlt.png").convert_alpha(),
-    "castleCliffRight" : image.load("Textures\\png\\Tiles\\castleCliffRight.png").convert_alpha(),
-    "castleCliffRightAlt" : image.load("Textures\\png\\Tiles\\castleCliffRightAlt.png").convert_alpha(),
-    "castleLeft" : image.load("Textures\\png\\Tiles\\castleLeft.png").convert_alpha(),
-    "castleMid" : image.load("Textures\\png\\Tiles\\castleMid.png").convert_alpha(),
-    "castleRight" : image.load("Textures\\png\\Tiles\\castleRight.png").convert_alpha(),
-    "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
-    "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
-    "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
-    "gun" : image.load("Textures\png\Tiles\gun.png")
-}
-
-idleStates = {
-    "normal0" : image.load("Textures\png\Player\\normal.png"),
-    "normal1" : image.load("Textures\png\Player\\normal.png"),
-    "fireball0" : image.load("Textures\png\Player\\fireball.png"),
-    "fireball1" : image.load("Textures\png\Player\\fireball.png"),
-    "gun0" : image.load("Textures\png\Player\\gun0.png"),
-    "gun1" : image.load("Textures\png\Player\\gun1.png"),
-}
+#dictionaries with tiles and other states of the player
+tileDict = tilesAndIdleStates.tileDict
+idleStates = tilesAndIdleStates.idleStates
 
 for i in range(row):
     for j in range(len(level_1[0])):
@@ -313,18 +244,15 @@ for i in range(row):
             offset = 0
             if level_2[i][j] == ["BlueSlime1Right"]:
                 offset = 20
-                myObj = Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_2[i][j] = []
-                level_2_Enemies.append(myObj)
+                level_2_Enemies.append(Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) )
             if level_2[i][j] == ["PinkSlime1Right"]:
                 offset = 20
-                myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_2[i][j] = []
-                level_2_Enemies.append(myObj)
+                level_2_Enemies.append(Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset))
             if level_2[i][j] == ["Bat1"]:
-                myObj = Bat("Bat", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i)
                 level_2[i][j] = []
-                level_2_Enemies.append(myObj)
+                level_2_Enemies.append(Bat("Bat", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
         elif level_2[i][j] in seperateObjects:
             W = tileDict[level_2[i][j][0]].get_width()
             H = tileDict[level_2[i][j][0]].get_height()
@@ -377,6 +305,7 @@ class Level():
         self.doorOpening = False
         self.temp = 0
         self.doorIsOpen = False
+        self.backgroundOffset = 0
     def drawLevel(self):
         for i in range(row):
             for j in range(lower, upper):
@@ -416,6 +345,7 @@ class Player():
         self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 72, 12)]
         self.checkPoint = [100, 50, 0, 0]
         self.jumping = False
+        self.crouched = True
         self.moveSpot = 0
         self.direction = 0
         self.powerUp = "normal"
@@ -431,21 +361,22 @@ class Player():
         self.vel[0] = 0
         self.gravity = 1
         #checking inputs
-        if keys[K_LEFT]:
-            self.vel[0]=-5
-            leftOfPlayer = Rect(self.posInLevel+self.vel[0], self.y, 2, self.size[1])
-            if leftOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
-                self.vel[0]=0
-            self.direction = 1
-        elif keys[K_RIGHT]:
-            self.vel[0]=5
-            rightOfPlayer = Rect(self.posInLevel+self.size[0]+self.vel[0], self.y, 1, self.size[1])
-            if rightOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
-                self.vel[0]=0
-            self.direction = 0
-        if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 2:
-            self.vel[1] = self.jumpPower
-            self.jumping = True
+        if not self.crouched:
+            if keys[K_LEFT]:
+                self.vel[0]=-5
+                leftOfPlayer = Rect(self.posInLevel+self.vel[0], self.y, 2, self.size[1])
+                if leftOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
+                    self.vel[0]=0
+                self.direction = 1
+            elif keys[K_RIGHT]:
+                self.vel[0]=5
+                rightOfPlayer = Rect(self.posInLevel+self.size[0]+self.vel[0], self.y, 1, self.size[1])
+                if rightOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
+                    self.vel[0]=0
+                self.direction = 0
+            if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 2:
+                self.vel[1] = self.jumpPower
+                self.jumping = True
         #OBJECTS
         if len(level.objects[level.currentLevel]) > 0:
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
@@ -485,6 +416,7 @@ class Player():
                     level.doorOpening = False
                     self.posInLevel = 100
                     level.currentLevel+=1
+                    self.checkPoint = [self.x, self.y, self.offset, self.vel[1]]
                 if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
                     mixer.music.load("Sound Effects\\checkpoint.ogg")
                     mixer.music.play()
@@ -496,6 +428,7 @@ class Player():
 
         #defaults the ground to be the 1
         self.groundY = height
+
         '''
         Ideas for enemies:
         worm that digs through soil???
@@ -546,7 +479,7 @@ class Player():
     def checkPlayerCollision(self):
         #checks when the level should be scrolled
         #also check if the player is hitting an enemy
-        if self.x+self.size[0] > 900 and self.posInLevel < right:
+        if self.x+self.size[0] > 900 and self.posInLevel < level.levelLengths[level.currentLevel]:
             self.x = 900-self.size[0]
             if self.moving:
                 self.offset -= 5
@@ -557,7 +490,10 @@ class Player():
 
     def drawPlayer(self):
         if not self.moving:
-            screen.blit(idleStates[str(self.powerUp)+str(self.direction)], (self.x, self.y))
+            if self.powerUp == "gun" and self.crouched:
+                screen.blit(idleStates["crouch"+str(self.direction)], (self.x, self.y))
+            else:
+                screen.blit(idleStates[str(self.powerUp)+str(self.direction)], (self.x, self.y))
         else:
             if self.jumping:
                 screen.blit(self.animationFrames[self.direction+self.powerUpOffset][-1], (self.x, self.y))
@@ -600,7 +536,7 @@ class Player():
                     del self.fireBalls[i]
         if powerUp == "gun":
             for i in range(len(self.bullets)):
-                bulletRect = Rect(self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
+                bulletRect = Rect(self.bullets[i].x, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
                 draw.ellipse(screen, BROWN, (self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height))
                 if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x > level.levelLengths[level.currentLevel]:
                     self.bullets[i].dead = True
@@ -659,6 +595,7 @@ ui = UI()
 
 while running:
     keys = key.get_pressed()
+
     lower = (player.posInLevel)//widthOfTile-20
     if lower < 0:
         lower = 0
@@ -693,7 +630,10 @@ while running:
                         if player.moving:
                             player.bullets.append(Bullet(player.posInLevel,player.y+30))
                         else:
-                            player.bullets.append(Bullet(player.posInLevel,player.y+35))
+                            if player.crouched:
+                                player.bullets.append(Bullet(player.posInLevel,player.y+57))
+                            else:
+                                player.bullets.append(Bullet(player.posInLevel,player.y+35))
                         player.bulletTimer = 0
 
     player.movePlayer()
@@ -705,6 +645,10 @@ while running:
 
     if player.powerUp != "normal":
         player.usePowerUp(player.powerUp)
+    if keys[K_DOWN] and player.powerUp == "gun":
+        player.crouched = True
+    else:
+        player.crouched = False
 
     #flipping display and insuring 60fps
     display.flip()
