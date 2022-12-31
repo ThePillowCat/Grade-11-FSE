@@ -1,5 +1,6 @@
 from pygame import *
 import tilesAndIdleStates
+import levelOutline
 
 init()
 
@@ -282,52 +283,20 @@ for i in range(row):
         elif level_3[i][j] not in stuffWithNoCollision:
             level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
+bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
+bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
+
+level_data = [[level_1, level_2, level_3],
+              [level_1_Objects, level_2_Objects, level_3_Objects],
+              [level_1_Rects, level_2_Rects, level_2_Rects],
+              [level_1_Enemies, level_2_Enemies, level_3_Enemies],
+              [bgForest, bgCave, bgForest]]
+
 class UI():
     def __init__(self):
         self.timeLeft = 200
 
-bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
-bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
 fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
-
-class Level():
-    def __init__(self, screen):
-        self.screen = screen
-        self.levels = [level_1, level_2, level_3]
-        self.objects = [level_1_Objects, level_2_Objects, level_3_Rects]
-        self.rects =[level_1_Rects, level_2_Rects, level_3_Rects]
-        self.door = [image.load("Textures\\png\\Door\\door" + str(i) + ".png") for i in range(1,5)]
-        self.enemies = [level_1_Enemies, level_2_Enemies, level_3_Enemies]
-        self.background = [bgForest, bgCave, bgForest]
-        self.levelLengths = [len(level_1[0])*widthOfTile, len(level_2[0])*widthOfTile, len(level_3[0])*widthOfTile]
-        self.currentLevel = 0
-        self.doorFrame = 1
-        self.doorOpening = False
-        self.temp = 0
-        self.doorIsOpen = False
-        self.backgroundOffset = 0
-    def drawLevel(self):
-        for i in range(row):
-            for j in range(lower, upper):
-                if self.levels[self.currentLevel][i][j] != []:
-                    screen.blit(tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+player.offset, heightOfTile*i))
-    def playAnimations(self):
-        if self.doorOpening:
-            X = level.objects[level.currentLevel][self.temp][0]//widthOfTile
-            Y = level.objects[level.currentLevel][self.temp][1]//heightOfTile
-            self.levels[level.currentLevel][Y][X] = ["door"+str(int(level.doorFrame))]
-            self.doorFrame+=0.05
-            if level.doorFrame >= 5:
-                self.doorOpening = False
-                self.doorIsOpen = True
-    def drawEnemies(self):
-        for e in self.enemies[self.currentLevel]:
-            e.drawSelf()
-            e.checkCollision()
-        tempLen = len(self.enemies[self.currentLevel])
-        for i in range(tempLen-1,-1,-1):
-            if self.enemies[self.currentLevel][i].dead:
-                del self.enemies[self.currentLevel][i]
 
 class Player():
     def __init__(self, x, y, screen):
@@ -554,6 +523,8 @@ class Player():
         # self.powerUp = "normal"
         # self.powerUpOffset = 0
 
+player = Player(300,100,screen)
+
 class Fireball():
     def __init__(self, x, y):
         self.x = x
@@ -589,8 +560,7 @@ running=True
 
 #OBJECTS
 myClock = time.Clock()
-player = Player(300,100,screen)
-level = Level(screen)
+level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, row, tileDict)
 ui = UI()
 
 while running:
@@ -639,7 +609,7 @@ while running:
     player.movePlayer()
     player.checkPlayerCollision()
     level.drawEnemies()
-    level.drawLevel()
+    level.drawLevel(row, lower, upper, widthOfTile, player.offset, heightOfTile)
     level.playAnimations()
     player.drawPlayer()
 
