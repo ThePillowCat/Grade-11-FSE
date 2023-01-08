@@ -1,7 +1,12 @@
 from pygame import *
 from pprint import *
 
+lFile = open("Levels\\level1.txt", "r")
+lFileRects = open("Levels\\level1collision.txt", "w")
+
+level_1 = eval(lFile.readline().strip())
 lFile = open("Levels\\level1.txt", "w")
+
 
 width,height=1200,703
 screen=display.set_mode((width,height))
@@ -59,6 +64,9 @@ tileDict = {
     "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
     "flag_red" : image.load("Textures\png\Object\\flag_red.png"),
     "flag_blue" : image.load("Textures\png\Object\\flag_blue.png"),
+    "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
+    "key_green": image.load("Textures\png\Object\keyGreen.png").convert_alpha(),
+    "key_yellow": image.load("Textures\png\Object\keyYellow.png").convert_alpha(),
 }
 
 print(len(tileDict))
@@ -73,10 +81,13 @@ spot = 0
 
 numOfRects=5
 
-level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
+dragging = False
+origX, origY = 0, 0
 
 widthOfTile = width//col
 heightOfTile = height//row
+
+previewRects = [[] for i in range(numOfRects)]
 
 def drawLevel(screen):
     screen.blit(bgForest,(0,0))
@@ -88,6 +99,9 @@ def drawLevel(screen):
         for j in range(col*spot, col*spot+col):
             if level_1[i][j] != []:
                 screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j-(spot*width), heightOfTile*i))
+    for c in previewRects[spot]:
+        draw.rect(screen, GREEN, c, 10)
+
 
 def addTile(x, y, t):
     for i in range(row):
@@ -99,6 +113,14 @@ def addTile(x, y, t):
                     else:
                         level_1[i][j] = [t]
 
+def addCollisionBoundry(x, y):
+    myRect = Rect(origX, origY, abs(origX-x//widthOfTile*widthOfTile), abs(origY-y//heightOfTile*heightOfTile))
+    draw.rect(screen, GREEN, myRect)
+    return [coords for coords in myRect]
+#when the mouse is lifted, save rects
+
+collisionRects = []
+
 while running:
     
     mx,my=mouse.get_pos()
@@ -107,9 +129,6 @@ while running:
     for evt in event.get():
         if evt.type==QUIT:
             running=False
-        if evt.type==MOUSEBUTTONDOWN:
-            if evt.button==2:
-                lFile.write(repr(level_1))
         if evt.type==KEYDOWN:
             if evt.key == K_LEFT:
                 if spot > 0:
@@ -120,7 +139,9 @@ while running:
             if evt.key == K_n:
                 addTile(mx, my, "door1")
             if evt.key == K_SPACE:
-                lFile.write(repr(level_1))
+                lFile.write(str(repr(level_1)))
+                lFileRects.write(str(repr(collisionRects)))
+                running = False
     keys = key.get_pressed()
     if keys[K_e]:
         addTile(mx,my,"erase")
@@ -172,11 +193,25 @@ while running:
         addTile(mx,my,"question_fire_flower")
     elif keys[K_i]:
         addTile(mx,my,"question_gun")
+    elif keys[K_q]:
+        addTile(mx,my,"key_red")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
     if mb[2]:
         addTile(mx, my, "lava")
     drawLevel(screen)
+    if mb[1]:
+        if not dragging:
+            origX = mx//widthOfTile*widthOfTile
+            origY = my//heightOfTile*heightOfTile
+            dragging = True
+        addCollisionBoundry(mx, my)
+    elif dragging:
+        dragging = False
+        myRect = addCollisionBoundry(mx, my)
+        myRect[0] += spot*width
+        collisionRects.append(myRect)
+        previewRects[spot].append(addCollisionBoundry(mx, my))
     display.flip()
 
 quit()

@@ -53,3 +53,6 @@ def fixTextures(level_1):
                     else:
                         level_1[i][j] = ["m_r_side_dirt"]
     return level_1
+
+ #Rect(self.posInLevel+self.size[0]+5, self.y, 1, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1
+ Rect(self.posInLevel-5, self.y, 2, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1

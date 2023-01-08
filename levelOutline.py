@@ -4,11 +4,12 @@ class Level():
     def __init__(self, screen, level_data, widthOfTile, heightOfTile, row, tileDict):
         self.screen = screen
         self.levels = [level_data[0][0], level_data[0][1], level_data[0][2]]
-        self.objects = [level_data[1][0], level_data[2][0], level_data[3][0]]
+        self.objects = [level_data[1][0], level_data[1][1], level_data[1][2]]
         self.rects =[level_data[2][0], level_data[2][1], level_data[2][2]]
         self.enemies = [level_data[3][0], level_data[3][1], level_data[3][2]]
         self.background = [level_data[4][0], level_data[4][1], level_data[4][2]]
         self.levelLengths = [len(level_data[0][0][0])*widthOfTile, len(level_data[0][1][0])*widthOfTile, len(level_data[0][2][0])*widthOfTile]
+        self.keyLocations = []
         self.tileDict = tileDict
         self.level_data = level_data
         self.widthOfTile = widthOfTile
@@ -35,11 +36,13 @@ class Level():
             if self.doorFrame >= 5:
                 self.doorOpening = False
                 self.doorIsOpen = True
+                self.doorFrame = 1
     def drawEnemies(self):
-        for e in self.enemies[self.currentLevel]:
-            e.drawSelf()
-            e.checkCollision()
-        tempLen = len(self.enemies[self.currentLevel])
-        for i in range(tempLen-1,-1,-1):
-            if self.enemies[self.currentLevel][i].dead:
-                del self.enemies[self.currentLevel][i]
+        if self.enemies[self.currentLevel] != []:
+            for e in self.enemies[self.currentLevel]:
+                e.drawSelf()
+                e.checkCollision()
+            tempLen = len(self.enemies[self.currentLevel])
+            for i in range(tempLen-1,-1,-1):
+                if self.enemies[self.currentLevel][i].dead:
+                    del self.enemies[self.currentLevel][i]

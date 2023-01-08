@@ -59,7 +59,10 @@ tileDict = {
     "lava_top" : image.load("Textures\\png\\Tiles\\lava_top.png").convert_alpha(),
     "lava_bottom" : image.load("Textures\\png\\Tiles\\lava_bottom.png").convert_alpha(),
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
-    "gun" : image.load("Textures\png\Tiles\gun.png")
+    "gun" : image.load("Textures\png\Tiles\gun.png").convert_alpha(),
+    "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
+    "key_green": image.load("Textures\png\Object\keyGreen.png").convert_alpha(),
+    "key_yellow": image.load("Textures\png\Object\keyYellow.png").convert_alpha(),
 }
 
 idleStates = {

@@ -1,4 +1,5 @@
 from pygame import *
+from math import *
 import tilesAndIdleStates
 import levelOutline
 
@@ -27,9 +28,23 @@ l1File = open("Levels\\level1.txt","r")
 l2File = open("Levels\\level2.txt","r")
 l3File = open("Levels\\level3.txt","r")
 
+l1FileRects = open("Levels\\level1collision.txt","r")
+l2FileRects= open("Levels\\level2collision.txt","r")
+l3FileRects= open("Levels\\level3collision.txt","r")
+
 level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
+
+level_1_Rects = eval(l1FileRects.readline().strip("\n"))
+for i in range(len(level_1_Rects)):
+    level_1_Rects[i] = Rect(level_1_Rects[i][0], level_1_Rects[i][1], level_1_Rects[i][2], level_1_Rects[i][3])
+level_2_Rects = eval(l2FileRects.readline().strip("\n"))
+for i in range(len(level_2_Rects)):
+    level_2_Rects[i] = Rect(level_2_Rects[i][0], level_2_Rects[i][1], level_2_Rects[i][2], level_2_Rects[i][3])
+level_3_Rects = eval(l3FileRects.readline().strip("\n"))
+for i in range(len(level_3_Rects)):
+    level_2_Rects[i] = Rect(level_3_Rects[i][0], level_3_Rects[i][1], level_3_Rects[i][2], level_3_Rects[i][3])
 
 width,height=1200,703
 screen=display.set_mode((width,height))
@@ -42,13 +57,10 @@ heightOfTile = height//row
 
 #boundries for scrolling:
 lenOfLevel = len(level_1[0])
-level_1_Rects = []
 level_1_Objects = []
 level_1_Enemies = []
-level_2_Rects = []
 level_2_Objects = []
 level_2_Enemies = []
-level_3_Rects = []
 level_3_Objects = []
 level_3_Enemies = []
 
@@ -173,15 +185,17 @@ class Bat(Enemy):
         if not self.playDeathAnimation:
             bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
             playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+            #if stomped on by player
             if bottomOfPlayer.colliderect(self.hitbox):
                 player.vel[1] = -10
                 self.dead = True
                 mixer.music.load("Sound Effects\\smb_stomp.mp3")
                 mixer.music.play()
+            #if collided with player
             elif playerRect.colliderect(self.hitbox):
                 player.resetPlayer()
-            #Checking if hit by fireball
             else:
+                #Checking if hit by fireball
                 for i in range(len(player.fireBalls)):
                     fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
                     if fireRect.colliderect(self.hitbox):
@@ -192,6 +206,7 @@ class Bat(Enemy):
                         self.playDeathAnimation = True
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
+                #checking if hit by bullet
                 for i in range(len(player.bullets)):
                     bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
                     if bullRect.colliderect(self.hitbox):
@@ -202,13 +217,40 @@ class Bat(Enemy):
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
 
-stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["door1"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
+class epicKey(Enemy):
+    def __init__(self, t, re, x, y):
+        #inheriting parrent stuff
+        Enemy.__init__(self, t, re, x, y)
+        self.isFollowingPlayer = False
+        self.origX = x
+        self.origY = y
+        self.counter =10 
+    def drawSelf(self):
+        if self.isFollowingPlayer:
+            if self.hitbox[1] > player.y:
+                self.hitbox = self.hitbox.move(0, -1)
+            if self.hitbox[1] < player.y:
+                self.hitbox = self.hitbox.move(0, 1)
+            if (abs(((player.y-player.y)**2+(self.hitbox[0]-player.posInLevel+75)**2)**0.5) > 200):
+                if self.hitbox[0] > player.x:
+                    self.hitbox = self.hitbox.move(-1, 0)
+                if self.hitbox[0] < player.x:
+                    self.hitbox = self.hitbox.move(1, 0)
+        self.hitbox = self.hitbox.move(0, sin(self.counter*0.1)*3)
+        self.counter+=1
+        screen.blit(tileDict[self.type], (self.hitbox[0]+player.offset, self.hitbox[1]))
+    def checkCollision(self):
+        if not self.isFollowingPlayer:
+            playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+            if playerRect.colliderect(self.hitbox):
+                self.isFollowingPlayer = True
 
-#would include stuff like enemies
+
+stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
+
 seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"], ["lava"], ["lava_top"]]
 
-#enemies array (contains all the enemies)
-enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"]]
+enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
 
 #dictionaries with tiles and other states of the player
 tileDict = tilesAndIdleStates.tileDict
@@ -230,12 +272,13 @@ for i in range(row):
                 myObj = Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_1[i][j] = []
                 level_1_Enemies.append(myObj)
+            if level_1[i][j] == ["key_red"]:
+                level_1[i][j] = []
+                level_1_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
         elif level_1[i][j] in seperateObjects:
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
-        elif level_1[i][j] not in stuffWithNoCollision:
-            level_1_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 for i in range(row):
     for j in range(len(level_2[0])):
@@ -258,8 +301,6 @@ for i in range(row):
             W = tileDict[level_2[i][j][0]].get_width()
             H = tileDict[level_2[i][j][0]].get_height()
             level_2_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
-        elif level_2[i][j] not in stuffWithNoCollision:
-            level_2_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 for i in range(row):
     for j in range(len(level_3[0])):
@@ -280,15 +321,13 @@ for i in range(row):
             W = tileDict[level_3[i][j][0]].get_width()
             H = tileDict[level_3[i][j][0]].get_height()
             level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
-        elif level_3[i][j] not in stuffWithNoCollision:
-            level_3_Rects.append(Rect(widthOfTile*j, heightOfTile*i, widthOfTile, heightOfTile))
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
 
 level_data = [[level_1, level_2, level_3],
               [level_1_Objects, level_2_Objects, level_3_Objects],
-              [level_1_Rects, level_2_Rects, level_2_Rects],
+              [level_1_Rects, level_2_Rects, level_3_Rects],
               [level_1_Enemies, level_2_Enemies, level_3_Enemies],
               [bgForest, bgCave, bgForest]]
 
@@ -313,15 +352,16 @@ class Player():
         self.posInLevel = 0
         self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 72, 12)]
         self.checkPoint = [100, 50, 0, 0]
+        self.bullets = []
+        self.fireBalls = []
+        self.collidedSquares = []
+        self.powerUp = "normal"
         self.jumping = False
-        self.crouched = True
+        self.crouched = False
         self.moveSpot = 0
         self.direction = 0
-        self.powerUp = "normal"
         self.powerUpOffset = 0
-        self.fireBalls = []
         self.lives = 3
-        self.bullets = []
         self.bulletTimer = 0
 
     def movePlayer(self):
@@ -330,18 +370,17 @@ class Player():
         self.vel[0] = 0
         self.gravity = 1
         #checking inputs
+        X = self.posInLevel//widthOfTile
+        Y = self.y//heightOfTile
+        self.collidedSquares = [[X, Y]]
+        if (self.posInLevel-X*widthOfTile >= widthOfTile-player.size[0]):
+            self.collidedSquares.append([X+1, Y])
         if not self.crouched:
-            if keys[K_LEFT]:
+            if keys[K_LEFT] and Rect(self.posInLevel-5, self.y, 2, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1:
                 self.vel[0]=-5
-                leftOfPlayer = Rect(self.posInLevel+self.vel[0], self.y, 2, self.size[1])
-                if leftOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.vel[0]=0
                 self.direction = 1
-            elif keys[K_RIGHT]:
+            elif keys[K_RIGHT] and Rect(self.posInLevel+self.size[0]+5, self.y, 1, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1:
                 self.vel[0]=5
-                rightOfPlayer = Rect(self.posInLevel+self.size[0]+self.vel[0], self.y, 1, self.size[1])
-                if rightOfPlayer.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.vel[0]=0
                 self.direction = 0
             if keys[K_SPACE] and self.y+self.size[1] == self.groundY and self.vel[1] <= 2:
                 self.vel[1] = self.jumpPower
@@ -360,8 +399,7 @@ class Player():
                     else:
                         self.vel[1] = 3
                 if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
-                    mixer.music.load("Sound Effects\\smb_powerup.mp3")
-                    mixer.music.play()
+                    mixer.Channel(2).play(mixer.Sound(("Sound Effects\\smb_powerup.mp3")))
                     self.powerUp = "fireball"
                     self.powerUpOffset = 4
                     del level.objects[level.currentLevel][temp]
@@ -427,6 +465,7 @@ class Player():
                     level.levels[level.currentLevel][Y-2][X] = [level.levels[level.currentLevel][Y-1][X][0][9:]]
                     level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
                 level.levels[level.currentLevel][Y-1][X] = ["neutral_block"]
+                mixer.Channel(1).play(mixer.Sound("Sound Effects\\smb_powerup_appears.mp3"))
                 mixer.music.load("Sound Effects\\smb_powerup_appears.mp3")
                 mixer.music.play()
         
@@ -457,6 +496,10 @@ class Player():
                 self.offset += 5
 
     def drawPlayer(self):
+        for i in range(col):
+            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
+        for i in range(row):
+            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
         if not self.moving:
             if self.powerUp == "gun" and self.crouched:
                 screen.blit(idleStates["crouch"+str(self.direction)], (self.x, self.y))
@@ -594,8 +637,7 @@ while running:
                             player.fireBalls.append(Fireball(player.posInLevel,player.y))
                 if player.powerUp == "gun":
                     if len(player.fireBalls) < 10 and player.bulletTimer > 1:
-                        mixer.music.load("Sound Effects\\gun_shot.mp3")
-                        mixer.music.play()
+                        mixer.Channel(0).play(mixer.Sound("Sound Effects\\gun_shot.mp3"))
                         if player.moving:
                             player.bullets.append(Bullet(player.posInLevel,player.y+30))
                         else:
