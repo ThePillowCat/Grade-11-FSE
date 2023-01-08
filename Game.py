@@ -32,6 +32,9 @@ l1FileRects = open("Levels\\level1collision.txt","r")
 l2FileRects= open("Levels\\level2collision.txt","r")
 l3FileRects= open("Levels\\level3collision.txt","r")
 
+l1FileCollisionRects = open("Levels\\level1collisionobjects.txt", "r")
+l1FileCollisionRects = eval(l1FileCollisionRects.readline().strip())
+
 level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
@@ -248,7 +251,7 @@ class epicKey(Enemy):
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
-seperateObjects = [["door1"], ["water"], ["water_top"], ["flag_red"], ["lava"], ["lava_top"]]
+seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"]]
 
 enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
 
@@ -279,6 +282,8 @@ for i in range(row):
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+
+level_1_Objects += l1FileCollisionRects
 
 for i in range(row):
     for j in range(len(level_2[0])):
@@ -496,10 +501,6 @@ class Player():
                 self.offset += 5
 
     def drawPlayer(self):
-        for i in range(col):
-            draw.line(screen, GREEN, (width//col*i, 0), (width//col*i, height))
-        for i in range(row):
-            draw.line(screen, GREEN, (0, height//row*i), (width, height//row*i))
         if not self.moving:
             if self.powerUp == "gun" and self.crouched:
                 screen.blit(idleStates["crouch"+str(self.direction)], (self.x, self.y))

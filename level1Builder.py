@@ -3,10 +3,12 @@ from pprint import *
 
 lFile = open("Levels\\level1.txt", "r")
 lFileRects = open("Levels\\level1collision.txt", "w")
+lFileCollisionRects = open("Levels\\level1collisionobjects.txt", "w")
 
 level_1 = eval(lFile.readline().strip())
 lFile = open("Levels\\level1.txt", "w")
 
+dragging2 = False
 
 width,height=1200,703
 screen=display.set_mode((width,height))
@@ -88,6 +90,7 @@ widthOfTile = width//col
 heightOfTile = height//row
 
 previewRects = [[] for i in range(numOfRects)]
+previewObjects = [[] for i in range(numOfRects)]
 
 def drawLevel(screen):
     screen.blit(bgForest,(0,0))
@@ -101,6 +104,8 @@ def drawLevel(screen):
                 screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j-(spot*width), heightOfTile*i))
     for c in previewRects[spot]:
         draw.rect(screen, GREEN, c, 10)
+    for c in previewObjects[spot]:
+        draw.rect(screen, RED, c, 10)
 
 
 def addTile(x, y, t):
@@ -117,9 +122,15 @@ def addCollisionBoundry(x, y):
     myRect = Rect(origX, origY, abs(origX-x//widthOfTile*widthOfTile), abs(origY-y//heightOfTile*heightOfTile))
     draw.rect(screen, GREEN, myRect)
     return [coords for coords in myRect]
+
+def addCollisionBoundryObject(x, y):
+    myRect = Rect(origX, origY, abs(origX-x//widthOfTile*widthOfTile), abs(origY-y//heightOfTile*heightOfTile))
+    draw.rect(screen, RED, myRect)
+    return [coords for coords in myRect]
 #when the mouse is lifted, save rects
 
 collisionRects = []
+collisionObjects = []
 
 while running:
     
@@ -141,6 +152,7 @@ while running:
             if evt.key == K_SPACE:
                 lFile.write(str(repr(level_1)))
                 lFileRects.write(str(repr(collisionRects)))
+                lFileCollisionRects.write(str(repr(collisionObjects)))
                 running = False
     keys = key.get_pressed()
     if keys[K_e]:
@@ -197,17 +209,27 @@ while running:
         addTile(mx,my,"key_red")
     if mb[0]:
         addTile(mx, my, "t_m_side_dirt")
-    if mb[2]:
-        addTile(mx, my, "lava")
     drawLevel(screen)
-    if mb[1]:
+    if mb[2]:
         if not dragging:
             origX = mx//widthOfTile*widthOfTile
             origY = my//heightOfTile*heightOfTile
             dragging = True
-        addCollisionBoundry(mx, my)
+        addCollisionBoundryObject(mx, my)
     elif dragging:
         dragging = False
+        myRect = addCollisionBoundryObject(mx, my)
+        myRect[0] += spot*width
+        collisionObjects.append(myRect)
+        previewObjects[spot].append(addCollisionBoundryObject(mx, my))
+    if mb[1]:
+        if not dragging2:
+            origX = mx//widthOfTile*widthOfTile
+            origY = my//heightOfTile*heightOfTile
+            dragging2 = True
+        addCollisionBoundry(mx, my)
+    elif dragging2:
+        dragging2 = False
         myRect = addCollisionBoundry(mx, my)
         myRect[0] += spot*width
         collisionRects.append(myRect)
