@@ -1,4 +1,3 @@
-# menu.py
 
 from pygame import *
 GREEN=0,255,0
@@ -8,40 +7,55 @@ screen = display.set_mode((1200, 703))
 
 
 def instructions():
-    running = True
     inst = image.load("pics/Instructions.png")
     inst = transform.smoothscale(inst, screen.get_size())
     screen.blit(inst,(0,0))
+    back=image.load("pics/Back.png")
+    backRect=Rect(975,10,220,70)
+    running=True
     while running:
-        #print("instructions")
+        mx,my=mouse.get_pos()
+        mb=mouse.get_pressed()
+        print("instructions")
+        screen.blit(inst,(0,0))
+        screen.blit(back,(975,10))
         for evnt in event.get():          
             if evnt.type == QUIT:
                 running = False
-        if key.get_pressed()[27]:
-            running = False
+
+        if backRect.collidepoint(mx,my)and mb[0]==1:
+            running=False
         display.flip()
+
     return "menu"
+
     
 
-#story
-def story():
+def story(): #function when the player clicks story
     running = True
     story = image.load("pics/story.png")
     story = transform.smoothscale(story, screen.get_size())
     screen.blit(story,(0,0))
+    back=image.load("pics/Back.png")
+    backRect=Rect(975,10,220,70)
     while running:
+        mx,my=mouse.get_pos()
+        mb=mouse.get_pressed()
+        print("story")
+        screen.blit(story,(0,0))
+        screen.blit(back,(975,10))
         for evnt in event.get():          
             if evnt.type == QUIT:
                 running = False
-        if key.get_pressed()[27]:#escape
-            running = False
+        if backRect.collidepoint(mx,my)and mb[0]==1:
+            running=False
         display.flip()
     return "menu"
 
-#start
 def level1():
     running=True
     while running:#game loop level 1
+        print("start")
         for evnt in event.get():            
             if evnt.type == QUIT:
                 running=False
@@ -54,18 +68,18 @@ def level1():
 
 
 
+instructionspic=image.load("pics/instructionspic.png")
+instructionspicB=image.load("pics/instructionspicB.png")
+storypic=image.load("pics/storypic.png")
+storypicB=image.load("pics/storypicB.png")
+startpic=image.load("pics/startpic.png")
+startpicB=image.load("pics/startpicB.png")
+bgmenu=image.load("pics/bgmenu.png")
 
 def menu():  
     running = True
     myClock = time.Clock()
     buttons=[Rect(600,400,363,151),Rect(600,300,252,87),Rect(900,300,155,80)]#creating the buttons
-    instructionspic=image.load("pics/instructionspic.png")
-    instructionspicB=image.load("pics/instructionspicB.png")
-    storypic=image.load("pics/storypic.png")
-    storypicB=image.load("pics/storypicB.png")
-    startpic=image.load("pics/startpic.png")
-    startpicB=image.load("pics/startpicB.png")
-    bgmenu=image.load("pics/bgmenu.png")
     while running:
         #print("main menu")
         for evnt in event.get():            
