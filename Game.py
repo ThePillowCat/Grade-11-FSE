@@ -248,6 +248,7 @@ class epicKey(Enemy):
             if playerRect.colliderect(self.hitbox):
                 self.isFollowingPlayer = True
 
+#source of lag: always redrawing tiles
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
