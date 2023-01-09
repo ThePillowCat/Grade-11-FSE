@@ -5,7 +5,8 @@ lFile = open("Levels\\level1.txt", "r")
 lFileRects = open("Levels\\level1collision.txt", "w")
 lFileCollisionRects = open("Levels\\level1collisionobjects.txt", "w")
 
-level_1 = eval(lFile.readline().strip())
+level_1 = eval(lFile.read().strip())
+
 lFile = open("Levels\\level1.txt", "w")
 
 dragging2 = False
@@ -91,6 +92,7 @@ heightOfTile = height//row
 
 previewRects = [[] for i in range(numOfRects)]
 previewObjects = [[] for i in range(numOfRects)]
+level_1_images =  [[[] for i in range(col*numOfRects)] for j in range(row)]
 
 def drawLevel(screen):
     screen.blit(bgForest,(0,0))
@@ -115,8 +117,11 @@ def addTile(x, y, t):
                 if y > height//row*i and y < height//row*i+height//row:
                     if t is "erase":
                         level_1[i][j] = []
+                        level_1_images[i][j] = []
                     else:
                         level_1[i][j] = [t]
+                        level_1_images[i][j] = tileDict[t]
+                        print(level_1_images)
 
 def addCollisionBoundry(x, y):
     myRect = Rect(origX, origY, abs(origX-x//widthOfTile*widthOfTile), abs(origY-y//heightOfTile*heightOfTile))
