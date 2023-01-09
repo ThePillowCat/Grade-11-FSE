@@ -72,8 +72,6 @@ tileDict = {
     "key_yellow": image.load("Textures\png\Object\keyYellow.png").convert_alpha(),
 }
 
-print(len(tileDict))
-
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
 running=True
@@ -121,7 +119,6 @@ def addTile(x, y, t):
                     else:
                         level_1[i][j] = [t]
                         level_1_images[i][j] = tileDict[t]
-                        print(level_1_images)
 
 def addCollisionBoundry(x, y):
     myRect = Rect(origX, origY, abs(origX-x//widthOfTile*widthOfTile), abs(origY-y//heightOfTile*heightOfTile))

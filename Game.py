@@ -49,7 +49,7 @@ level_3_Rects = eval(l3FileRects.readline().strip("\n"))
 for i in range(len(level_3_Rects)):
     level_2_Rects[i] = Rect(level_3_Rects[i][0], level_3_Rects[i][1], level_3_Rects[i][2], level_3_Rects[i][3])
 
-width,height=1200,703
+width,height=1200,702
 screen=display.set_mode((width,height))
 
 #LEVEL LISTS AND VARIABLES
@@ -248,13 +248,13 @@ class epicKey(Enemy):
             if playerRect.colliderect(self.hitbox):
                 self.isFollowingPlayer = True
 
-#source of lag: always redrawing tiles
-
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
 seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"]]
 
 enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
+
+stuffToDrawOverBackground = []
 
 #dictionaries with tiles and other states of the player
 tileDict = tilesAndIdleStates.tileDict
@@ -409,6 +409,9 @@ class Player():
                     self.powerUp = "fireball"
                     self.powerUpOffset = 4
                     del level.objects[level.currentLevel][temp]
+                    for o in level.stuffToDrawOverBackground:
+                        if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
+                            del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
                 if level.levels[level.currentLevel][Y][X] == ["gun"]:
                     mixer.music.load("Sound Effects\\smb_powerup.mp3")
@@ -416,6 +419,9 @@ class Player():
                     self.powerUp = "gun"
                     self.powerUpOffset = 2
                     del level.objects[level.currentLevel][temp]
+                    for o in level.stuffToDrawOverBackground:
+                        if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
+                            del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
                 if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
                     level.doorOpening = True
@@ -433,6 +439,7 @@ class Player():
                 if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
                     mixer.music.load("Sound Effects\\checkpoint.ogg")
                     mixer.music.play()
+                    level.stuffToDrawOverBackground.append(["flag_blue", (X*widthOfTile, Y*heightOfTile)])
                     level.levels[level.currentLevel][Y][X] = ["flag_blue"]
                     self.checkPoint = [self.x, self.y, self.offset, self.vel[1]]
 
@@ -466,11 +473,14 @@ class Player():
             if level.levels[level.currentLevel][Y-1][X] != [] and level.levels[level.currentLevel][Y-1][X][0][:8] == "question":
                 if level.levels[level.currentLevel][Y-1][X][0][9:] == "gun":
                     level.levels[level.currentLevel][Y-3][X] = ["gun"]
+                    level.stuffToDrawOverBackground.append(["gun", (X*widthOfTile, (Y-3)*heightOfTile)])
                     level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-3)*heightOfTile, widthOfTile, heightOfTile))
                 else:
                     level.levels[level.currentLevel][Y-2][X] = [level.levels[level.currentLevel][Y-1][X][0][9:]]
+                    level.stuffToDrawOverBackground.append([level.levels[level.currentLevel][Y-1][X][0][9:], (X*widthOfTile, (Y-2)*heightOfTile)])
                     level.objects[level.currentLevel].append(Rect(X*widthOfTile, (Y-2)*heightOfTile, widthOfTile, heightOfTile))
                 level.levels[level.currentLevel][Y-1][X] = ["neutral_block"]
+                level.stuffToDrawOverBackground.append(["neutral_block", (X*widthOfTile, (Y-1)*heightOfTile)])
                 mixer.Channel(1).play(mixer.Sound("Sound Effects\\smb_powerup_appears.mp3"))
                 mixer.music.load("Sound Effects\\smb_powerup_appears.mp3")
                 mixer.music.play()
@@ -602,9 +612,11 @@ BLACK = (0,0,0)
 BROWN=(205, 127, 50)
 running=True
 
+screenshots = [[image.load("Levels\\background\\"+str(i)+".jpg").convert() for i in range(1,6)] for j in range(3)]
+
 #OBJECTS
 myClock = time.Clock()
-level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, row, tileDict)
+level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, row, tileDict, screenshots)
 ui = UI()
 
 while running:
@@ -621,7 +633,6 @@ while running:
     mb=mouse.get_pressed()
 
     #drawing background - SUBJECT TO CHANGE
-    screen.blit(level.background[level.currentLevel], (0,0))
     for evt in event.get():
         if evt.type==QUIT:
             running=False
@@ -650,8 +661,8 @@ while running:
                         player.bulletTimer = 0
 
     player.movePlayer()
+    level.drawLevel(player.offset)
     level.drawEnemies()
-    level.drawLevel(row, lower, upper, widthOfTile, player.offset, heightOfTile)
     level.playAnimations()
     player.drawPlayer()
 

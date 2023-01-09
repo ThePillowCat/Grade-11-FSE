@@ -1,14 +1,14 @@
 from pygame import *
 
 class Level():
-    def __init__(self, screen, level_data, widthOfTile, heightOfTile, row, tileDict):
+    def __init__(self, screen, level_data, widthOfTile, heightOfTile, row, tileDict, screenshots):
         self.screen = screen
         self.levels = [level_data[0][0], level_data[0][1], level_data[0][2]]
         self.objects = [level_data[1][0], level_data[1][1], level_data[1][2]]
         self.rects =[level_data[2][0], level_data[2][1], level_data[2][2]]
         self.enemies = [level_data[3][0], level_data[3][1], level_data[3][2]]
-        self.background = [level_data[4][0], level_data[4][1], level_data[4][2]]
         self.levelLengths = [len(level_data[0][0][0])*widthOfTile, len(level_data[0][1][0])*widthOfTile, len(level_data[0][2][0])*widthOfTile]
+        self.screenshots = screenshots
         self.keyLocations = []
         self.tileDict = tileDict
         self.level_data = level_data
@@ -19,13 +19,14 @@ class Level():
         self.temp = 0
         self.doorOpening = False
         self.doorIsOpen = False
+        self.stuffToDrawOverBackground = []
     def calcDrawingBounds(self):
         pass
-    def drawLevel(self, row, lower, upper, widthOfTile, offset, heightOfTile):
-        for i in range(row):
-            for j in range(lower, upper):
-                if self.levels[self.currentLevel][i][j] != []:
-                    self.screen.blit(self.tileDict[self.levels[self.currentLevel][i][j][0]], (widthOfTile*j+offset, heightOfTile*i))
+    def drawLevel(self, offset):
+        for i in range(len(self.screenshots[self.currentLevel])):
+            self.screen.blit(self.screenshots[self.currentLevel][i], (1200*i+offset, 0))
+        for it in self.stuffToDrawOverBackground:
+            self.screen.blit(self.tileDict[it[0]], (it[1][0]+offset, it[1][1]))
     def playAnimations(self):
         if self.doorOpening:
             #temp represents the door rectangle from the level objects
