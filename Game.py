@@ -502,7 +502,7 @@ class Player():
 
         #checks when the level should be scrolled
         #also check if the player is hitting an enemy
-        if self.x+self.size[0] > 900 and self.posInLevel < level.levelLengths[level.currentLevel]-240:
+        if self.x+self.size[0] > 900 and self.posInLevel < level.levelLengths[level.currentLevel]-345:
             self.x = 900-self.size[0]
             if self.moving:
                 self.offset -= 5
@@ -612,7 +612,7 @@ BLACK = (0,0,0)
 BROWN=(205, 127, 50)
 running=True
 
-screenshots = [[image.load("Levels\\background\\"+str(i)+".jpg").convert() for i in range(1,6)] for j in range(3)]
+screenshots = [[image.load("Levels\\background\\"+str(i)+".png").convert() for i in range(1,6)] for j in range(3)]
 
 #OBJECTS
 myClock = time.Clock()
@@ -621,13 +621,6 @@ ui = UI()
 
 while running:
     keys = key.get_pressed()
-
-    lower = (player.posInLevel)//widthOfTile-20
-    if lower < 0:
-        lower = 0
-    upper = (player.posInLevel+width)//widthOfTile+1
-    if upper > lenOfLevel:
-        upper = lenOfLevel
     #getting mouse coords
     mx,my=mouse.get_pos()
     mb=mouse.get_pressed()
