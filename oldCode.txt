@@ -56,3 +56,14 @@ def fixTextures(level_1):
 
  #Rect(self.posInLevel+self.size[0]+5, self.y, 1, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1
  Rect(self.posInLevel-5, self.y, 2, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1
+
+ if self.isFollowingPlayer:
+            if (abs(((self.hitbox[1]-player.y)**2+(self.hitbox[0]+self.hitbox[2]//2-player.posInLevel)**2)**0.5) > 200):
+                if self.hitbox[1] > player.y:
+                    self.hitbox = self.hitbox.move(0, -self.moveAmount)
+                if self.hitbox[1] < player.y:
+                    self.hitbox = self.hitbox.move(0, self.moveAmount)
+                if self.hitbox[0] > player.posInLevel:
+                    self.hitbox = self.hitbox.move(-self.moveAmount, 0)
+                if self.hitbox[0] < player.posInLevel:
+                    self.hitbox = self.hitbox.move(self.moveAmount, 0)

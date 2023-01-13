@@ -47,7 +47,7 @@ for i in range(len(level_2_Rects)):
     level_2_Rects[i] = Rect(level_2_Rects[i][0], level_2_Rects[i][1], level_2_Rects[i][2], level_2_Rects[i][3])
 level_3_Rects = eval(l3FileRects.readline().strip("\n"))
 for i in range(len(level_3_Rects)):
-    level_2_Rects[i] = Rect(level_3_Rects[i][0], level_3_Rects[i][1], level_3_Rects[i][2], level_3_Rects[i][3])
+    level_3_Rects[i] = Rect(level_3_Rects[i][0], level_3_Rects[i][1], level_3_Rects[i][2], level_3_Rects[i][3])
 
 width,height=1200,702
 screen=display.set_mode((width,height))
@@ -224,29 +224,19 @@ class epicKey(Enemy):
     def __init__(self, t, re, x, y):
         #inheriting parrent stuff
         Enemy.__init__(self, t, re, x, y)
-        self.isFollowingPlayer = False
         self.origX = x
         self.origY = y
-        self.counter =10 
+        self.counter =10
+        self.moveAmount = 1
     def drawSelf(self):
-        if self.isFollowingPlayer:
-            if self.hitbox[1] > player.y:
-                self.hitbox = self.hitbox.move(0, -1)
-            if self.hitbox[1] < player.y:
-                self.hitbox = self.hitbox.move(0, 1)
-            if (abs(((player.y-player.y)**2+(self.hitbox[0]-player.posInLevel+75)**2)**0.5) > 200):
-                if self.hitbox[0] > player.x:
-                    self.hitbox = self.hitbox.move(-1, 0)
-                if self.hitbox[0] < player.x:
-                    self.hitbox = self.hitbox.move(1, 0)
         self.hitbox = self.hitbox.move(0, sin(self.counter*0.1)*3)
         self.counter+=1
         screen.blit(tileDict[self.type], (self.hitbox[0]+player.offset, self.hitbox[1]))
     def checkCollision(self):
-        if not self.isFollowingPlayer:
-            playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
-            if playerRect.colliderect(self.hitbox):
-                self.isFollowingPlayer = True
+        playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+        if Rect.colliderect(self.hitbox, playerRect):
+            self.dead = True
+            level.hasKey = True
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
@@ -280,6 +270,8 @@ for i in range(row):
                 level_1[i][j] = []
                 level_1_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
         elif level_1[i][j] in seperateObjects:
+            if level_1[i][j] == ["door1"]:
+                stuffToDrawOverBackground.append(["door1", (j*widthOfTile, i*heightOfTile)])
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
@@ -330,16 +322,27 @@ for i in range(row):
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
+bgDesert = image.load("Textures\\png\\BG\\desertBG.png")
 
 level_data = [[level_1, level_2, level_3],
               [level_1_Objects, level_2_Objects, level_3_Objects],
               [level_1_Rects, level_2_Rects, level_3_Rects],
-              [level_1_Enemies, level_2_Enemies, level_3_Enemies],
-              [bgForest, bgCave, bgForest]]
+              [level_1_Enemies, level_2_Enemies, level_3_Enemies]]
 
 class UI():
     def __init__(self):
         self.timeLeft = 200
+        self.lives = 3
+        self.heart = image.load("Textures\\png\\UI\\heart\\heart pixel art 32x32.png").convert_alpha()
+        self.timePast = 0
+    #ADD PERAMETER FOR THE NUMBER OF REMAINING LIVES
+    def drawUI(self):
+        for i in range(3):
+            screen.blit(self.heart, (15+i*40,15))
+    def updateTimer(self):
+        self.timeLeft-=self.timePast//60
+        print(self.timeLeft, self.timePast)
+        self.timePast+=1
 
 fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
 
@@ -356,7 +359,7 @@ class Player():
         self.moving = True
         self.offset = 0
         self.posInLevel = 0
-        self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png") for i in range(1, 13)] for j in range(0, 72, 12)]
+        self.animationFrames = [[image.load("Textures\\png\\Player\\Layer "+str(i+j)+".png").convert_alpha() for i in range(1, 13)] for j in range(0, 72, 12)]
         self.checkPoint = [100, 50, 0, 0]
         self.bullets = []
         self.fireBalls = []
@@ -375,12 +378,9 @@ class Player():
         keys = key.get_pressed()
         self.vel[0] = 0
         self.gravity = 1
-        #checking inputs
+        #getting which row and tile the player is on (0 indexed)
         X = self.posInLevel//widthOfTile
         Y = self.y//heightOfTile
-        self.collidedSquares = [[X, Y]]
-        if (self.posInLevel-X*widthOfTile >= widthOfTile-player.size[0]):
-            self.collidedSquares.append([X+1, Y])
         if not self.crouched:
             if keys[K_LEFT] and Rect(self.posInLevel-5, self.y, 2, self.size[1]).collidelist(level.rects[level.currentLevel]) == -1:
                 self.vel[0]=-5
@@ -396,6 +396,7 @@ class Player():
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
             temp = playerRect.collidelist(level.objects[level.currentLevel])
             if temp != -1:
+                #gets the row and collumn the object is on
                 X = level.objects[level.currentLevel][temp][0]//widthOfTile
                 Y = level.objects[level.currentLevel][temp][1]//heightOfTile
                 if level.levels[level.currentLevel][Y][X] == ["water"] or level.levels[level.currentLevel][Y][X] == ["water_top"]:
@@ -435,6 +436,7 @@ class Player():
                     level.doorOpening = False
                     self.posInLevel = 100
                     level.currentLevel+=1
+                    level.stuffToDrawOverBackground = []
                     self.checkPoint = [self.x, self.y, 0, self.vel[1]]
                 if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
                     mixer.music.load("Sound Effects\\checkpoint.ogg")
@@ -612,11 +614,13 @@ BLACK = (0,0,0)
 BROWN=(205, 127, 50)
 running=True
 
-screenshots = [[image.load("Levels\\background\\"+str(i)+".png").convert() for i in range(1,6)] for j in range(3)]
+#THIS LINE NEEDS TO CHANGE
+screenshots = [[image.load("Levels\\background\\"+str(i+j)+".png").convert() for i in range(1,6)] for j in range(0, 10, 5)]
 
 #OBJECTS
 myClock = time.Clock()
 level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, row, tileDict, screenshots)
+level.stuffToDrawOverBackground += stuffToDrawOverBackground
 ui = UI()
 
 while running:
@@ -654,10 +658,12 @@ while running:
                         player.bulletTimer = 0
 
     player.movePlayer()
+    level.playAnimations()
     level.drawLevel(player.offset)
     level.drawEnemies()
-    level.playAnimations()
     player.drawPlayer()
+    ui.drawUI()
+    ui.updateTimer()
 
     if player.powerUp != "normal":
         player.usePowerUp(player.powerUp)
