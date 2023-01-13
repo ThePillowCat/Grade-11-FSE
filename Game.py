@@ -59,7 +59,6 @@ widthOfTile = width//col
 heightOfTile = height//row
 
 #boundries for scrolling:
-lenOfLevel = len(level_1[0])
 level_1_Objects = []
 level_1_Enemies = []
 level_2_Objects = []
@@ -67,10 +66,10 @@ level_2_Enemies = []
 level_3_Objects = []
 level_3_Enemies = []
 
-#POSSIBLE SOURCE OF BUGS:
-#LEN OF LEVEL
-#ANOTHER IDEA:
-#HAVE ENEMIES IN THEIR OWN ARRAY
+numOfKeysInLevels = [0, 0, 0]
+
+#loading font
+myFont = font.Font("Textures\\png\\Fonts\\PressStart2P-Regular.ttf", 30)
 
 class Enemy():
     def __init__(self, t, re, x, y):
@@ -237,6 +236,7 @@ class epicKey(Enemy):
         if Rect.colliderect(self.hitbox, playerRect):
             self.dead = True
             level.hasKey = True
+            player.numOfKeys+=1
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
@@ -269,6 +269,7 @@ for i in range(row):
             if level_1[i][j] == ["key_red"]:
                 level_1[i][j] = []
                 level_1_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
+                numOfKeysInLevels[0]+=1
         elif level_1[i][j] in seperateObjects:
             if level_1[i][j] == ["door1"]:
                 stuffToDrawOverBackground.append(["door1", (j*widthOfTile, i*heightOfTile)])
@@ -295,6 +296,10 @@ for i in range(row):
             if level_2[i][j] == ["Bat1"]:
                 level_2[i][j] = []
                 level_2_Enemies.append(Bat("Bat", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
+            if level_2[i][j] == ["key_red"]:
+                level_2[i][j] = []
+                level_2_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
+                numOfKeysInLevels[1]+=1
         elif level_2[i][j] in seperateObjects:
             W = tileDict[level_2[i][j][0]].get_width()
             H = tileDict[level_2[i][j][0]].get_height()
@@ -315,6 +320,10 @@ for i in range(row):
                 myObj = Slime("PinkSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_3[i][j] = []
             level_3_Enemies.append(myObj)
+            if level_3[i][j] == ["key_red"]:
+                level_3[i][j] = []
+                level_3_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
+                numOfKeysInLevels[2]+=1
         elif level_3[i][j] in seperateObjects:
             W = tileDict[level_3[i][j][0]].get_width()
             H = tileDict[level_3[i][j][0]].get_height()
@@ -331,18 +340,19 @@ level_data = [[level_1, level_2, level_3],
 
 class UI():
     def __init__(self):
-        self.timeLeft = 200
+        self.startTime = 200
         self.lives = 3
         self.heart = image.load("Textures\\png\\UI\\heart\\heart pixel art 32x32.png").convert_alpha()
         self.timePast = 0
     #ADD PERAMETER FOR THE NUMBER OF REMAINING LIVES
     def drawUI(self):
-        for i in range(3):
-            screen.blit(self.heart, (15+i*40,15))
-    def updateTimer(self):
-        self.timeLeft-=self.timePast//60
-        print(self.timeLeft, self.timePast)
+        for i in range(player.lives, 0, -1):
+            screen.blit(self.heart, (15+(i-1)*40,15))
+        self.timeLeft = self.startTime - self.timePast//60
         self.timePast+=1
+        screen.blit(myFont.render(str(self.timeLeft), BLACK, True), (1100, 15))
+        screen.blit(myFont.render(str(player.numOfKeys)+"/"+str(level.numOfKeysInLevels[level.currentLevel]), BLACK, True), (500,15))
+        screen.blit(tileDict["key_red"], (600,-5))
 
 fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
 
@@ -372,6 +382,7 @@ class Player():
         self.powerUpOffset = 0
         self.lives = 3
         self.bulletTimer = 0
+        self.numOfKeys = 0
 
     def movePlayer(self):
         #getting keys list
@@ -425,9 +436,13 @@ class Player():
                             del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
                 if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
-                    level.doorOpening = True
-                    level.doorFrame = 1
-                    level.temp = temp
+                    if player.numOfKeys == level.numOfKeysInLevels[level.currentLevel]:
+                        level.doorOpening = True
+                        level.doorFrame = 1
+                        level.temp = temp
+                    else:
+                        mixer.music.load("Sound Effects\\locked.mp3")
+                        mixer.music.play()
                 if level.levels[level.currentLevel][Y][X] == ["door4"]:
                     player.x = 100
                     player.y = 50
@@ -576,6 +591,9 @@ class Player():
         self.vel[1] = self.checkPoint[3]
         self.offset = self.checkPoint[2]
         self.lives-=1
+        self.numOfKeys = 0
+        if self.lives == 0:
+            level.gameOver = True
         # self.powerUp = "normal"
         # self.powerUpOffset = 0
 
@@ -619,9 +637,11 @@ screenshots = [[image.load("Levels\\background\\"+str(i+j)+".png").convert() for
 
 #OBJECTS
 myClock = time.Clock()
-level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, row, tileDict, screenshots)
+level = levelOutline.Level(screen, level_data, widthOfTile, heightOfTile, tileDict, screenshots, numOfKeysInLevels)
 level.stuffToDrawOverBackground += stuffToDrawOverBackground
 ui = UI()
+
+paused = False
 
 while running:
     keys = key.get_pressed()
@@ -634,6 +654,11 @@ while running:
         if evt.type==QUIT:
             running=False
         if evt.type==KEYDOWN:
+            if evt.key == K_p:
+                if not paused:
+                    paused = True
+                else:
+                    paused = False
             if evt.key == K_r:
                 if player.powerUp == "fireball":
                     if len(player.fireBalls) < 3:
@@ -657,20 +682,20 @@ while running:
                                 player.bullets.append(Bullet(player.posInLevel,player.y+35))
                         player.bulletTimer = 0
 
-    player.movePlayer()
-    level.playAnimations()
-    level.drawLevel(player.offset)
-    level.drawEnemies()
-    player.drawPlayer()
-    ui.drawUI()
-    ui.updateTimer()
+    if not paused:
+        player.movePlayer()
+        level.drawLevel(player.offset)
+        level.playAnimations()
+        level.drawEnemies()
+        player.drawPlayer()
+        ui.drawUI()
 
-    if player.powerUp != "normal":
-        player.usePowerUp(player.powerUp)
-    if keys[K_DOWN] and player.powerUp == "gun":
-        player.crouched = True
-    else:
-        player.crouched = False
+        if player.powerUp != "normal":
+            player.usePowerUp(player.powerUp)
+        if keys[K_DOWN] and player.powerUp == "gun":
+            player.crouched = True
+        else:
+            player.crouched = False
 
     #flipping display and insuring 60fps
     display.flip()
