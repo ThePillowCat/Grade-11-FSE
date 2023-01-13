@@ -107,7 +107,6 @@ def drawLevel(screen):
     for c in previewObjects[spot]:
         draw.rect(screen, RED, c, 10)
 
-
 def addTile(x, y, t):
     for i in range(row):
         for j in range(col*spot, col*spot+col):

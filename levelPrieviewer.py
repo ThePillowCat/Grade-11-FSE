@@ -2,7 +2,7 @@ from pygame import *
 from tkinter import filedialog
 import tilesAndIdleStates
 
-lFile = open("Levels\\level1.txt", "r")
+lFile = open("Levels\\level2.txt", "r")
 level_1 = eval(lFile.read().strip())
 
 tileDict = tilesAndIdleStates.tileDict
@@ -30,7 +30,7 @@ heightOfTile = height//row
 
 running=True
 
-bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
+bgForest = image.load("Textures\\png\\BG\\CaveBG.png").convert()
 
 while running:
     for evt in event.get():
@@ -45,7 +45,7 @@ while running:
                     spot+=1
             if evt.key == K_SPACE:
                 myScreen = screen.subsurface(0, 0, width, height).copy()
-                fname=filedialog.asksaveasfilename(defaultextension=".jpg")
+                fname=filedialog.asksaveasfilename(defaultextension=".png")
                 image.save(myScreen, fname)
     screen.blit(bgForest, (0, 0))
     for i in range(row):
