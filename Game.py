@@ -377,6 +377,7 @@ class Player():
         self.powerUp = "normal"
         self.jumping = False
         self.crouched = False
+        self.swimming = False
         self.moveSpot = 0
         self.direction = 0
         self.powerUpOffset = 0
@@ -403,6 +404,7 @@ class Player():
                 self.vel[1] = self.jumpPower
                 self.jumping = True
         #OBJECTS
+        self.swimming = False
         if len(level.objects[level.currentLevel]) > 0:
             playerRect = Rect(self.posInLevel, self.y, self.size[0], self.size[1])
             temp = playerRect.collidelist(level.objects[level.currentLevel])
@@ -411,6 +413,8 @@ class Player():
                 X = level.objects[level.currentLevel][temp][0]//widthOfTile
                 Y = level.objects[level.currentLevel][temp][1]//heightOfTile
                 if level.levels[level.currentLevel][Y][X] == ["water"] or level.levels[level.currentLevel][Y][X] == ["water_top"]:
+                    if not self.swimming:
+                        self.swimming = True
                     self.gravity = 0
                     if keys[K_SPACE]:
                         self.vel[1] = -3
@@ -535,7 +539,7 @@ class Player():
             else:
                 screen.blit(idleStates[str(self.powerUp)+str(self.direction)], (self.x, self.y))
         else:
-            if self.jumping:
+            if self.jumping or self.swimming:
                 screen.blit(self.animationFrames[self.direction+self.powerUpOffset][-1], (self.x, self.y))
             else:
                 if self.moveSpot > 10:
