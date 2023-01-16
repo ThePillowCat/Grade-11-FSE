@@ -650,9 +650,6 @@ paused = False
 while running:
     keys = key.get_pressed()
     #getting mouse coords
-    mx,my=mouse.get_pos()
-    mb=mouse.get_pressed()
-
     #drawing background - SUBJECT TO CHANGE
     for evt in event.get():
         if evt.type==QUIT:
@@ -706,5 +703,4 @@ while running:
     myClock.tick(60)
 
 l1File.close()
-
 quit()
