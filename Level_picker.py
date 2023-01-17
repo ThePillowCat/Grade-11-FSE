@@ -83,7 +83,8 @@ def runLevelPicker(myScreen):
             screen.blit(picknameForLevel,(18,60))
         else:
             draw.circle(screen, BLACK, (loc[0], loc[1]), 1500, circleSize)
-            circleSize+=25
+            circleSize+=40
+            print("hello there")
             if not mixer.music.get_busy():
                 return "game", int(Levels_levelpicker[0][-1])-1 
         display.flip()

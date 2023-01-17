@@ -15,7 +15,7 @@ lFile = open("Levels\\level3.txt", "r")
 lFileRects = open("Levels\\level3collision.txt", "w")
 lFileCollisionRects = open("Levels\\level3collisionobjects.txt", "w")
 
-level_1 = eval(lFile.read().strip())
+level_1 = eval(lFile.readline().strip())
 
 lFile = open("Levels\\level3.txt", "w")
 
@@ -64,6 +64,9 @@ tileDict = {
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
     "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
+    "lava": image.load("Textures\png\Tiles\lava_bottom.png").convert_alpha(),
+    "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
+    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png")
 }
 
 bgForest = image.load("Textures\\png\\BG\\desertBG.png").convert()
@@ -75,8 +78,6 @@ col = 20
 spot = 0
 
 numOfRects=5
-
-level_1 = [[[] for i in range(col*numOfRects)] for j in range(row)]
 
 widthOfTile = width//col
 heightOfTile = height//row
@@ -109,7 +110,7 @@ def addTile(x, y, t):
         for j in range(col*spot, col*spot+col):
             if x > width//col*j-(spot*width) and x < width//col*j-(spot*width)+width//col:
                 if y > height//row*i and y < height//row*i+height//row:
-                    if t is "erase":
+                    if t == "erase":
                         level_1[i][j] = []
                     else:
                         level_1[i][j] = [t]
@@ -132,9 +133,6 @@ while running:
     for evt in event.get():
         if evt.type==QUIT:
             running=False
-        if evt.type==MOUSEBUTTONDOWN:
-            if evt.button==2:
-                lFile.write(repr(level_1))
         if evt.type==KEYDOWN:
             if evt.key == K_LEFT:
                 if spot > 0:
@@ -148,6 +146,7 @@ while running:
                 lFile.write(str(repr(level_1)))
                 lFileRects.write(str(repr(collisionRects)))
                 lFileCollisionRects.write(str(repr(collisionObjects)))
+                lFile.close()
                 running = False
     keys = key.get_pressed()
     if keys[K_e]:
@@ -202,6 +201,13 @@ while running:
         addTile(mx,my,"question_gun")
     elif keys[K_q]:
         addTile(mx,my,"key_red")
+    elif keys[K_s]:
+        addTile(mx,my,"lava")
+    elif keys[K_v]:
+        addTile(mx,my,"lava_top")
+    elif keys[K_0]:
+        addTile(mx,my,"bird1")
+
     drawLevel(screen)
     if mb[2]:
         if not dragging:

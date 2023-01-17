@@ -82,6 +82,36 @@ class Enemy():
         self.type = t
         self.speed = 5
 
+class Bird(Enemy):
+    def __init__(self, t, re, x, y):
+        #inheriting parrent stuff
+        Enemy.__init__(self, t, re, x, y)
+        self.animationFrames = [[image.load("Textures\\png\\Enemies\\bird"+str(i+j)+".png").convert_alpha() for i in range(1,8)] for j in range(0, 12, 7)]
+        self.frame = 1
+        self.eggTimer = 0
+        self.direction = 0
+        self.playDeathAnimation = False
+    def drawSelf(self):
+        self.eggTimer+=0.01
+        if self.x < player.posInLevel:
+            self.direction = 0
+            self.x+=2
+            self.hitbox = self.hitbox.move(2,0)
+        elif self.x > player.posInLevel:
+            self.direction = 1
+            self.x-=2
+            self.hitbox = self.hitbox.move(-2,0)
+        if 0 >= abs(self.x-player.posInLevel) <= 5 and self.eggTimer == 1 and len(player.eggs) < 5:
+            player.eggs.append(Egg(self.x, self.y))
+        screen.blit(self.animationFrames[self.direction][int(self.frame)], (self.x+player.offset, self.y))
+        self.frame+=0.2
+        if self.frame >= 7:
+            self.frame = 1
+    def checkCollision(self):
+        playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+        if playerRect.colliderect(self.hitbox):
+            pass
+
 class Slime(Enemy):
     def __init__(self, t, re, x, y):
         #inheriting parrent stuff
@@ -244,7 +274,7 @@ stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1
 
 seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"]]
 
-enemies = [["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
+enemies = [["bird1"],["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
 
 stuffToDrawOverBackground = []
 
@@ -310,8 +340,8 @@ for i in range(row):
 for i in range(row):
     for j in range(len(level_3[0])):
         if level_3[i][j] in enemies:
-            W = tileDict[level_1[i][j][0]].get_width()
-            H = tileDict[level_1[i][j][0]].get_height()
+            W = tileDict[level_3[i][j][0]].get_width()
+            H = tileDict[level_3[i][j][0]].get_height()
             offset = 0
             if level_3[i][j] == ["BlueSlime1Left"]:
                 offset = 20
@@ -326,6 +356,9 @@ for i in range(row):
                 level_3[i][j] = []
                 level_3_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
                 numOfKeysInLevels[2]+=1
+            if level_3[i][j] == ["bird1"]:
+                level_3[i][j] = []
+                level_3_Enemies.append(Bird("bird1", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
         elif level_3[i][j] in seperateObjects:
             W = tileDict[level_3[i][j][0]].get_width()
             H = tileDict[level_3[i][j][0]].get_height()
@@ -375,6 +408,7 @@ class Player():
         self.checkPoint = [100, 50, 0, 0]
         self.bullets = []
         self.fireBalls = []
+        self.eggs = []
         self.collidedSquares = []
         self.powerUp = "normal"
         self.jumping = False
@@ -631,6 +665,17 @@ class Bullet():
             self.speed=-self.speed
         self.dead = False
 
+class Egg():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.img = image.load("Textures\\png\\Object\\egg.png")
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.speed = 15
+        if player.direction != 0:
+            self.speed=-self.speed
+        self.dead = False
 RED=(255,0,0)
 GREY=(127,127,127)
 BLACK=(0,0,0)
@@ -642,7 +687,7 @@ BROWN=(205, 127, 50)
 running=True
 
 #THIS LINE NEEDS TO CHANGE
-screenshots = [[image.load("Levels\\background\\"+str(i+j)+".png").convert() for i in range(1,6)] for j in range(0, 10, 5)]
+screenshots = [[image.load("Levels\\background\\"+str(i+j)+".png").convert() for i in range(1,6)] for j in range(0, 15, 5)]
 
 #OBJECTS
 myClock = time.Clock()
@@ -667,7 +712,6 @@ def instructions():
     while running:
         mx,my=mouse.get_pos()
         mb=mouse.get_pressed()
-        print("instructions")
         screen.blit(inst,(0,0))
         screen.blit(back,(975,10))
         for evnt in event.get():          
@@ -690,7 +734,6 @@ def story(): #function when the player clicks story
     while running:
         mx,my=mouse.get_pos()
         mb=mouse.get_pressed()
-        print("story")
         screen.blit(story,(0,0))
         screen.blit(back,(975,10))
         for evnt in event.get():          
@@ -760,7 +803,7 @@ def game(lev):
             player.movePlayer()
             level.drawLevel(player.offset)
             level.playAnimations()
-            level.drawEnemies()
+            level.drawEnemies(player.eggs)
             player.drawPlayer()
             ui.drawUI()
 
@@ -789,7 +832,6 @@ def menu():
     myClock = time.Clock()
     buttons=[Rect(600,400,363,151),Rect(600,300,252,87),Rect(900,300,155,80)]#creating the buttons
     while running:
-        #print("main menu")
         for evnt in event.get():            
             if evnt.type == QUIT:
                 return "exit"

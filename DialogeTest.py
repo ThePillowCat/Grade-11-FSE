@@ -17,12 +17,12 @@ running=True
 
 myClock = time.Clock()
 
-# for i in range(11):
-#     fname = filedialog.askopenfilename()
-#     myImg = image.load(fname)
-#     myImg = transform.scale(myImg, (60, 54))
-#     fname = filedialog.asksaveasfilename(defaultextension="png")
-#     image.save(myImg, fname)
+for i in range(7):
+    fname = filedialog.askopenfilename()
+    myImg = image.load(fname)
+    myImg = transform.scale(myImg, (100, 117))
+    fname = filedialog.asksaveasfilename(defaultextension="png")
+    image.save(myImg, fname)
 
 
 # while running:

@@ -44,8 +44,8 @@ class Level():
                 self.doorFrame = 1
         if self.gameOver:
             draw.circle(self.screen, (0,0,0), (600, 351), 800, self.circleThickness)
-            self.circleThickness+=5
-    def drawEnemies(self):
+            self.circleThickness+=1
+    def drawEnemies(self, egg):
         if self.enemies[self.currentLevel] != []:
             for e in self.enemies[self.currentLevel]:
                 e.drawSelf()
@@ -54,3 +54,6 @@ class Level():
             for i in range(tempLen-1,-1,-1):
                 if self.enemies[self.currentLevel][i].dead:
                     del self.enemies[self.currentLevel][i]
+        #loop through and update egg postition
+        for e in egg:
+            print(e)
