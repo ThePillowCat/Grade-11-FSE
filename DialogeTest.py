@@ -2,9 +2,7 @@ from pygame import *
 from tkinter import *
 from tkinter import filedialog
 
-
 init()
-soundFrame = 5
 
 width,height=800,600
 screen=display.set_mode((width,height))
@@ -19,11 +17,11 @@ running=True
 
 myClock = time.Clock()
 
-# for i in range(1):
+# for i in range(11):
 #     fname = filedialog.askopenfilename()
 #     myImg = image.load(fname)
-#     myImg = transform.flip(myImg, True, False)
-#     fname = filedialog.asksaveasfilename()
+#     myImg = transform.scale(myImg, (60, 54))
+#     fname = filedialog.asksaveasfilename(defaultextension="png")
 #     image.save(myImg, fname)
 
 
@@ -40,20 +38,15 @@ myClock = time.Clock()
 #     display.flip()
 #     myClock.tick(60)
 
-startX = 0
-startY = 0
-screen.fill(BLUE)
-
-while running:
-    for evt in event.get():
-        if evt.type == QUIT:
-            running = False
-    screen.set_clip(None)
-    currRect = Rect(startX, startY, width-startX*2, height-startY*2)
-    screen.set_clip(currRect)
-    screen.fill(0)
-    startX+=5
-    startY+=5
-    display.flip()
-    myClock.tick(1)
-quit()
+# while running:
+#     for evt in event.get():
+#         if evt.type == QUIT:
+#             running = False
+#     screen.set_clip(None)
+#     currRect = Rect(startX, startY, width-startX*2, height-startY*2)
+#     screen.set_clip(currRect)
+#     screen.fill(0)
+#     startX+=5
+#     startY+=5
+#     display.flip()
+#     myClock.tick(1)
