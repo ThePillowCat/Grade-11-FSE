@@ -66,7 +66,7 @@ def runLevelPicker(myScreen):
                         bglevel=bgmain
                         Levels_levelpicker=["Choose your level"]
                         names_levelpicker=[" "]
-                if evt.key == K_RETURN:
+                if evt.key == K_RETURN and Levels_levelpicker[0][-1] != "l":
                     mixer.music.stop()
                     mixer.music.load("Sound Effects\\choose.mp3")
                     mixer.music.play()
@@ -84,7 +84,6 @@ def runLevelPicker(myScreen):
         else:
             draw.circle(screen, BLACK, (loc[0], loc[1]), 1500, circleSize)
             circleSize+=40
-            print("hello there")
             if not mixer.music.get_busy():
                 return "game", int(Levels_levelpicker[0][-1])-1 
         display.flip()

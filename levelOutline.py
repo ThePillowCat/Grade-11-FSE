@@ -23,6 +23,7 @@ class Level():
         self.stuffToDrawOverBackground = []
         self.gameOver = False
         self.circleThickness = 1
+        self.eggs = []
     def calcDrawingBounds(self):
         pass
     def drawLevel(self, offset):
@@ -45,15 +46,12 @@ class Level():
         if self.gameOver:
             draw.circle(self.screen, (0,0,0), (600, 351), 800, self.circleThickness)
             self.circleThickness+=1
-    def drawEnemies(self, egg):
+    def drawEnemies(self):
         if self.enemies[self.currentLevel] != []:
             for e in self.enemies[self.currentLevel]:
-                e.drawSelf()
                 e.checkCollision()
+                e.drawSelf()
             tempLen = len(self.enemies[self.currentLevel])
             for i in range(tempLen-1,-1,-1):
                 if self.enemies[self.currentLevel][i].dead:
                     del self.enemies[self.currentLevel][i]
-        #loop through and update egg postition
-        for e in egg:
-            print(e)

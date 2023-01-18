@@ -90,27 +90,71 @@ class Bird(Enemy):
         self.frame = 1
         self.eggTimer = 0
         self.direction = 0
+        self.vel = [0,0]
+        self.gravity = 0.5
+        self.speed = 5
         self.playDeathAnimation = False
     def drawSelf(self):
-        self.eggTimer+=0.01
-        if self.x < player.posInLevel:
-            self.direction = 0
-            self.x+=2
-            self.hitbox = self.hitbox.move(2,0)
-        elif self.x > player.posInLevel:
-            self.direction = 1
-            self.x-=2
-            self.hitbox = self.hitbox.move(-2,0)
-        if 0 >= abs(self.x-player.posInLevel) <= 5 and self.eggTimer == 1 and len(player.eggs) < 5:
-            player.eggs.append(Egg(self.x, self.y))
+        if not self.playDeathAnimation:
+            self.eggTimer+=0.05
+            if abs(self.x-player.posInLevel) < 1200:
+                if (abs(self.x-player.posInLevel)) > 1:
+                    if self.x < player.posInLevel:
+                        self.direction = 0
+                        self.x+=2
+                        self.hitbox = self.hitbox.move(2,0)
+                    else:
+                        self.direction = 1
+                        self.x-=2
+                        self.hitbox = self.hitbox.move(-2,0)
+                if 0 <= abs(self.x-player.posInLevel) <= 10 and self.eggTimer >= 2 and len(level.eggs) < 5:
+                    level.eggs.append(Egg(self.x+20, self.y+50))
+                    self.eggTimer = 0
+                self.frame+=0.2
+                if self.frame >= 7:
+                    self.frame = 1
+        else:
+            self.hitbox = self.hitbox.move(self.speed, self.vel[1])
+            self.x = self.hitbox[0]
+            self.y = self.hitbox[1]
+            self.vel[1]+=self.gravity
+            if self.hitbox[1] > height:
+                self.dead = True
         screen.blit(self.animationFrames[self.direction][int(self.frame)], (self.x+player.offset, self.y))
-        self.frame+=0.2
-        if self.frame >= 7:
-            self.frame = 1
     def checkCollision(self):
-        playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
-        if playerRect.colliderect(self.hitbox):
-            pass
+        if not self.playDeathAnimation:
+            playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
+            bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
+            if bottomOfPlayer.colliderect(self.hitbox):
+                player.vel[1] = -10
+                mixer.music.load("Sound Effects\\smb_stomp.mp3")
+                mixer.music.play()
+                self.dead = True
+            elif playerRect.colliderect(self.hitbox):
+                player.resetPlayer()
+                self.hitbox = self.hitbox.move(500, 0)
+                self.x+=500
+            else:
+                for i in range(len(player.fireBalls)):
+                    fireRect = Rect(player.fireBalls[i].x, player.fireBalls[i].y, player.fireBalls[i].rad*2, player.fireBalls[i].rad*2)
+                    if fireRect.colliderect(self.hitbox):
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
+                        player.fireBalls[i].bounces = 4
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
+                for i in range(len(player.bullets)):
+                    bullRect = Rect(player.bullets[i].x, player.bullets[i].y, player.bullets[i].width, player.bullets[i].height)
+                    if bullRect.colliderect(self.hitbox):
+                        mixer.music.load("Sound Effects\\smb_kick.wav")
+                        mixer.music.play()
+                        self.vel[1] = -10
+                        self.playDeathAnimation = True
+                        #making sure enemy goes to right during death
+                        self.speed = abs(self.speed)
+
 
 class Slime(Enemy):
     def __init__(self, t, re, x, y):
@@ -408,7 +452,6 @@ class Player():
         self.checkPoint = [100, 50, 0, 0]
         self.bullets = []
         self.fireBalls = []
-        self.eggs = []
         self.collidedSquares = []
         self.powerUp = "normal"
         self.jumping = False
@@ -456,6 +499,8 @@ class Player():
                         self.vel[1] = -3
                     else:
                         self.vel[1] = 3
+                if level.levels[level.currentLevel][Y][X] == ["lava_top"] or level.levels[level.currentLevel][Y][X] == ["lava_bottom"]:
+                    self.resetPlayer()
                 if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
                     powerUpSound = mixer.Sound(("Sound Effects\\smb_powerup.mp3"))
                     powerUpSound.set_volume(0.4)
@@ -621,7 +666,7 @@ class Player():
             for i in range(len(self.bullets)):
                 bulletRect = Rect(self.bullets[i].x, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
                 draw.ellipse(screen, BROWN, (self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height))
-                if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x > level.levelLengths[level.currentLevel]:
+                if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x+self.offset+self.bullets[i].width > width or self.bullets[i].x+self.offset < 0:
                     self.bullets[i].dead = True
                 self.bullets[i].x+=self.bullets[i].speed
             temp = len(self.bullets)
@@ -669,11 +714,13 @@ class Egg():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.img = image.load("Textures\\png\\Object\\egg.png")
+        self.img = image.load("Textures\\png\\Object\\egg.png").convert_alpha()
         self.width = self.img.get_width()
         self.height = self.img.get_height()
-        self.speed = 15
+        self.hitbox = Rect(self.x, self.y, self.width,self.height)
+        self.speed = 5
         self.dead = False
+
 RED=(255,0,0)
 GREY=(127,127,127)
 BLACK=(0,0,0)
@@ -760,7 +807,7 @@ def game(lev):
     mixer.Channel(6).play(bgMusic)
     player.numOfKeys = 0
     while running:
-        if not mixer.Channel(6).get_busy():
+        if not mixer.Channel(6).get_busy() and not paused:
             mixer.Channel(6).play(bgMusic)
         if level.currentLevel != lev:
             mixer.Channel(6).stop()
@@ -774,6 +821,7 @@ def game(lev):
                 if evt.key == K_p:
                     if not paused:
                         paused = True
+                        bgMusic.stop()
                     else:
                         paused = False
                 if evt.key == K_r:
@@ -801,9 +849,24 @@ def game(lev):
             player.movePlayer()
             level.drawLevel(player.offset)
             level.playAnimations()
-            level.drawEnemies(player.eggs)
+            level.drawEnemies()
             player.drawPlayer()
             ui.drawUI()
+
+            #code for handling the falling egg
+            for e in level.eggs:
+                screen.blit(e.img, (e.x+player.offset, e.y))
+                if e.hitbox.collidelist(level.rects[level.currentLevel]) != -1:
+                    e.dead = True
+                if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
+                    e.dead = True
+                    player.resetPlayer()
+                e.y+=e.speed
+                e.hitbox = e.hitbox.move(0, e.speed)
+            temp = len(level.eggs)
+            for i in range(temp-1, -1, -1):
+                if level.eggs[i].dead:
+                    del level.eggs[i]
 
             if player.powerUp != "normal":
                 player.usePowerUp(player.powerUp)

@@ -64,9 +64,16 @@ tileDict = {
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
     "PinkSlimeDeadRight": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
     "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
+    "Bush (1)" : image.load("Textures\png\Object\Bush (1).png").convert_alpha(),
+    "Bush (2)" : image.load("Textures\png\Object\Bush (2).png").convert_alpha(),
+    "Bush (3)" : image.load("Textures\png\Object\Bush (3).png").convert_alpha(),
+    "Bush (4)" : image.load("Textures\png\Object\Bush (4).png").convert_alpha(),
     "lava": image.load("Textures\png\Tiles\lava_bottom.png").convert_alpha(),
     "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
-    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png")
+    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png"),
+    "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
+    "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
+    "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\desertBG.png").convert()
@@ -183,18 +190,14 @@ while running:
         addTile(mx, my, "Bush (2)")
     elif keys[K_k]:
         addTile(mx, my, "Bush (3)")
-    elif keys[K_l]:
-        addTile(mx, my, "Bush (4)")
     elif keys[K_o]:
-        addTile(mx,my, "BlueSlime1Left")
+        addTile(mx,my, "BlueSlime1Right")
     elif keys[K_p]:
-        addTile(mx,my, "PinkSlime1Left")
+        addTile(mx,my, "PinkSlime1Right")
     elif keys[K_z]:
         addTile(mx,my,"water_top")
     elif keys[K_x]:
         addTile(mx,my,"water")
-    elif keys[K_y]:
-        addTile(mx,my,"flag_red")
     elif keys[K_u]:
         addTile(mx,my,"question_fire_flower")
     elif keys[K_i]:
@@ -207,6 +210,10 @@ while running:
         addTile(mx,my,"lava_top")
     elif keys[K_0]:
         addTile(mx,my,"bird1")
+    elif keys[K_l]:
+        addTile(mx,my,"flag_red")
+    elif keys[K_y]:
+        addTile(mx,my,"Bat1")
 
     drawLevel(screen)
     if mb[2]:
