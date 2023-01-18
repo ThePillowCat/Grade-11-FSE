@@ -673,8 +673,6 @@ class Egg():
         self.width = self.img.get_width()
         self.height = self.img.get_height()
         self.speed = 15
-        if player.direction != 0:
-            self.speed=-self.speed
         self.dead = False
 RED=(255,0,0)
 GREY=(127,127,127)
