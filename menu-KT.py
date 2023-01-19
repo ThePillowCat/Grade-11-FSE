@@ -37,6 +37,12 @@ l3FileRects= open("Levels\\level3collision.txt","r")
 l1FileCollisionRects = open("Levels\\level1collisionobjects.txt", "r")
 l1FileCollisionRects = eval(l1FileCollisionRects.readline().strip())
 
+l2FileCollisionRects = open("Levels\\level2collisionobjects.txt", "r")
+l2FileCollisionRects = eval(l2FileCollisionRects.readline().strip())
+
+l3FileCollisionRects = open("Levels\\level3collisionobjects.txt", "r")
+l3FileCollisionRects = eval(l3FileCollisionRects.readline().strip())
+
 level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
@@ -347,8 +353,8 @@ for i in range(row):
                 level_1_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
                 numOfKeysInLevels[0]+=1
         elif level_1[i][j] in seperateObjects:
-            if level_1[i][j] == ["door1"]:
-                stuffToDrawOverBackground.append(["door1", (j*widthOfTile, i*heightOfTile)])
+            # if level_1[i][j] == ["door1"]:
+            #     stuffToDrawOverBackground.append(["door1", (j*widthOfTile, i*heightOfTile)])
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
@@ -381,21 +387,22 @@ for i in range(row):
             H = tileDict[level_2[i][j][0]].get_height()
             level_2_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
 
+level_2_Objects += l2FileCollisionRects
+
 for i in range(row):
     for j in range(len(level_3[0])):
         if level_3[i][j] in enemies:
             W = tileDict[level_3[i][j][0]].get_width()
             H = tileDict[level_3[i][j][0]].get_height()
             offset = 0
-            if level_3[i][j] == ["BlueSlime1Left"]:
+            if level_3[i][j] == ["BlueSlime1Right"]:
                 offset = 20
-                myObj = Slime("BlueSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) 
                 level_3[i][j] = []
-            if level_3[i][j] == ["PinkSlime1Left"]:
+                level_3_Enemies.append(Slime("BlueSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset) )
+            if level_3[i][j] == ["PinkSlime1Right"]:
                 offset = 20
-                myObj = Slime("PinkSlime1Left", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset)
                 level_3[i][j] = []
-            level_3_Enemies.append(myObj)
+                level_3_Enemies.append(Slime("PinkSlime1", Rect(widthOfTile*j, heightOfTile*i+offset, W, H), widthOfTile*j, heightOfTile*i+offset))
             if level_3[i][j] == ["key_red"]:
                 level_3[i][j] = []
                 level_3_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
@@ -403,10 +410,15 @@ for i in range(row):
             if level_3[i][j] == ["bird1"]:
                 level_3[i][j] = []
                 level_3_Enemies.append(Bird("bird1", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
-        elif level_3[i][j] in seperateObjects:
+            if level_3[i][j] == ["Bat1"]:
+                level_3[i][j] = []
+                level_3_Enemies.append(Bat("Bat", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
+        if level_3[i][j] in seperateObjects:
             W = tileDict[level_3[i][j][0]].get_width()
             H = tileDict[level_3[i][j][0]].get_height()
             level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
+
+level_3_Objects += l3FileCollisionRects
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
@@ -420,7 +432,7 @@ level_data = [[level_1, level_2, level_3],
 class UI():
     def __init__(self):
         self.startTime = 200
-        self.lives = 3
+        self.lives = 5
         self.heart = image.load("Textures\\png\\UI\\heart\\heart pixel art 32x32.png").convert_alpha()
         self.timePast = 0
     #ADD PERAMETER FOR THE NUMBER OF REMAINING LIVES
@@ -460,11 +472,11 @@ class Player():
         self.moveSpot = 0
         self.direction = 0
         self.powerUpOffset = 0
-        self.lives = 3
+        self.lives = 5
         self.bulletTimer = 0
         self.numOfKeys = 0
-
     def movePlayer(self):
+        global switchLevel
         #getting keys list
         keys = key.get_pressed()
         self.vel[0] = 0
@@ -499,9 +511,9 @@ class Player():
                         self.vel[1] = -3
                     else:
                         self.vel[1] = 3
-                if level.levels[level.currentLevel][Y][X] == ["lava_top"] or level.levels[level.currentLevel][Y][X] == ["lava_bottom"]:
+                elif level.levels[level.currentLevel][Y][X] == ["lava_top"] or level.levels[level.currentLevel][Y][X] == ["lava_bottom"]:
                     self.resetPlayer()
-                if level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
+                elif level.levels[level.currentLevel][Y][X] == ["fire_flower"]:
                     powerUpSound = mixer.Sound(("Sound Effects\\smb_powerup.mp3"))
                     powerUpSound.set_volume(0.4)
                     mixer.Channel(2).play(powerUpSound)
@@ -512,7 +524,7 @@ class Player():
                         if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
                             del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
-                if level.levels[level.currentLevel][Y][X] == ["gun"]:
+                elif level.levels[level.currentLevel][Y][X] == ["gun"]:
                     powerUpSound = mixer.Sound(("Sound Effects\\smb_powerup.mp3"))
                     powerUpSound.set_volume(0.4)
                     mixer.Channel(2).play(powerUpSound)
@@ -523,7 +535,7 @@ class Player():
                         if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
                             del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
-                if level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
+                elif level.levels[level.currentLevel][Y][X] == ["door1"] and keys[K_UP]:
                     if player.numOfKeys == level.numOfKeysInLevels[level.currentLevel]:
                         level.doorOpening = True
                         level.doorFrame = 1
@@ -531,17 +543,20 @@ class Player():
                     else:
                         mixer.music.load("Sound Effects\\locked.mp3")
                         mixer.music.play()
-                if level.levels[level.currentLevel][Y][X] == ["door4"]:
+                elif level.levels[level.currentLevel][Y][X] == ["door4"]:
                     player.x = 100
                     player.y = 50
                     self.offset = 0
                     level.doorFrame = 1
                     level.doorOpening = False
                     self.posInLevel = 100
-                    level.currentLevel+=1
+                    if level.currentLevel < 2:
+                        level.currentLevel+=1
+                    else:
+                        switchLevel = True
                     level.stuffToDrawOverBackground = []
                     self.checkPoint = [self.x, self.y, 0, self.vel[1]]
-                if level.levels[level.currentLevel][Y][X] == ["flag_red"]:
+                elif level.levels[level.currentLevel][Y][X] == ["flag_red"]:
                     mixer.music.load("Sound Effects\\checkpoint.ogg")
                     mixer.music.play()
                     level.stuffToDrawOverBackground.append(["flag_blue", (X*widthOfTile, Y*heightOfTile)])
@@ -682,6 +697,8 @@ class Player():
         self.lives-=1
         if self.lives == 0:
             level.gameOver = True
+            gameOver = mixer.Sound("Sound Effects\\smb_gameover.mp3")
+            mixer.Channel(6).play(gameOver)
         # self.powerUp = "normal"
         # self.powerUpOffset = 0
 
@@ -795,6 +812,8 @@ def level1():
     return s
 
 def game(lev):
+    global switchLevel
+    switchLevel = False
     running = True
     paused = False
     level.currentLevel = lev*1
@@ -807,9 +826,15 @@ def game(lev):
     mixer.Channel(6).play(bgMusic)
     player.numOfKeys = 0
     while running:
-        if not mixer.Channel(6).get_busy() and not paused:
+        if not mixer.Channel(6).get_busy() and not paused and not level.gameOver:
             mixer.Channel(6).play(bgMusic)
-        if level.currentLevel != lev:
+        if level.gameOver and not mixer.Channel(6).get_busy():
+            level.gameOver = False
+            player.lives = 5
+            player.powerUp = "normal"
+            level.circleThickness = 1
+            return "lev1"
+        if level.currentLevel != lev or switchLevel:
             mixer.Channel(6).stop()
             return "lev1"
         keys = key.get_pressed()
@@ -845,7 +870,7 @@ def game(lev):
                                 else:
                                     player.bullets.append(Bullet(player.posInLevel,player.y+35))
                             player.bulletTimer = 0
-        if not paused:
+        if not paused and not level.gameOver:
             player.movePlayer()
             level.drawLevel(player.offset)
             level.playAnimations()
@@ -861,6 +886,7 @@ def game(lev):
                 if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
                     e.dead = True
                     player.resetPlayer()
+                    break
                 e.y+=e.speed
                 e.hitbox = e.hitbox.move(0, e.speed)
             temp = len(level.eggs)
@@ -874,7 +900,8 @@ def game(lev):
                 player.crouched = True
             else:
                 player.crouched = False
-
+        elif level.gameOver:
+            level.gameOverAnimation()
         #flipping display and insuring 60fps
         display.flip()
         myClock.tick(60)

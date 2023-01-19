@@ -79,6 +79,8 @@ tileDict = {
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
     "question_fire_flower" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
+    "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
+    "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\CaveBG.png").convert()
@@ -196,6 +198,10 @@ while running:
         addTile(mx, my, "Bush (2)")
     elif keys[K_k]:
         addTile(mx, my, "Bush (3)")
+    elif keys[K_z]:
+        addTile(mx,my,"water_top")
+    elif keys[K_x]:
+        addTile(mx,my,"water")
     elif keys[K_l]:
         addTile(mx, my, "Bush (4)")
     elif keys[K_o]:

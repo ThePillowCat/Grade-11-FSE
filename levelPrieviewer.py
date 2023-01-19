@@ -50,7 +50,7 @@ while running:
     screen.blit(bgForest, (0, 0))
     for i in range(row):
         for j in range(col*spot, col*spot+col):
-            if level_1[i][j] != [] and level_1[i][j] != ["door1"] and level_1[i][j] != ["BlueSlime1Right"] and level_1[i][j] != ["PinkSlime1Right"] and level_1[i][j] != ["BlueSlime1Left"] and level_1[i][j] != ["PinkSlime1Left"] and level_1[i][j]!= ["bird1"]:
+            if level_1[i][j] != [] and level_1[i][j] != ["Bat1"] and level_1[i][j] != ["BlueSlime1Right"] and level_1[i][j] != ["PinkSlime1Right"] and level_1[i][j] != ["BlueSlime1Left"] and level_1[i][j] != ["PinkSlime1Left"] and level_1[i][j]!= ["bird1"]:
                 screen.blit(tileDict[level_1[i][j][0]], (widthOfTile*j-(spot*width), heightOfTile*i))
     mx,my=mouse.get_pos()
     mb=mouse.get_pressed()

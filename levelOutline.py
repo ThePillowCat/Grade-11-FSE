@@ -1,5 +1,7 @@
 from pygame import *
 
+init()
+
 class Level():
     def __init__(self, screen, level_data, widthOfTile, heightOfTile, tileDict, screenshots, numOfKeysInLevels):
         self.screen = screen
@@ -24,6 +26,7 @@ class Level():
         self.gameOver = False
         self.circleThickness = 1
         self.eggs = []
+        self.gameOverFont = font.Font("Textures\\png\\Fonts\\PressStart2P-Regular.ttf", 50).render("Game Over", True, (255,255,255))
     def calcDrawingBounds(self):
         pass
     def drawLevel(self, offset):
@@ -43,9 +46,13 @@ class Level():
                 self.doorOpening = False
                 self.doorIsOpen = True
                 self.doorFrame = 1
+    def gameOverAnimation(self):
         if self.gameOver:
             draw.circle(self.screen, (0,0,0), (600, 351), 800, self.circleThickness)
-            self.circleThickness+=1
+            self.circleThickness+=50
+            if self.circleThickness == 500:
+                self.screen.blit(self.gameOver, (100,100))
+
     def drawEnemies(self):
         if self.enemies[self.currentLevel] != []:
             for e in self.enemies[self.currentLevel]:
