@@ -20,6 +20,7 @@ class Level():
         self.currentLevel = 0
         self.doorFrame = 1
         self.temp = 0
+        self.won = False
         self.doorOpening = False
         self.doorIsOpen = False
         self.stuffToDrawOverBackground = []
@@ -27,6 +28,7 @@ class Level():
         self.circleThickness = 1
         self.eggs = []
         self.gameOverFont = font.Font("Textures\\png\\Fonts\\PressStart2P-Regular.ttf", 50).render("Game Over", True, (255,255,255))
+        self.winFont = font.Font("Textures\\png\\Fonts\\PressStart2P-Regular.ttf", 50).render("You Win!", True, (255,255,255))
     def calcDrawingBounds(self):
         pass
     def drawLevel(self, offset):
@@ -50,8 +52,10 @@ class Level():
         if self.gameOver:
             draw.circle(self.screen, (0,0,0), (600, 351), 800, self.circleThickness)
             self.circleThickness+=50
-            if self.circleThickness == 500:
-                self.screen.blit(self.gameOver, (100,100))
+            if self.won:
+                self.screen.blit(self.winFont, (450,300))
+            else:
+                self.screen.blit(self.gameOverFont, (400,300))
 
     def drawEnemies(self):
         if self.enemies[self.currentLevel] != []:

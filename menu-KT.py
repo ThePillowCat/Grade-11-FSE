@@ -17,14 +17,8 @@ init()
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
 #THINGS TO DO IN GAME-----------
-#-->Add heart powerup
-#-->Fix door
-#-->Create dungeon level
-#-->Add ammo powerup
-#-->Add UI
-#Add dog enemy
-#Fix any bugs/touchups
-#(maybe add speech bubbles)
+#FIX LEVELS
+#ADD KAITLYNS GAME
 
 l1File = open("Levels\\level1.txt","r")
 l2File = open("Levels\\level2.txt","r")
@@ -553,7 +547,11 @@ class Player():
                     if level.currentLevel < 2:
                         level.currentLevel+=1
                     else:
-                        switchLevel = True
+                        # switchLevel = True
+                        level.gameOver = True
+                        level.won = True
+                        gameOver = mixer.Sound("Sound Effects\\smb_world_clear.wav")
+                        mixer.Channel(6).play(gameOver)
                     level.stuffToDrawOverBackground = []
                     self.checkPoint = [self.x, self.y, 0, self.vel[1]]
                 elif level.levels[level.currentLevel][Y][X] == ["flag_red"]:
@@ -829,11 +827,7 @@ def game(lev):
         if not mixer.Channel(6).get_busy() and not paused and not level.gameOver:
             mixer.Channel(6).play(bgMusic)
         if level.gameOver and not mixer.Channel(6).get_busy():
-            level.gameOver = False
-            player.lives = 5
-            player.powerUp = "normal"
-            level.circleThickness = 1
-            return "lev1"
+            return "exit"
         if level.currentLevel != lev or switchLevel:
             mixer.Channel(6).stop()
             return "lev1"

@@ -47,6 +47,8 @@ tileDict = {
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
     "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "BlueSlimeDeaDeadLeft" : image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
+    "PinkSlimeDeaDeadLeft" : image.load("Textures\png\Enemies\PinkSlimeDeadLeft.png").convert_alpha(),                                                                                                 
     "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
     "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
     "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),

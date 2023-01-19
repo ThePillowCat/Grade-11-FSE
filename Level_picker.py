@@ -1,6 +1,8 @@
 from pygame import *
 from random import *
 
+unlockedLevels = [False, True, False, False, False]
+
 init()
 
 def runLevelPicker(myScreen):
@@ -33,7 +35,7 @@ def runLevelPicker(myScreen):
         for evt in event.get():
             if evt.type==QUIT:
                 running=False
-            if evt.type==KEYDOWN:
+            if evt.type==KEYDOWN and not playingCirlceAnimation:
                 if evt.key==K_RIGHT:
                     if loc==(210,310):
                         loc=(418,440)
@@ -66,11 +68,13 @@ def runLevelPicker(myScreen):
                         bglevel=bgmain
                         Levels_levelpicker=["Choose your level"]
                         names_levelpicker=[" "]
-                if evt.key == K_RETURN and Levels_levelpicker[0][-1] != "l":
+                if evt.key == K_RETURN and Levels_levelpicker != ["Choose your level"] and unlockedLevels[int(Levels_levelpicker[0][-1])]:
                     mixer.music.stop()
                     mixer.music.load("Sound Effects\\choose.mp3")
                     mixer.music.play()
                     playingCirlceAnimation = True
+                    unlockedLevels[int(Levels_levelpicker[0][-1])] = False
+                    unlockedLevels[int(Levels_levelpicker[0][-1])+1] = True
         #return "game", int(Levels_levelpicker[0][-1])-1
         if not playingCirlceAnimation:
             screen.blit(bglevel,(0,0))
@@ -85,6 +89,7 @@ def runLevelPicker(myScreen):
             draw.circle(screen, BLACK, (loc[0], loc[1]), 1500, circleSize)
             circleSize+=40
             if not mixer.music.get_busy():
+                playingCirlceAnimation = False
                 return "game", int(Levels_levelpicker[0][-1])-1 
         display.flip()
     
