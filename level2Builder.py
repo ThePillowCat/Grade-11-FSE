@@ -81,6 +81,7 @@ tileDict = {
     "question_gun" : image.load("Textures\\png\\Tiles\\block1.png").convert_alpha(),
     "water_top": image.load("Textures\png\Tiles\water_top.png").convert_alpha(),
     "water": image.load("Textures\png\Tiles\water.png").convert_alpha(),
+    "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
 }
 
 bgForest = image.load("Textures\\png\\BG\\CaveBG.png").convert()
@@ -170,6 +171,8 @@ while running:
     keys = key.get_pressed()
     if keys[K_e]:
         addTile(mx,my,"erase")
+    elif keys[K_q]:
+        addTile(mx, my, "key_red")
     elif keys[K_1]:
         addTile(mx, my, "castleLeft")
     elif keys[K_2]:

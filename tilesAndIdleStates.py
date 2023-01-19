@@ -80,7 +80,8 @@ tileDict = {
     "lava": image.load("Textures\png\Tiles\lava_bottom.png").convert_alpha(),
     "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
     "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
-    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png")
+    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png").convert_alpha(),
+    "arcade" : image.load("Textures\\png\\Object\\arcade.png").convert_alpha(),
 }
 
 idleStates = {

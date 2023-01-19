@@ -74,6 +74,7 @@ tileDict = {
     "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
     "PinkSlime1Right": image.load("Textures\png\Enemies\PinkSlime1Right.png").convert_alpha(),
     "Bat1": image.load("Textures\png\Enemies\Bat1.png").convert_alpha(),
+    "arcade" : image.load("Textures\\png\\Object\\arcade.png").convert_alpha()
 }
 
 bgForest = image.load("Textures\\png\\BG\\desertBG.png").convert()
@@ -211,7 +212,7 @@ while running:
     elif keys[K_0]:
         addTile(mx,my,"bird1")
     elif keys[K_l]:
-        addTile(mx,my,"flag_red")
+        addTile(mx,my,"arcade")
     elif keys[K_y]:
         addTile(mx,my,"Bat1")
 

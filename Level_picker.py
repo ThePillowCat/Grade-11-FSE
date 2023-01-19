@@ -1,7 +1,7 @@
 from pygame import *
 from random import *
 
-unlockedLevels = [False, True, False, False, False]
+unlockedLevels = [False, True, False, True, False]
 
 init()
 

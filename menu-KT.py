@@ -2,6 +2,7 @@ from pygame import *
 from math import *
 from random import *
 import Level_picker
+import ticTacToe
 import tilesAndIdleStates
 import levelOutline
 
@@ -316,7 +317,7 @@ class epicKey(Enemy):
 
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
-seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"]]
+seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"], ["arcade"]]
 
 enemies = [["bird1"],["BlueSlime1Left"], ["PinkSlime1Left"], ["BlueSlime1Right"], ["PinkSlime1Right"], ["Bat1"], ["key_red"]]
 
@@ -413,6 +414,7 @@ for i in range(row):
             level_3_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
 
 level_3_Objects += l3FileCollisionRects
+numOfKeysInLevels[2]+=1
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
@@ -469,6 +471,7 @@ class Player():
         self.lives = 5
         self.bulletTimer = 0
         self.numOfKeys = 0
+        self.playingTicTacToe = False
     def movePlayer(self):
         global switchLevel
         #getting keys list
@@ -518,6 +521,8 @@ class Player():
                         if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
                             del level.stuffToDrawOverBackground[level.stuffToDrawOverBackground.index(o)]
                     level.levels[level.currentLevel][Y][X] = []
+                elif level.levels[level.currentLevel][Y][X] == ["arcade"] and keys[K_UP]:
+                    player.playingTicTacToe = True
                 elif level.levels[level.currentLevel][Y][X] == ["gun"]:
                     powerUpSound = mixer.Sound(("Sound Effects\\smb_powerup.mp3"))
                     powerUpSound.set_volume(0.4)
@@ -697,8 +702,8 @@ class Player():
             level.gameOver = True
             gameOver = mixer.Sound("Sound Effects\\smb_gameover.mp3")
             mixer.Channel(6).play(gameOver)
-        # self.powerUp = "normal"
-        # self.powerUpOffset = 0
+        self.powerUp = "normal"
+        self.powerUpOffset = 0
 
 player = Player(300,100,screen)
 
@@ -807,9 +812,10 @@ def story(): #function when the player clicks story
 def level1():
     global lev
     s, lev = Level_picker.runLevelPicker(screen)
-    return s
+    return s 
 
 def game(lev):
+    global screen
     global switchLevel
     switchLevel = False
     running = True
@@ -824,7 +830,14 @@ def game(lev):
     mixer.Channel(6).play(bgMusic)
     player.numOfKeys = 0
     while running:
-        if not mixer.Channel(6).get_busy() and not paused and not level.gameOver:
+        #screen = display.set_mode((width, height))
+        if player.playingTicTacToe:
+            screen = display.set_mode((650, 650))
+            if ticTacToe.runTicTacToe(screen) == "winner":
+                level.enemies[level.currentLevel].append(epicKey("key_red", Rect(player.posInLevel+100, player.y, W, H), player.posInLevel+100, player.y))
+            screen = display.set_mode((1200, 702))
+            player.playingTicTacToe = False
+        if not paused and not level.gameOver:
             mixer.Channel(6).play(bgMusic)
         if level.gameOver and not mixer.Channel(6).get_busy():
             return "exit"
