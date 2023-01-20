@@ -149,8 +149,6 @@ def runTicTacToe(s):
             result=comicFont.render(win,True,WHITE)
             screen.blit(result,(325,325))
             #brings the player back to the platformer
-            if thickness >= 100:
-                print ("winner")
             if thickness >= 4000:
                 running = False
                 return "winner"

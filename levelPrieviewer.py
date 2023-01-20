@@ -2,7 +2,7 @@ from pygame import *
 from tkinter import filedialog
 import tilesAndIdleStates
 
-lFile = open("Levels\\level3.txt", "r")
+lFile = open("Levels\\level1.txt", "r")
 level_1 = eval(lFile.read().strip())
 
 tileDict = tilesAndIdleStates.tileDict
@@ -30,7 +30,7 @@ heightOfTile = height//row
 
 running=True
 
-bgForest = image.load("Textures\\png\\BG\\desertBG.png").convert()
+bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 
 while running:
     for evt in event.get():

@@ -446,6 +446,7 @@ fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
+        self.hitArcadeCoords = [0,0]
         self.x=x
         self.y=y
         self.vel = [0,0]
@@ -523,6 +524,7 @@ class Player():
                     level.levels[level.currentLevel][Y][X] = []
                 elif level.levels[level.currentLevel][Y][X] == ["arcade"] and keys[K_UP]:
                     player.playingTicTacToe = True
+                    player.hitArcadeCoords = [X, Y]
                 elif level.levels[level.currentLevel][Y][X] == ["gun"]:
                     powerUpSound = mixer.Sound(("Sound Effects\\smb_powerup.mp3"))
                     powerUpSound.set_volume(0.4)
@@ -767,6 +769,7 @@ BLACK=0,0,0
 WHITE=255,255,255
 screen = display.set_mode((width, height))
 
+#instructions pannel
 def instructions():
     inst = image.load("pics/Instructions.png")
     inst = transform.smoothscale(inst, screen.get_size())
@@ -789,6 +792,7 @@ def instructions():
 
     return "menu"
 
+#story pannel
 def story(): #function when the player clicks story
     running = True
     story = image.load("pics/story.png")
@@ -809,11 +813,13 @@ def story(): #function when the player clicks story
         display.flip()
     return "menu"
 
+#level choosing pannel
 def level1():
     global lev
     s, lev = Level_picker.runLevelPicker(screen)
     return s 
 
+#actuall game
 def game(lev):
     global screen
     global switchLevel
@@ -832,12 +838,15 @@ def game(lev):
     while running:
         #screen = display.set_mode((width, height))
         if player.playingTicTacToe:
+            mixer.Channel(6).stop()
             screen = display.set_mode((650, 650))
             if ticTacToe.runTicTacToe(screen) == "winner":
                 level.enemies[level.currentLevel].append(epicKey("key_red", Rect(player.posInLevel+100, player.y, W, H), player.posInLevel+100, player.y))
+                level.levels[level.currentLevel][player.hitArcadeCoords[1]][player.hitArcadeCoords[0]] = []
             screen = display.set_mode((1200, 702))
             player.playingTicTacToe = False
-        if not paused and not level.gameOver:
+            mixer.Channel(6).play(bgMusic)
+        if not paused and not level.gameOver and not mixer.Channel(6).get_busy():
             mixer.Channel(6).play(bgMusic)
         if level.gameOver and not mixer.Channel(6).get_busy():
             return "exit"
@@ -853,6 +862,8 @@ def game(lev):
                 if evt.key == K_p:
                     if not paused:
                         paused = True
+                        mixer.music.load("Sound Effects\\smb_pause.wav")
+                        mixer.music.play()
                         bgMusic.stop()
                     else:
                         paused = False
