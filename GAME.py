@@ -17,18 +17,17 @@ init()
 #The second array contains rectangles with powerups and eneimes
 #To detect collision in these arrays, collidepoint is used as it is optimised for this sort of thing
 
-#THINGS TO DO IN GAME-----------
-#FIX LEVELS
-#ADD KAITLYNS GAME
-
+#open the text files with the 2D lists that have what each tile is (a door, a grass block, etc.)
 l1File = open("Levels\\level1.txt","r")
 l2File = open("Levels\\level2.txt","r")
 l3File = open("Levels\\level3.txt","r")
 
+#open the text files that contain the hitboxes for platforms
 l1FileRects = open("Levels\\level1collision.txt","r")
 l2FileRects= open("Levels\\level2collision.txt","r")
 l3FileRects= open("Levels\\level3collision.txt","r")
 
+#open the text files that contain hitboxes for objects (lava, water, fireflower, etc.)
 l1FileCollisionRects = open("Levels\\level1collisionobjects.txt", "r")
 l1FileCollisionRects = eval(l1FileCollisionRects.readline().strip())
 
@@ -38,10 +37,12 @@ l2FileCollisionRects = eval(l2FileCollisionRects.readline().strip())
 l3FileCollisionRects = open("Levels\\level3collisionobjects.txt", "r")
 l3FileCollisionRects = eval(l3FileCollisionRects.readline().strip())
 
+#store the 2D lists in a variable
 level_1 = eval(l1File.readline().strip("\n"))
 level_2 = eval(l2File.readline().strip("\n"))
 level_3 = eval(l3File.readline().strip("\n"))
 
+#convert the hitboxes stored in the text files into Rect objects
 level_1_Rects = eval(l1FileRects.readline().strip("\n"))
 for i in range(len(level_1_Rects)):
     level_1_Rects[i] = Rect(level_1_Rects[i][0], level_1_Rects[i][1], level_1_Rects[i][2], level_1_Rects[i][3])
@@ -52,6 +53,7 @@ level_3_Rects = eval(l3FileRects.readline().strip("\n"))
 for i in range(len(level_3_Rects)):
     level_3_Rects[i] = Rect(level_3_Rects[i][0], level_3_Rects[i][1], level_3_Rects[i][2], level_3_Rects[i][3])
 
+#set the screen
 width,height=1200,702
 screen=display.set_mode((width,height))
 
@@ -74,6 +76,7 @@ numOfKeysInLevels = [0, 0, 0]
 #loading font
 myFont = font.Font("Textures\\png\\Fonts\\PressStart2P-Regular.ttf", 30)
 
+#base class for eneimies
 class Enemy():
     def __init__(self, t, re, x, y):
         self.dead = False
@@ -83,6 +86,7 @@ class Enemy():
         self.type = t
         self.speed = 5
 
+#bird enemy
 class Bird(Enemy):
     def __init__(self, t, re, x, y):
         #inheriting parrent stuff
@@ -98,7 +102,10 @@ class Bird(Enemy):
     def drawSelf(self):
         if not self.playDeathAnimation:
             self.eggTimer+=0.05
+            #only move if at most 1200 pixels away from player
             if abs(self.x-player.posInLevel) < 1200:
+                #makes sure the distance between the bird and the player
+                #is large enough so it won't mess up animations
                 if (abs(self.x-player.posInLevel)) > 1:
                     if self.x < player.posInLevel:
                         self.direction = 0
@@ -108,6 +115,7 @@ class Bird(Enemy):
                         self.direction = 1
                         self.x-=2
                         self.hitbox = self.hitbox.move(-2,0)
+                #check if bird can lay an egg
                 if 0 <= abs(self.x-player.posInLevel) <= 10 and self.eggTimer >= 2 and len(level.eggs) < 5:
                     level.eggs.append(Egg(self.x+20, self.y+50))
                     self.eggTimer = 0
@@ -115,14 +123,17 @@ class Bird(Enemy):
                 if self.frame >= 7:
                     self.frame = 1
         else:
+            #death animation
             self.hitbox = self.hitbox.move(self.speed, self.vel[1])
             self.x = self.hitbox[0]
             self.y = self.hitbox[1]
             self.vel[1]+=self.gravity
             if self.hitbox[1] > height:
                 self.dead = True
+        #draw the bird
         screen.blit(self.animationFrames[self.direction][int(self.frame)], (self.x+player.offset, self.y))
     def checkCollision(self):
+        #checks if the player collides from the top, or if self is collided with bullet or fireball
         if not self.playDeathAnimation:
             playerRect = Rect(player.posInLevel, player.y, player.size[0], player.size[1])
             bottomOfPlayer = Rect(player.posInLevel+5, player.y+player.vel[1]+player.size[1], player.size[0]-10, 1)
@@ -156,7 +167,7 @@ class Bird(Enemy):
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
 
-
+#slime class (works very similar to other enemies)
 class Slime(Enemy):
     def __init__(self, t, re, x, y):
         #inheriting parrent stuff
@@ -167,6 +178,7 @@ class Slime(Enemy):
         self.direction = "Right"
         self.playDeathAnimation = False
     def drawSelf(self):
+        #draws either its idle state (walking) or its death animation
         screen.blit(tileDict[self.type+self.direction], (self.hitbox[0]+player.offset, self.hitbox[1]))
         if self.playDeathAnimation:
             self.hitbox = self.hitbox.move(self.speed, self.vel[1])
@@ -177,6 +189,9 @@ class Slime(Enemy):
         else:
             self.hitbox = self.hitbox.move(self.speed,0)
     def checkCollision(self):
+        #The slime enemy moves left and right
+        #if it's going near an air tile, it knows to go the other way
+        #similar mechanics to goombas in other mario games
         if not self.playDeathAnimation:
             X = self.hitbox[0]//widthOfTile
             Y = self.hitbox[1]//heightOfTile
@@ -228,6 +243,7 @@ class Slime(Enemy):
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
 
+#Bat enemy (similar to slime and bird enemies)
 class Bat(Enemy):
     def __init__(self, t, re, x, y):
         Enemy.__init__(self, t, re, x, y)
@@ -296,6 +312,8 @@ class Bat(Enemy):
                         #making sure enemy goes to right during death
                         self.speed = abs(self.speed)
 
+#this is the class for key objects in the level
+#the player needs a certain amount of keys to beat a level
 class epicKey(Enemy):
     def __init__(self, t, re, x, y):
         #inheriting parrent stuff
@@ -315,6 +333,11 @@ class epicKey(Enemy):
             level.hasKey = True
             player.numOfKeys+=1
 
+#------------------------------------------------
+'''
+THIS PART OF THE CODE LOOPS THROUGH EACH LEVEL'S 2D LIST
+IT CHECKS WHERE ENEMIES SHOULD BE ADDED, AND WHICH OBJECTS SHOULDN'T HAVE COLLISION
+'''
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
 seperateObjects = [["door1"], ["flag_red"], ["lava"], ["lava_top"], ["arcade"]]
@@ -418,8 +441,11 @@ numOfKeysInLevels[2]+=1
 
 bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
 bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
-bgDesert = image.load("Textures\\png\\BG\\desertBG.png")
+bgDesert = image.load("Textures\\png\\BG\\desertBG.png").convert()
 
+#level class is stored in a seperate py file that is imported
+#so, you need to pass in some data when making the level class
+#this code isn't the best way to do this, but it works for this game
 level_data = [[level_1, level_2, level_3],
               [level_1_Objects, level_2_Objects, level_3_Objects],
               [level_1_Rects, level_2_Rects, level_3_Rects],
@@ -721,6 +747,9 @@ class Fireball():
         self.rad = 10
         self.bounces = 0
 
+#BULLET PROJECTILE
+#KEEPS TRACK OF THE BULLETS POSITION ON SCREEN
+#AND ITS VELOCITY
 class Bullet():
     def __init__(self, x, y):
         self.x = x
@@ -732,6 +761,9 @@ class Bullet():
             self.speed=-self.speed
         self.dead = False
 
+#EGG PROJECTILE
+#KEEPS TRACK OF THE BULLETS POSITION ON SCREEN
+#AND ITS VELOCITY
 class Egg():
     def __init__(self, x, y):
         self.x = x
@@ -837,6 +869,10 @@ def game(lev):
     player.numOfKeys = 0
     while running:
         #screen = display.set_mode((width, height))
+        if ui.timeLeft < 0:
+            ui.startTime = 200
+            ui.timePast = 0
+            player.resetPlayer()
         if player.playingTicTacToe:
             mixer.Channel(6).stop()
             screen = display.set_mode((650, 650))
@@ -867,6 +903,7 @@ def game(lev):
                         bgMusic.stop()
                     else:
                         paused = False
+                #FIRING PROJECTILES
                 if evt.key == K_r:
                     if player.powerUp == "fireball":
                         if len(player.fireBalls) < 3:
@@ -888,6 +925,7 @@ def game(lev):
                                 else:
                                     player.bullets.append(Bullet(player.posInLevel,player.y+35))
                             player.bulletTimer = 0
+        #DRAWING THE SCREEN
         if not paused and not level.gameOver:
             player.movePlayer()
             level.drawLevel(player.offset)
@@ -924,6 +962,7 @@ def game(lev):
         display.flip()
         myClock.tick(60)
 
+#LOADING IMAGES FOR THE MENU
 instructionspic=image.load("pics/instructionspic.png")
 instructionspicB=image.load("pics/instructionspicB.png")
 storypic=image.load("pics/storypic.png")
@@ -932,6 +971,7 @@ startpic=image.load("pics/startpic.png")
 startpicB=image.load("pics/startpicB.png")
 bgmenu=image.load("pics/bgmenu.png")
 
+#MENU FUNCTION
 def menu():  
     running = True
     playingClickSound = False
@@ -984,7 +1024,8 @@ def menu():
         display.flip()
         myClock.tick(60)
 
-
+#MAIN LOOP THAT HANDLES ALL THE MENUS
+#THIS IS TAKEN FROM THE MENU TEMPLATE PROGRAM
 running = True
 x,y = 0,0
 OUTLINE = (150,50,30)
