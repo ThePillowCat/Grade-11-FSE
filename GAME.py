@@ -457,6 +457,7 @@ class UI():
         self.lives = 5
         self.heart = image.load("Textures\\png\\UI\\heart\\heart pixel art 32x32.png").convert_alpha()
         self.timePast = 0
+        self.timeLeft = 0
     #ADD PERAMETER FOR THE NUMBER OF REMAINING LIVES
     def drawUI(self):
         for i in range(player.lives, 0, -1):
