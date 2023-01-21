@@ -15,15 +15,15 @@ WHITE=(255,255,255)
 
 running=True
 
-bgmain=image.load("pics/LevPickMain.png")
+bgmain=image.load("pics/LevPickMain.png")#initzaliing all  the pictures
 bgmain1=image.load("pics/LevPickMain1.png")
 bgmain2=image.load("pics/LevPickMain2.png")
 bgmain3=image.load("pics/LevPickMain3.png")
 
 stickmannorm=image.load("Textures/png/Player/normal.png")
-loc=(210,310)
+loc=(210,310)#location
 
-bglevel=bgmain
+bglevel=bgmain #variable for the background
 
 comicFont=font.SysFont("Comic Sans MS",30)
 #"render" creates a picture
@@ -54,10 +54,12 @@ while running:
         if evt.type==KEYDOWN:
             if evt.key==K_RIGHT:
                 if loc==(210,310):
+                    #so if we move right from the first location
+                    #then our location becomes the second
                     loc=(418,440)
-                    bglevel=bgmain1
-                    Levels_levelpicker=["Level 1"]
-                    names_levelpicker=["The Enchanted Forest"]
+                    bglevel=bgmain1#changing the background
+                    Levels_levelpicker=["Level 1"]#which level
+                    names_levelpicker=["The Enchanted Forest"]#name of the level so I can blit it underneath
                 elif loc==(418,440):
                     loc=(700,126)
                     bglevel=bgmain2
@@ -68,7 +70,7 @@ while running:
                     bglevel=bgmain3
                     Levels_levelpicker=["Level 3"]
                     names_levelpicker=["The Hot Dessert"]
-            if evt.key==K_LEFT:
+            if evt.key==K_LEFT:#if they go left
                 if loc==(983,241):
                     loc=(700,126)
                     bglevel=bgmain2
@@ -89,10 +91,10 @@ while running:
                        
     mx,my=mouse.get_pos()
     mb=mouse.get_pressed()
-    print(mx,my)
+##    print(mx,my)#this was to check the lockations of the little circles
     
-    screen.blit(bglevel,(0,0))
-    screen.blit(stickmannorm,loc)
+    screen.blit(bglevel,(0,0))#bliting the level
+    screen.blit(stickmannorm,loc)#adding the charcter
 ##    screen.blit(stickmannorm,(418,440))
 ##    screen.blit(stickmannorm,(700,126))
 ##    screen.blit(stickmannorm,(983,241))
@@ -100,8 +102,8 @@ while running:
     name=choice(names_levelpicker)
     picLevel=comicFont.render(level,True,BLACK)#converting the string into a picture
     picknameForLevel=comicFont.render(name,True,BLACK)
-    screen.blit(picLevel,(20,20))
-    screen.blit(picknameForLevel,(18,60))
+    screen.blit(picLevel,(20,20))#this is the level 1,2,3
+    screen.blit(picknameForLevel,(18,60))#this is the name of the level
     
     
       

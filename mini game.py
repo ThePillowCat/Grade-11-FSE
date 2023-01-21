@@ -1,6 +1,7 @@
 from pygame import *
 from random import *
 
+font.init()
 width,height=650,650
 screen=display.set_mode((width,height))
 RED=(255,0,0)
@@ -27,6 +28,8 @@ counter = 0
 screen.fill(WHITE)
 thickness=1
 isDrawingAnimation = False
+comicFont=font.SysFont("Comic Sans MS",30)
+winner=[" "]
 
 while running:
     for evt in event.get():
@@ -77,42 +80,80 @@ while running:
                                 boardState[j][h] = "O"
                                 break
                         if boardState[0][0]==boardState[0][1]==boardState[0][2]: #row 1
-                            if boardState[0][0]=="X" or boardState[0][0]=="O":
+                            if boardState[0][0]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[0][0]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
 
                         if boardState[1][0]==boardState[1][1]==boardState[1][2]:#row 2
-                            if boardState[1][0]=="X" or boardState[1][0]=="O":
+                            if boardState[1][0]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[1][0]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
                                 
                         if boardState[2][0]==boardState[2][1]==boardState[2][2]:#row 3
-                            if boardState[2][0]=="X" or boardState[2][0]=="O":
+                            if boardState[2][0]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[2][0]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
                                 
                         if boardState[0][0]==boardState[1][0]==boardState[2][0]:#collum 1
-                            if boardState[2][0]=="X" or boardState[2][0]=="O":
+                            if boardState[2][0]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[2][0]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
                                 
                         if boardState[0][1]==boardState[1][1]==boardState[2][1]:#collum 2
-                            if boardState[2][1]=="X" or boardState[2][1]=="O":
+                            if boardState[2][1]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[2][1]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
   
                         if boardState[0][2]==boardState[1][2]==boardState[2][2]:#collum 3
-                            if boardState[2][2]=="X" or boardState[2][2]=="O":
+                            if boardState[2][2]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[2][2]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
 
                         if boardState[0][0]==boardState[1][1]==boardState[2][2]:#diagonal left to right
-                            if boardState[2][2]=="X" or boardState[2][2]=="O":
+                            if boardState[2][2]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[2][2]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
 
                         if boardState[0][2]==boardState[1][1]==boardState[2][0]:#diagonal right to left
-                            if boardState[0][2]=="X" or boardState[0][2]=="O":
+                            if boardState[0][2]=="X":
                                 isDrawingAnimation = True
+                                winner=["You Win!"]
+                            if boardState[0][2]=="O":
+                                isDrawingAnimation = True
+                                winner=["You lost! :("]
     else:
         draw.circle(screen,BLACK,(325,325), 1000, thickness)
         thickness+=10
+        win=choice(winner)
+        result=comicFont.render(win,True,WHITE)
+        screen.blit(result,(325,325))
         #brings the player back to the platformer
-        if thickness == 1000:
-            pass
+        if thickness >= 100:
+            print ("winner")
+        if thickness >= 4000:
+            running = False
+            
                                 
     
                     
