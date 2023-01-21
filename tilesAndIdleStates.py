@@ -2,6 +2,18 @@ from pygame import *
 width,height=1200,703
 screen=display.set_mode((width,height))
 tileDict = {
+    "d1" : image.load("Textures\\png\\Tiles\\d1.png").convert_alpha(),
+    "d2" : image.load("Textures\\png\\Tiles\\d2.png").convert_alpha(),
+    "d3" : image.load("Textures\\png\\Tiles\\d3.png").convert_alpha(),
+    "d4" : image.load("Textures\\png\\Tiles\\d4.png").convert_alpha(),
+    "d5" : image.load("Textures\\png\\Tiles\\d5.png").convert_alpha(),
+    "d6" : image.load("Textures\\png\\Tiles\\d6.png").convert_alpha(),
+    "d7" : image.load("Textures\\png\\Tiles\\d7.png").convert_alpha(),
+    "d8" : image.load("Textures\\png\\Tiles\\d8.png").convert_alpha(),
+    "d9" : image.load("Textures\\png\\Tiles\\d9.png").convert_alpha(),
+    "da" : image.load("Textures\\png\\Tiles\\da.png").convert_alpha(),
+    "db" : image.load("Textures\\png\\Tiles\\db.png").convert_alpha(),
+    "dc" : image.load("Textures\\png\\Tiles\\dc.png").convert_alpha(),
     "t_l_side_dirt" : image.load("Textures\\png\\Tiles\\t_l_side_dirt.png").convert_alpha(),
     "t_m_side_dirt" : image.load("Textures\\png\\Tiles\\dirt.png").convert_alpha(),
     "t_r_side_dirt" : image.load("Textures\\png\\Tiles\\t_r_side_dirt.png").convert_alpha(),
@@ -35,6 +47,8 @@ tileDict = {
     "PinkSlime2Left": image.load("Textures\png\Enemies\PinkSlime2Left.png").convert_alpha(),
     "PinkSlimeSqLeft": image.load("Textures\png\Enemies\PinkSlimeSqLeft.png").convert_alpha(),
     "PinkSlimeDeadLeft": image.load("Textures\png\Enemies\PinkSlimeDeadRight.png").convert_alpha(),
+    "BlueSlimeDeaDeadLeft" : image.load("Textures\png\Enemies\BlueSlimeDeadLeft.png").convert_alpha(),
+    "PinkSlimeDeaDeadLeft" : image.load("Textures\png\Enemies\PinkSlimeDeadLeft.png").convert_alpha(),                                                                                                 
     "BlueSlime1Right": image.load("Textures\png\Enemies\BlueSlime1Right.png").convert_alpha(),
     "BlueSlime2Right": image.load("Textures\png\Enemies\BlueSlime2Right.png").convert_alpha(),
     "BlueSlimeSqRight": image.load("Textures\png\Enemies\BlueSlimeSqRight.png").convert_alpha(),
@@ -63,6 +77,11 @@ tileDict = {
     "key_red": image.load("Textures\png\Object\keyRed.png").convert_alpha(),
     "key_green": image.load("Textures\png\Object\keyGreen.png").convert_alpha(),
     "key_yellow": image.load("Textures\png\Object\keyYellow.png").convert_alpha(),
+    "lava": image.load("Textures\png\Tiles\lava_bottom.png").convert_alpha(),
+    "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
+    "lava_top": image.load("Textures\png\Tiles\lava_top.png").convert_alpha(),
+    "bird1" : image.load("Textures\\png\\Enemies\\bird1.png").convert_alpha(),
+    "arcade" : image.load("Textures\\png\\Object\\arcade.png").convert_alpha(),
 }
 
 idleStates = {
