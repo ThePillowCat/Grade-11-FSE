@@ -1,33 +1,35 @@
 from pygame import *
 from random import *
 
-unlockedLevels = [False, True, False, False, False]
+unlockedLevels = [False, True, False, True, False]
 
 init()
 
 def runLevelPicker(myScreen):
+    playingCirlceAnimation = False
+    circleSize = 1
     screen=myScreen
     BLACK=(0,0,0)
 
     running=True
 
-    bgmain=image.load("pics/LevPickMain.png").convert()
-    bgmain1=image.load("pics/LevPickMain1.png").convert()
-    bgmain2=image.load("pics/LevPickMain2.png").convert()
-    bgmain3=image.load("pics/LevPickMain3.png").convert()
+    bgmain=image.load("pics/LevPickMain.png")#initzaliing all  the pictures
+    bgmain1=image.load("pics/LevPickMain1.png")
+    bgmain2=image.load("pics/LevPickMain2.png")
+    bgmain3=image.load("pics/LevPickMain3.png")
 
-    stickmannorm=image.load("Textures/png/Player/normal.png").convert_alpha()
-    loc=(210,310)
+    stickmannorm=image.load("Textures/png/Player/normal.png")
 
-    bglevel=bgmain
-    playingCirlceAnimation = False
-    circleSize = 1
+    loc=(210,310)#location
+
+    bglevel=bgmain #variable for the background
 
     comicFont=font.SysFont("Comic Sans MS",30)
     #"render" creates a picture
 
     Levels_levelpicker=["Choose your level"]
     names_levelpicker=[" "]
+
     mixer.music.stop()
     mixer.music.load("Sound Effects\\levelSelect.mp3")
     mixer.music.play()
@@ -75,16 +77,18 @@ def runLevelPicker(myScreen):
                     playingCirlceAnimation = True
                     unlockedLevels[int(Levels_levelpicker[0][-1])] = False
                     unlockedLevels[int(Levels_levelpicker[0][-1])+1] = True
-        #return "game", int(Levels_levelpicker[0][-1])-1
         if not playingCirlceAnimation:
-            screen.blit(bglevel,(0,0))
-            screen.blit(stickmannorm,loc)
+            screen.blit(bglevel,(0,0))#bliting the level
+            screen.blit(stickmannorm,loc)#adding the charcter
+            ##screen.blit(stickmannorm,(418,440))
+            ##screen.blit(stickmannorm,(700,126))
+            ##screen.blit(stickmannorm,(983,241))
             level=choice(Levels_levelpicker)
             name=choice(names_levelpicker)
-            picLevel=comicFont.render(level,True,BLACK).convert_alpha()#converting the string into a picture
-            picknameForLevel=comicFont.render(name,True,BLACK).convert_alpha()
-            screen.blit(picLevel,(20,20))
-            screen.blit(picknameForLevel,(18,60))
+            picLevel=comicFont.render(level,True,BLACK)#converting the string into a picture
+            picknameForLevel=comicFont.render(name,True,BLACK)
+            screen.blit(picLevel,(20,20))#this is the level 1,2,3
+            screen.blit(picknameForLevel,(18,60))#this is the name of the level
             if Levels_levelpicker[0][-1] != "l":
                 if unlockedLevels[int(Levels_levelpicker[0][-1])]:
                     screen.blit(comicFont.render("Unlocked", True, BLACK), (18, 100))

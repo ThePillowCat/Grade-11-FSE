@@ -733,22 +733,22 @@ class Player():
             if self.bullets[i].dead:
                 del self.bullets[i]
                     #code for handling the falling egg
-            for e in level.eggs:
-                screen.blit(e.img, (e.x+player.offset, e.y))
-                if e.hitbox.collidelist(level.rects[level.currentLevel]) != -1:
-                    e.dead = True
-                if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
-                    e.dead = True
-                    player.resetPlayer()
-                    break
-                e.y+=e.speed
-                e.hitbox = e.hitbox.move(0, e.speed)
-            temp = len(level.eggs)
-            #loops through each egg one more time
-            #if it's dead, remove it from the level.eggs list
-            for i in range(temp-1, -1, -1):
-                if level.eggs[i].dead:
-                    del level.eggs[i]
+        for e in level.eggs:
+            screen.blit(e.img, (e.x+player.offset, e.y))
+            if e.hitbox.collidelist(level.rects[level.currentLevel]) != -1:
+                e.dead = True
+            if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
+                e.dead = True
+                player.resetPlayer()
+                break
+            e.y+=e.speed
+            e.hitbox = e.hitbox.move(0, e.speed)
+        temp = len(level.eggs)
+        #loops through each egg one more time
+        #if it's dead, remove it from the level.eggs list
+        for i in range(temp-1, -1, -1):
+            if level.eggs[i].dead:
+                del level.eggs[i]
     #resets the player upon death
     #subtracts a life and puts the player at the start of the level
     def resetPlayer(self):
@@ -901,6 +901,7 @@ def game(lev):
     mixer.Channel(6).play(bgMusic)
     #resets the time and the number of keys the player has collected
     player.numOfKeys = 0
+    player.lives+=1
     ui.timeLeft = 0
     ui.timePast = 0
     while running:
