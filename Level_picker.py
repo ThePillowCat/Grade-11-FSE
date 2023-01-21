@@ -37,13 +37,15 @@ def runLevelPicker(myScreen):
         for evt in event.get():
             if evt.type==QUIT:
                 running=False
-            if evt.type==KEYDOWN and not playingCirlceAnimation:
+            if evt.type==KEYDOWN:
                 if evt.key==K_RIGHT:
                     if loc==(210,310):
+                        #so if we move right from the first location
+                        #then our location becomes the second
                         loc=(418,440)
-                        bglevel=bgmain1
-                        Levels_levelpicker=["Level 1"]
-                        names_levelpicker=["The Enchanted Forest"]
+                        bglevel=bgmain1#changing the background
+                        Levels_levelpicker=["Level 1"]#which level
+                        names_levelpicker=["The Enchanted Forest"]#name of the level so I can blit it underneath
                     elif loc==(418,440):
                         loc=(700,126)
                         bglevel=bgmain2
@@ -54,7 +56,7 @@ def runLevelPicker(myScreen):
                         bglevel=bgmain3
                         Levels_levelpicker=["Level 3"]
                         names_levelpicker=["The Hot Dessert"]
-                if evt.key==K_LEFT:
+                if evt.key==K_LEFT:#if they go left
                     if loc==(983,241):
                         loc=(700,126)
                         bglevel=bgmain2
