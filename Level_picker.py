@@ -1,7 +1,7 @@
 from pygame import *
 from random import *
 
-unlockedLevels = [False, True, False, True, False]
+unlockedLevels = [False, True, False, False, False]
 
 init()
 
@@ -85,6 +85,11 @@ def runLevelPicker(myScreen):
             picknameForLevel=comicFont.render(name,True,BLACK).convert_alpha()
             screen.blit(picLevel,(20,20))
             screen.blit(picknameForLevel,(18,60))
+            if Levels_levelpicker[0][-1] != "l":
+                if unlockedLevels[int(Levels_levelpicker[0][-1])]:
+                    screen.blit(comicFont.render("Unlocked", True, BLACK), (18, 100))
+                else:
+                    screen.blit(comicFont.render("Locked", True, BLACK), (18, 100))
         else:
             draw.circle(screen, BLACK, (loc[0], loc[1]), 1500, circleSize)
             circleSize+=40
@@ -92,5 +97,4 @@ def runLevelPicker(myScreen):
                 playingCirlceAnimation = False
                 return "game", int(Levels_levelpicker[0][-1])-1 
         display.flip()
-    
     return "menu"

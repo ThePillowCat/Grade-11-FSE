@@ -1,6 +1,7 @@
 from pygame import *
 from math import *
 from random import *
+#importing other files to save some lines of code
 import Level_picker
 import ticTacToe
 import tilesAndIdleStates
@@ -262,6 +263,7 @@ class Bat(Enemy):
             if self.hitbox[1] > height:
                 self.dead = True
                 return
+        #code to make the bat follow the player
         self.curFrame+=0.2
         if self.curFrame > 3:
             self.curFrame = 0
@@ -323,6 +325,8 @@ class epicKey(Enemy):
         self.counter =10
         self.moveAmount = 1
     def drawSelf(self):
+        #makes a sin wave on the y axis when drawing the key
+        #makes it bob up and down
         self.hitbox = self.hitbox.move(0, sin(self.counter*0.1)*3)
         self.counter+=1
         screen.blit(tileDict[self.type], (self.hitbox[0]+player.offset, self.hitbox[1]))
@@ -334,9 +338,11 @@ class epicKey(Enemy):
             player.numOfKeys+=1
 
 #------------------------------------------------
+
 '''
 THIS PART OF THE CODE LOOPS THROUGH EACH LEVEL'S 2D LIST
 IT CHECKS WHERE ENEMIES SHOULD BE ADDED, AND WHICH OBJECTS SHOULDN'T HAVE COLLISION
+THIS IS DONE BY LOOPING THROUGH EACH LEVEL WITH THREE NESTED LOOPS (SEEN BELOW)
 '''
 stuffWithNoCollision = [["Tree_1"], ["Tree_2"], [], ["m_m_side_dirt"], ["Bush (1)"], ["Bush (2)"], ["Bush (3)"], ["Bush (4)"]]
 
@@ -371,8 +377,6 @@ for i in range(row):
                 level_1_Enemies.append(epicKey("key_red", Rect(widthOfTile*j, heightOfTile*i, W, H), widthOfTile*j, heightOfTile*i))
                 numOfKeysInLevels[0]+=1
         elif level_1[i][j] in seperateObjects:
-            # if level_1[i][j] == ["door1"]:
-            #     stuffToDrawOverBackground.append(["door1", (j*widthOfTile, i*heightOfTile)])
             W = tileDict[level_1[i][j][0]].get_width()
             H = tileDict[level_1[i][j][0]].get_height()
             level_1_Objects.append(Rect(widthOfTile*j, heightOfTile*i, W, H))
@@ -439,10 +443,6 @@ for i in range(row):
 level_3_Objects += l3FileCollisionRects
 numOfKeysInLevels[2]+=1
 
-bgForest = image.load("Textures\\png\\BG\\BG.png").convert()
-bgCave = image.load("Textures\\png\\BG\\CaveBG.png").convert()
-bgDesert = image.load("Textures\\png\\BG\\desertBG.png").convert()
-
 #level class is stored in a seperate py file that is imported
 #so, you need to pass in some data when making the level class
 #this code isn't the best way to do this, but it works for this game
@@ -470,6 +470,10 @@ class UI():
 
 fireBall = image.load("Textures\\png\\Object\\fireball.png").convert_alpha()
 
+#PLAYER CLASS
+#STORES ATTRIBUTES ABOUT THE PLAYER
+#ALSO HAS FUNCTIONS FOR RESETING THE PLAYER UPON DEATH,
+#MOVING THE PLAYER, HANDLING PROJECTILES FROM THE PLAYER, etc.
 class Player():
     def __init__(self, x, y, screen):
         self.screen = screen
@@ -526,6 +530,10 @@ class Player():
             temp = playerRect.collidelist(level.objects[level.currentLevel])
             if temp != -1:
                 #gets the row and collumn the object is on
+                #these two lines of code are a bit complex
+                #you integer divide the x and y coordinates of the collided object by their widths and heights respectivley
+                #this gives you THE TILE COORDS of the collided object
+                #you can then refrence this to the 2D list containing tile data to see which object you collided with
                 X = level.objects[level.currentLevel][temp][0]//widthOfTile
                 Y = level.objects[level.currentLevel][temp][1]//heightOfTile
                 if level.levels[level.currentLevel][Y][X] == ["water"] or level.levels[level.currentLevel][Y][X] == ["water_top"]:
@@ -558,6 +566,9 @@ class Player():
                     mixer.Channel(2).play(powerUpSound)
                     self.powerUp = "gun"
                     self.powerUpOffset = 2
+                    #deleting the gun powerup from level data and from being drawn over
+                    #background (which is a screenshot)
+                    #works same way for fireflower powerup
                     del level.objects[level.currentLevel][temp]
                     for o in level.stuffToDrawOverBackground:
                         if o[1][0] == X*widthOfTile and o[1][1] == Y*heightOfTile:
@@ -608,6 +619,7 @@ class Player():
         snake that walks on platform
         '''
         
+        #handles collision on the top and bottom of player
         bottomOfPlayer = Rect(self.posInLevel, self.y+self.vel[1]+self.size[1], self.size[0], 1)
         hitRect = bottomOfPlayer.collidelist(level.rects[level.currentLevel])
         if hitRect != -1:
@@ -663,6 +675,7 @@ class Player():
             if self.moving and self.posInLevel > 240:
                 self.offset += 5
 
+    #this function simply draws the player and its animations
     def drawPlayer(self):
         if not self.moving:
             if self.powerUp == "gun" and self.crouched:
@@ -678,48 +691,66 @@ class Player():
                 self.moveSpot+=0.6
                 screen.blit(self.animationFrames[self.direction+self.powerUpOffset][int(self.moveSpot)], (self.x, self.y))
         self.bulletTimer += 0.02
-    def usePowerUp(self, powerUp):
-        if powerUp == "fireball":
-            for i in range(len(self.fireBalls)):
-                screen.blit(fireBall, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y))
-                #fix speed?
-                bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2+self.fireBalls[i].vel[1]), (self.fireBalls[i].rad*2)-10, 5)
-                rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2)+self.fireBalls[i].speed, self.fireBalls[i].y+5, 1, (self.fireBalls[i].rad*2)-10)
-                leftOfFireball = Rect(self.fireBalls[i].x+5+self.fireBalls[i].speed, self.fireBalls[i].y, 1, (self.fireBalls[i].rad*2)-10)
-                #deletes fireball if it's in the void (at bottom of screen)
-                if self.fireBalls[i].y+self.fireBalls[i].rad > height:
-                    self.fireBalls[i].bounces = 4
-                    continue
-                hitRect = bottomOfFireball.collidelist(level.rects[level.currentLevel])
-                if hitRect != -1:
-                    self.fireBalls[i].vel[1]=-8
-                    self.fireBalls[i].bounces+=1
-                    self.fireBalls[i].y = level.rects[level.currentLevel][hitRect][1]-self.fireBalls[i].rad
-                elif rightOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.fireBalls[i].bounces = 4
-                    continue
-                elif leftOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
-                    self.fireBalls[i].bounces = 4
-                    continue
-                #increasing gravity, updating x and y based off velocites
-                self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
-                self.fireBalls[i].y+=self.fireBalls[i].vel[1]
-                self.fireBalls[i].x+=self.fireBalls[i].speed
-            temp = len(self.fireBalls)
-            for i in range(temp-1,-1,-1):
-                if self.fireBalls[i].bounces > 3:
-                    del self.fireBalls[i]
-        if powerUp == "gun":
-            for i in range(len(self.bullets)):
-                bulletRect = Rect(self.bullets[i].x, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
-                draw.ellipse(screen, BROWN, (self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height))
-                if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x+self.offset+self.bullets[i].width > width or self.bullets[i].x+self.offset < 0:
-                    self.bullets[i].dead = True
-                self.bullets[i].x+=self.bullets[i].speed
-            temp = len(self.bullets)
+    #updates projectiles
+    def handleProjectiles(self):
+        for i in range(len(self.fireBalls)):
+            screen.blit(fireBall, (self.fireBalls[i].x+self.offset, self.fireBalls[i].y))
+            #fix speed?
+            bottomOfFireball = Rect(self.fireBalls[i].x+5, self.fireBalls[i].y+(self.fireBalls[i].rad*2+self.fireBalls[i].vel[1]), (self.fireBalls[i].rad*2)-10, 5)
+            rightOfFireball = Rect(self.fireBalls[i].x+(self.fireBalls[i].rad*2)+self.fireBalls[i].speed, self.fireBalls[i].y+5, 1, (self.fireBalls[i].rad*2)-10)
+            leftOfFireball = Rect(self.fireBalls[i].x+5+self.fireBalls[i].speed, self.fireBalls[i].y, 1, (self.fireBalls[i].rad*2)-10)
+            #deletes fireball if it's in the void (at bottom of screen)
+            if self.fireBalls[i].y+self.fireBalls[i].rad > height:
+                self.fireBalls[i].bounces = 4
+                continue
+            hitRect = bottomOfFireball.collidelist(level.rects[level.currentLevel])
+            if hitRect != -1:
+                self.fireBalls[i].vel[1]=-8
+                self.fireBalls[i].bounces+=1
+                self.fireBalls[i].y = level.rects[level.currentLevel][hitRect][1]-self.fireBalls[i].rad
+            elif rightOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
+                self.fireBalls[i].bounces = 4
+                continue
+            elif leftOfFireball.collidelist(level.rects[level.currentLevel]) != -1:
+                self.fireBalls[i].bounces = 4
+                continue
+            #increasing gravity, updating x and y based off velocites
+            self.fireBalls[i].vel[1]+=self.fireBalls[i].gravity
+            self.fireBalls[i].y+=self.fireBalls[i].vel[1]
+            self.fireBalls[i].x+=self.fireBalls[i].speed
+        temp = len(self.fireBalls)
+        for i in range(temp-1,-1,-1):
+            if self.fireBalls[i].bounces > 3:
+                del self.fireBalls[i]
+        for i in range(len(self.bullets)):
+            bulletRect = Rect(self.bullets[i].x, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height)
+            draw.ellipse(screen, BROWN, (self.bullets[i].x+self.offset, self.bullets[i].y, self.bullets[i].width, self.bullets[i].height))
+            if bulletRect.collidelist(level.rects[level.currentLevel]) != -1 or self.bullets[i].x+self.offset+self.bullets[i].width > width or self.bullets[i].x+self.offset < 0:
+                self.bullets[i].dead = True
+            self.bullets[i].x+=self.bullets[i].speed
+        temp = len(self.bullets)
+        for i in range(temp-1, -1, -1):
+            if self.bullets[i].dead:
+                del self.bullets[i]
+                    #code for handling the falling egg
+            for e in level.eggs:
+                screen.blit(e.img, (e.x+player.offset, e.y))
+                if e.hitbox.collidelist(level.rects[level.currentLevel]) != -1:
+                    e.dead = True
+                if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
+                    e.dead = True
+                    player.resetPlayer()
+                    break
+                e.y+=e.speed
+                e.hitbox = e.hitbox.move(0, e.speed)
+            temp = len(level.eggs)
+            #loops through each egg one more time
+            #if it's dead, remove it from the level.eggs list
             for i in range(temp-1, -1, -1):
-                if self.bullets[i].dead:
-                    del self.bullets[i]
+                if level.eggs[i].dead:
+                    del level.eggs[i]
+    #resets the player upon death
+    #subtracts a life and puts the player at the start of the level
     def resetPlayer(self):
         self.x = self.checkPoint[0]
         self.y = self.checkPoint[1]
@@ -736,6 +767,7 @@ class Player():
 
 player = Player(300,100,screen)
 
+#similar to bullet class, simply keeps track of a fireball's velocity
 class Fireball():
     def __init__(self, x, y):
         self.x = x
@@ -804,10 +836,10 @@ screen = display.set_mode((width, height))
 
 #instructions pannel
 def instructions():
-    inst = image.load("pics/Instructions.png")
+    inst = image.load("pics/Instructions.png").convert()
     inst = transform.smoothscale(inst, screen.get_size())
     screen.blit(inst,(0,0))
-    back=image.load("pics/Back.png")
+    back=image.load("pics/Back.png").convert()
     backRect=Rect(975,10,220,70)
     running=True
     while running:
@@ -867,27 +899,41 @@ def game(lev):
     mixer.Sound.set_volume(gunShot, 0.4)
     mixer.Sound.set_volume(fireBall, 0.4)
     mixer.Channel(6).play(bgMusic)
+    #resets the time and the number of keys the player has collected
     player.numOfKeys = 0
+    ui.timeLeft = 0
+    ui.timePast = 0
     while running:
-        #screen = display.set_mode((width, height))
+        #checks if the player ran out of time
         if ui.timeLeft < 0:
             ui.startTime = 200
             ui.timePast = 0
             player.resetPlayer()
+        #checks if the player is playing tic tac toe (from the third level)
+        #this game was made by Kaitlyn
         if player.playingTicTacToe:
             mixer.Channel(6).stop()
             screen = display.set_mode((650, 650))
+            #runs the ticTacToe game, and sees if the player won based on what the function returns
             if ticTacToe.runTicTacToe(screen) == "winner":
+                #add a key object to the level enemies list
+                #delete the arcade info from the 2D tiles list
+                #(the arcade will still be in the background, but the player can't play it)
                 level.enemies[level.currentLevel].append(epicKey("key_red", Rect(player.posInLevel+100, player.y, W, H), player.posInLevel+100, player.y))
                 level.levels[level.currentLevel][player.hitArcadeCoords[1]][player.hitArcadeCoords[0]] = []
             screen = display.set_mode((1200, 702))
             player.playingTicTacToe = False
             mixer.Channel(6).play(bgMusic)
+        #checks if the game is not paused, a game over animation is not playing, and other music isn't already playing
         if not paused and not level.gameOver and not mixer.Channel(6).get_busy():
+            #if so, play the background music
             mixer.Channel(6).play(bgMusic)
+        #exits if the gameover music stops playing
         if level.gameOver and not mixer.Channel(6).get_busy():
             return "exit"
+        #if the level is not equal to the original level
         if level.currentLevel != lev or switchLevel:
+            #stop the background music and go back to the level selection screen
             mixer.Channel(6).stop()
             return "lev1"
         keys = key.get_pressed()
@@ -896,6 +942,7 @@ def game(lev):
                 running=False
                 return "exit"
             if evt.type==KEYDOWN:
+                #HANDLES PAUSING
                 if evt.key == K_p:
                     if not paused:
                         paused = True
@@ -906,6 +953,9 @@ def game(lev):
                         paused = False
                 #FIRING PROJECTILES
                 if evt.key == K_r:
+                    '''
+                    The following if statements handle firing projectiles from the player
+                    '''
                     if player.powerUp == "fireball":
                         if len(player.fireBalls) < 3:
                             mixer.Channel(1).play(fireBall)
@@ -934,29 +984,15 @@ def game(lev):
             level.drawEnemies()
             player.drawPlayer()
             ui.drawUI()
+            #THE FOLLOWING FUNCTION UPDATES THE STATES OF VARIOUS PROJECTILES,
+            #IF THERE ARE ANY
+            player.handleProjectiles()
 
-            #code for handling the falling egg
-            for e in level.eggs:
-                screen.blit(e.img, (e.x+player.offset, e.y))
-                if e.hitbox.collidelist(level.rects[level.currentLevel]) != -1:
-                    e.dead = True
-                if e.hitbox.colliderect(Rect(player.posInLevel, player.y, player.size[0],player.size[1])):
-                    e.dead = True
-                    player.resetPlayer()
-                    break
-                e.y+=e.speed
-                e.hitbox = e.hitbox.move(0, e.speed)
-            temp = len(level.eggs)
-            for i in range(temp-1, -1, -1):
-                if level.eggs[i].dead:
-                    del level.eggs[i]
-
-            if player.powerUp != "normal":
-                player.usePowerUp(player.powerUp)
             if keys[K_DOWN] and player.powerUp == "gun":
                 player.crouched = True
             else:
                 player.crouched = False
+            
         elif level.gameOver:
             level.gameOverAnimation()
         #flipping display and insuring 60fps
@@ -992,9 +1028,12 @@ def menu():
         screen.blit(storypic,(900,300,235,70))
         screen.blit(startpic,(600,400))
 
+        #HANDLES THE USER SELECTING DIFFERENT OPTIONS
         if buttons[0].collidepoint(mx,my):
             draw.rect(screen,WHITE,(600,400,370,152))
             screen.blit(startpicB,(605,395))
+            #handles playing a clicking sound when hovering over a button
+            #same process is used for other buttons
             if playingClickSound:
                 mixer.music.load("Sound Effects\\click.mp3")
                 mixer.music.play()
