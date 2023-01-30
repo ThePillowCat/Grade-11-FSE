@@ -176,5 +176,7 @@ def runTicTacToe(s):
                 running = False
                 if winner == ["You Win!"]:
                     return "winner"
+                else:
+                    return "not winner"
         display.flip()
     quit()
