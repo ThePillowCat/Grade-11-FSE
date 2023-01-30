@@ -901,7 +901,6 @@ def game(lev):
     mixer.Channel(6).play(bgMusic)
     #resets the time and the number of keys the player has collected
     player.numOfKeys = 0
-    player.lives+=1
     ui.timeLeft = 0
     ui.timePast = 0
     while running:
@@ -924,7 +923,6 @@ def game(lev):
                 level.levels[level.currentLevel][player.hitArcadeCoords[1]][player.hitArcadeCoords[0]] = []
             screen = display.set_mode((1200, 702))
             player.playingTicTacToe = False
-            mixer.Channel(6).play(bgMusic)
         #checks if the game is not paused, a game over animation is not playing, and other music isn't already playing
         if not paused and not level.gameOver and not mixer.Channel(6).get_busy():
             #if so, play the background music
