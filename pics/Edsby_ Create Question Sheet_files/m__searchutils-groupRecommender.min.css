@@ -1,0 +1,14 @@
+/*
+Copyright CoreFour Inc.
+Version: baf4caef7b0dd7471dd76c3dc5db25e58fe75145ce31e12f9f3da02c27b2a1fb
+Compiled: 1674919995
+*/
+
+
+/*searchutils*/
+.searchPicker-sep{border-top:1px solid var(--ui-container-sep-primary-border-colour)}.searchPicker-spacer1{background-color:var(--ui-container-sep-secondary-border-colour);padding:1px}.xds-searchutils-summary{display:block;padding:10px;text-align:center;background-color:var(--ui-hover-background-colour)}.xds-searchutils-summary-shown{margin-right:5px}.xds-searchutils-summary-more{margin-right:15px}.xds-searchutils-summary-qt{margin-left:5px}.xds-searchutils-summary-et{margin:5px}
+
+/*groupRecommender*/
+.groupRecommender{padding:15px 5px 0}.groupRecommender .scrollingNews-boxLayout-newsbox-item{color:var(--ui-body-foreground-colour);padding:15px;height:149px;box-shadow:var(--ui-boxshadow-box-shadow)!important;margin-bottom:5px;margin-top:5px;margin-right:20px}.groupRecommender .scrollingNews-boxLayout-newsbox-item-top-groupdata-bot-members-icon,.groupRecommender .scrollingNews-boxLayout-newsbox-item-top-groupdata-bot-nposts-icon{font-weight:600;margin-right:3px;font-size:12px;align-self:center}.groupRecommender .scrollingNews-boxLayout-newsbox-item-top-groupdata-bot-members-text,.groupRecommender .scrollingNews-boxLayout-newsbox-item-top-groupdata-bot-nposts-text{font-weight:400;font-size:14px}.scrollingNews-boxLayout-newsbox-item-bot-join{margin:0;padding:0;text-align:center}.xds-groupRecommender-types-lastActive{display:flex;font-size:14px}.groupRecommender-scroller.scrollingNews .scrollingNews-boxLayout-newsbox-item-top-groupdata-name{font-weight:600;font-size:16px;max-height:34px;padding-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis}
+
+.c__m__searchutils-groupRecommender{visibility:hidden !important;}

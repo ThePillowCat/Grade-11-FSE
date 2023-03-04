@@ -1,0 +1,342 @@
+
+
+/**/
+/* @override http://192.168.0.26/leap/static/xdl/lib/richText.css?0 */
+
+/* @override http://192.168.0.26/leap/static/xdl_min/lib/richText.css?1317414002.1 */
+
+.xds-richtext-types-richText,
+.trumbowyg-editor {
+	font-family: "system-ui", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 15px;
+	word-break: break-word;
+	line-height: 1.3;
+}
+
+.xds-richtext-types-richText li,
+.trumbowyg-editor li {
+	display: list-item;
+	margin-bottom: 5px;
+}
+
+.xds-richtext-types-richText th,
+.trumbowyg-editor th {
+	font-weight: bolder;
+	text-align: center
+}
+
+.xds-richtext-types-richText h1,
+.trumbowyg-editor h1 {
+	font-size: 27px;
+	margin: 5px 0
+}
+
+.xds-richtext-types-richText h2,
+.trumbowyg-editor h2 {
+	font-size: 23px;
+	margin: 10px 0
+}
+
+.xds-richtext-types-richText h3,
+.trumbowyg-editor h3 {
+	font-size: 21px;
+	margin: 15px 0
+}
+
+.xds-richtext-types-richText h4,
+.trumbowyg-editor h4 {
+	font-size: 19px;
+	margin: 15px 0
+}
+
+.xds-richtext-types-richText p,
+.trumbowyg-editor p
+{
+	display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+	/*margin: 5px 0;*/
+}
+
+.xds-richtext-types-richText h4,
+.trumbowyg-editor h4,
+.xds-richtext-types-richText blockquote,
+.trumbowyg-editor blockquote,
+.xds-richtext-types-richText ul,
+.trumbowyg-editor ul,
+.xds-richtext-types-richText ol,
+.trumbowyg-editor ol,
+.xds-richtext-types-richText dl,
+.trumbowyg-editor dl {
+	margin: 18px 0
+}
+
+.xds-richtext-types-richText h5,
+.trumbowyg-editor h5 {
+	font-size: 17px;
+	margin: 10px 0
+}
+
+.xds-richtext-types-richText h6,
+.trumbowyg-editor h6 {
+	font-size: 15px;
+	margin: 10px 0
+}
+
+.xds-richtext-types-richText h1,
+.trumbowyg-editor h1,
+.xds-richtext-types-richText h2,
+.trumbowyg-editor h2,
+.xds-richtext-types-richText h3,
+.trumbowyg-editor h3,
+.xds-richtext-types-richText h4,
+.trumbowyg-editor h4,
+.xds-richtext-types-richText h5,
+.trumbowyg-editor h5,
+.xds-richtext-types-richText h6,
+.trumbowyg-editor h6,
+.xds-richtext-types-richText b,
+.trumbowyg-editor b,
+.xds-richtext-types-richText strong,
+.trumbowyg-editor strong {
+	font-weight: bolder
+}
+
+.xds-richtext-types-richText blockquote,
+.trumbowyg-editor blockquote {
+	margin-left: 40px;
+	margin-right: 40px
+}
+
+.xds-richtext-types-richText i,
+.trumbowyg-editor i,
+.xds-richtext-types-richText cite,
+.trumbowyg-editor cite,
+.xds-richtext-types-richText em,
+.trumbowyg-editor em
+{
+	font-style: italic
+}
+
+.xds-richtext-types-richText pre,
+.trumbowyg-editor pre,
+.xds-richtext-types-richText code,
+.trumbowyg-editor code
+{
+	font-family: monospace;
+}
+
+.xds-richtext-types-richText pre,
+.trumbowyg-editor pre
+{
+	white-space: pre-wrap;
+	margin: 1em 0px;
+}
+
+.xds-richtext-types-richText button,
+.trumbowyg-editor button,
+.xds-richtext-types-richText textarea,
+.trumbowyg-editor textarea,
+.xds-richtext-types-richText input,
+.trumbowyg-editor input,
+.xds-richtext-types-richText select,
+.trumbowyg-editor select {
+	display: inline-block
+}
+
+.xds-richtext-types-richText big,
+.trumbowyg-editor big
+{
+	font-size: 1.17em
+}
+
+.xds-richtext-types-richText small,
+.trumbowyg-editor small,
+.xds-richtext-types-richText sub,
+.trumbowyg-editor sub,
+.xds-richtext-types-richText sup,
+.trumbowyg-editor sup
+{
+	font-size: .83em
+}
+
+.xds-richtext-types-richText sub,
+.trumbowyg-editor sub
+{
+	vertical-align: sub
+}
+
+.xds-richtext-types-richText sup,
+.trumbowyg-editor sup
+{
+	vertical-align: super
+}
+
+.xds-richtext-types-richText table,
+.trumbowyg-editor table
+{
+	border-spacing: 2px;
+
+}
+
+.xds-richtext-types-richText thead,
+.trumbowyg-editor thead
+{
+	background: #e6e6e6;
+}
+
+
+
+.xds-richtext-types-richText thead,
+.trumbowyg-editor thead,
+.xds-richtext-types-richText tbody,
+.trumbowyg-editor tbody,
+.xds-richtext-types-richText tfoot,
+.trumbowyg-editor tfoot
+{
+	vertical-align: middle
+}
+
+.xds-richtext-types-richText td,
+.trumbowyg-editor td,
+.xds-richtext-types-richText th,
+.trumbowyg-editor th,
+.xds-richtext-types-richText tr,
+.trumbowyg-editor tr
+{
+	vertical-align: inherit;
+	border: 1px solid #999999;
+	padding: 5px;
+	min-height: 20px;
+}
+
+.xds-richtext-types-richText hr,
+.trumbowyg-editor hr
+{
+	border:none;
+	border-bottom: 1px solid #999999;
+}
+
+.xds-richtext-types-richText ol,
+.trumbowyg-editor ol,
+.xds-richtext-types-richText ul,
+.trumbowyg-editor ul,
+.xds-richtext-types-richText dd,
+.trumbowyg-editor dd
+{
+	margin-left: 40px
+}
+
+.xds-richtext-types-richText ol,
+.trumbowyg-editor ol
+{
+	list-style-type: decimal
+}
+
+
+.xds-richtext-types-richText ol ul,
+.trumbowyg-editor ol ul,
+.xds-richtext-types-richText ul ol,
+.trumbowyg-editor ul ol,
+.xds-richtext-types-richText ul ul,
+.trumbowyg-editor ul ul,
+.xds-richtext-types-richText ol ol,
+.trumbowyg-editor ol ol
+{
+	margin-top: 0;
+	margin-bottom: 0
+}
+
+.xds-richtext-types-richText ul,
+.trumbowyg-editor ul
+{
+	list-style-type: disc
+}
+
+.xds-richtext-types-richText u,
+.trumbowyg-editor u
+{
+	text-decoration: underline
+}
+
+.xds-richtext-types-richText center,
+.trumbowyg-editor center {
+	text-align: center
+}
+
+.xds-richtext-types-richText :link,
+.trumbowyg-editor :link,
+.xds-richtext-types-richText :visited,
+.trumbowyg-editor :visited
+{
+	text-decoration: underline
+}
+.xds-richtext-types-richText img,
+.trumbowyg-editor img
+{
+	max-width: 100%;
+	height: auto;
+}
+
+.xds-richtext-types-richText,
+.trumbowyg-editor
+{
+	overflow-x: hidden;
+}
+
+.xds-richtext-mathquill,
+.xds-richtext-mathquill.mq-math-mode
+{
+	display: inline-block;
+	font-size: 2em;
+}
+
+.xds-wysiwyg-embeddedLink {
+	width: 500px;
+	text-align: center;
+}
+.xds-wysiwyg-embeddedLink .thumbnail {
+	max-width: 500px;
+	display: inline-block;
+}
+.xds-wysiwyg-embeddedLink .thumbnail-box {
+	width: 500px;
+	display: inline-block;
+	border: 1px solid #cecece;
+	border-radius: 5px 5px 0px 0px;
+	padding: 5px;
+}
+.xds-wysiwyg-embeddedLink .description {
+	width: 500px;
+	display: inline-block;
+	border: 1px solid #cecece;
+	border-top: none;
+	border-radius: 0px 0px 5px 5px;
+	padding: 5px;
+}
+
+.trumbowyg-editor pre code {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    color: #333;
+    background: #f8f8f8;
+}
+
+.xds-wysiwyg-container .trumbowyg.trumbowyg-fullscreen {
+	top: 36px;
+	z-index: 1500;
+	height: calc(100% - 36px);
+}
+.xds-wysiwyg-container.xds-wysiwyg-container-alwaysFullscreen .trumbowyg.trumbowyg-fullscreen {
+	top: 36px;
+	z-index: initial;
+}
+.xds-wysiwyg-container .trumbowyg.trumbowyg-box {
+	margin: 0px auto;
+}
+
+
+.c__r__cmljaFRleHQuY3Nz{visibility:hidden !important;}
